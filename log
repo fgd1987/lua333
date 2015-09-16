@@ -1,0 +1,27 @@
+
+Wed Sep 16 23:00:23 CST 2015
+
+socket不进行封装，写一个poll做IO，写协议的DECODER/ENCODER读写数据，DECODER/ENCODER里有数据缓存
+
+lua模块
+
+c模块
+os.c 进行系统调用的封装
+socket.c 做socket系统调用的封装
+
+内部通信方法
+1.模块方法调用:不用实体接收，不可靠的，会丢失
+2.实体方法调用:调用实体的方法，可靠的，而且保存数据库
+
+协议:
+1.protobuf做客端协议
+
+数据库
+1.MYSQL要做ORM, 描述文件用table表示
+2.mongodb
+
+
+if(true || getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &len) != 0){
+aeCreateFileEvent(evt_loop(), sockfd, AE_READABLE, port_on_connect_error, (void*)line);
+aeCreateFileEvent(evt_loop(), sockfd, AE_WRITABLE, port_on_connect_success, (void*)line);
+

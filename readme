@@ -1,0 +1,8 @@
+libc    C实现的LUA模块
+liblua  lua模块
+libs    一些公用的函数库
+game    游戏目录
+
+
+
+
