@@ -33,14 +33,12 @@ static int ltime(lua_State *L){
     return 1;
 }
 
-
-//返回系统的微秒时间
-static int lusec(lua_State *L){
+static int lgettimeofday(lua_State *L){
     struct timeval tv; 
     struct timezone tz; 
     gettimeofday(&tv,&tz);
-    lua_pushinteger(L,tv.tv_usec);
     lua_pushinteger(L,tv.tv_sec);
+    lua_pushinteger(L,tv.tv_usec);
     return 2;
 }
 
@@ -53,78 +51,12 @@ static int lgetcwd(lua_State *L){
 }
 
 static int lchdir(lua_State *L){
-	if (lua_gettop(L) == 1 && lua_isstring(L, 1)){
-		const char *dir = (const char *)lua_tostring(L, 1);
-		int ir = chdir(dir);
-        lua_pushinteger(L, ir);
-        return 1;
-	}
-    lua_pushinteger(L, ir);
+	const char *dir = (const char *)lua_tostring(L, 1);
+	int error = chdir(dir);
+    lua_pushinteger(L, error);
     return 1;
 }
 
-static int lcmd(lua_State *L){
-    if(lua_isstring(L, 1)){
-		const char *str = lua_tostring(L, 1);
-        //拆参数
-        char buf[256];
-        strcpy(buf, str);
-        int len = strlen(buf);
-        char *pbuf = buf;
-        char *cmd = pbuf;
-        char *argv[128];
-        argv[0] = cmd;
-        int need_blank = 0;
-        int i ;
-        int idx = 0;
-        for(i = 0; i < len; i++){
-            if(need_blank == 0 && pbuf[i] != ' '){
-                argv[idx++] = pbuf + i;
-                need_blank = 1;
-            }else if(need_blank == 1 && pbuf[i] == ' '){
-                pbuf[i] = 0;
-                need_blank = 0;
-            }
-        }
-        argv[idx] = NULL;
-        int pid = fork();
-        if(pid == 0){
-	        execvp(cmd, argv);	
-            exit(1);
-        }else if(pid < 0){
-        }else if(pid > 0){
-            int status;
-            waitpid(pid, &status, 0);
-        }
-        lua_pushboolean(L, true);
-        return 1;
-	}
-    lua_pushboolean(L, false);
-    return 1;
-}
-static int lgethost(lua_State *L){
-	if (lua_gettop(L) == 0){
-        lua_newtable(L);
-        
-        int idx = 1;
-        struct ifaddrs *ifaddrs = NULL;
-        getifaddrs(&ifaddrs);
-        while(ifaddrs){
-            if(ifaddrs->ifa_addr && ifaddrs->ifa_addr->sa_family == AF_INET){
-                void *addr_ptr = &((struct sockaddr_in *)ifaddrs->ifa_addr)->sin_addr;
-                char ip[INET_ADDRSTRLEN];
-                inet_ntop(AF_INET, addr_ptr, ip, INET_ADDRSTRLEN);
-                lua_pushnumber(L, idx++);
-                lua_pushstring(L, ip);
-                lua_settable(L, -3);
-            }
-            ifaddrs = ifaddrs->ifa_next;
-        }
-        return 1;
-	}
-    lua_pushboolean(L, false);
-    return 1;
-}
 static int lnanosleep(lua_State *L){
 	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
 		int t = (int)lua_tonumber(L, 1);
@@ -142,26 +74,28 @@ static int lnanosleep(lua_State *L){
 }
 
 static int lsleep(lua_State *L){
-	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
-		int t = (int)lua_tonumber(L, 1);
-        sleep(t);
-        lua_pushboolean(L, true);
-        return 1;
-	}
-    lua_pushboolean(L, false);
+    int seconds;
+    int error;
+    seconds = (int)lua_tointeger(L, 1);
+    error = sleep(t);
+    lua_pushinteger(L, error);
     return 1;
 }
+
 static int lwaitpid(lua_State *L){
-	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
-		int pid = (int)lua_tonumber(L, 1);
-        int status;
-        waitpid(pid, &status, 0);
-        lua_pushnumber(L, status);
-        return 1;
-	}
-    lua_pushboolean(L, false);
-    return 1;
+    int status;
+    pid_t pid;
+    int options;
+    int error;
+    pid = (int)lua_tointeger(L, 1);
+    status = (int)lua_tointeger(L, 2);
+    options = (int)lua_tointeger(L, 3);
+    pid = waitpid(pid, &status, options);
+    lua_pushinteger(L, pid);
+    lua_pushinteger(L, status);
+    return 2;
 }
+
 static int lmkdirs(lua_State *L){
 	if (lua_gettop(L) == 1 && lua_isstring(L, 1)){
         size_t dir_len = 0;
@@ -199,46 +133,41 @@ static int lmkdir(lua_State *L){
     lua_pushboolean(L, false);
     return 1;
 }
+
 static int lexists(lua_State *L){
-	if (lua_gettop(L) == 1 && lua_isstring(L, 1)){
-		const char *dir = (const char *)lua_tostring(L, 1);
-        int ir = access(dir, 0);
-        lua_pushboolean(L, ir == 0);
-        return 1;
-	}
-    lua_pushboolean(L, false);
+    int amode;
+	const char *dir;
+    int error;
+    dir = (const char *)lua_tostring(L, 1);
+    amode = (int)lua_tointeger(L, 2);
+    error = access(dir, amode);
+    lua_pushinteger(L, error);
     return 1;
 }
 
 static int lclose(lua_State *L){
-	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
-		int fd = (int)lua_tonumber(L, 1);
-        close(fd);
-        lua_pushboolean(L, true);
-        return 1;
-	}
-    lua_pushboolean(L, false);
+    int error;
+    int fd;
+    fd  = (int)lua_tointeger(L, 1);
+    error = close(fd);
+    lua_pushinteger(L, error);
     return 1;
 }
+
 static int lremove(lua_State *L){
-	if (lua_gettop(L) == 1 && lua_isstring(L, 1)){
-		const char *filepath = (const char *)lua_tostring(L, 1);
-        remove(filepath);
-        lua_pushboolean(L, true);
-        return 1;
-	}
-    lua_pushboolean(L, false);
+    int error;
+	const char *filepath = (const char *)lua_tostring(L, 1);
+    remove(filepath);
+    lua_pushinteger(L, 1);
     return 1;
 }
+
 static int lrename(lua_State *L){
-	if (lua_gettop(L) == 2 && lua_isstring(L, 1) && lua_isstring(L, 2)){
-		const char *src = (const char *)lua_tostring(L, 1);
-		const char *dst = (const char *)lua_tostring(L, 2);
-        rename(src, dst);
-        lua_pushboolean(L, true);
-        return 1;
-	}
-    lua_pushboolean(L, false);
+    int error;
+	const char *src = (const char *)lua_tostring(L, 1);
+	const char *dst = (const char *)lua_tostring(L, 2);
+    error = rename(src, dst);
+    lua_pushinteger(L, error);
     return 1;
 }
 static int llistdir(lua_State *L){
@@ -285,114 +214,6 @@ static int llistdir(lua_State *L){
     return 1;
 }
 
-static int laccess_time(lua_State *L){
-    if(lua_gettop(L) == 1 && lua_isstring(L, 1)){
-        const char *file_path = (const char *)lua_tostring(L, 1);
-        struct stat info;
-        if(!stat(file_path, &info)){
-            lua_pushnumber(L, info.st_mtime);
-            return 1;
-        }
-    }
-    lua_pushnumber(L, 0);
-    return 1;
-}
-static int lreadline(lua_State *L){
-    if(lua_gettop(L) == 1 && lua_isstring(L, 1)){
-        const char *prompt = (const char *)lua_tostring(L, 1);
-        char *str = linenoise(prompt);
-        lua_pushstring(L, str);
-        return 1;
-    }
-    lua_pushstring(L, "");
-    return 1;
-}
-static int lhistory_add(lua_State *L){
-    if(lua_gettop(L) == 1 && lua_isstring(L, 1)){
-        const char *str = (const char *)lua_tostring(L, 1);
-        linenoiseHistoryAdd(str);
-        lua_pushboolean(L, true);
-        return 1;
-    }
-    lua_pushboolean(L, false);
-    return 1;
-}
-static int lstr2func(lua_State *L){
-    if(lua_gettop(L) == 1 && lua_isstring(L, 1)){
-        const char *func = (const char *)lua_tostring(L, 1);
-        char *start = (char *)func;
-        char *class_name = start;
-        char *pfunc = start;
-        while(*pfunc != 0){
-            if(*pfunc == '.' && class_name == start){
-                *pfunc = 0;
-                lua_getglobal(L, class_name);
-                *pfunc = '.';
-                if(lua_isnil(L, -1)){
-                    return 0;
-                }
-                class_name = pfunc + 1;
-            }else if(*pfunc == '.'){
-                *pfunc = 0;
-                lua_pushstring(L, class_name);
-                lua_gettable(L, -2);
-                *pfunc = '.';
-                if(lua_isnil(L, -1)){
-                    return 0;
-                }
-    	        lua_remove(L, -2);//弹出table
-                class_name = pfunc + 1;
-            }
-            pfunc++;
-        }
-        if(class_name == start){
-            lua_getglobal(L, class_name);
-            if(lua_isnil(L, -1)){
-                return 0;
-            }
-        }else{
-            lua_pushstring(L, class_name);
-            lua_gettable(L, -2);
-            if(lua_isnil(L, -1)){
-                return 0;
-            }
-            lua_remove(L, -2);//弹出table
-        }
-        return 1;     
-    }
-    lua_pushnil(L);
-    return 1;
-}
-
-
-
-static int lfrom_timestr(lua_State *L){
-	if (lua_gettop(L) == 1 && lua_isstring(L, 1)){
-		const char * str = (const char*)lua_tostring(L, 1);
-        struct tm tm;
-        sscanf(str, "%04d-%02d-%02d %02d:%02d:%02d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
-        tm.tm_year -= 1900;
-        tm.tm_mon -= 1;
-        time_t t = mktime(&tm);
-        lua_pushnumber(L, t);
-        return 1;
-	}
-    lua_pushboolean(L, false);
-    return 1;
-}
-
-
-static int ldays_after(lua_State *L){
-    if(lua_gettop(L) == 2 && lua_isnumber(L, 1) && lua_isnumber(L, 2)){
-        time_t timenow = (time_t)lua_tonumber(L, 1);
-        time_t timebefore = (time_t)lua_tonumber(L, 2);
-        int days = ((timenow - timenow % 86400) - (timebefore - timebefore % 86400)) / 86400;
-        lua_pushnumber(L, days);
-        return 1;
-    }
-    lua_pushboolean(L, false);
-    return 1;
-}
 static int lstrftime(lua_State *L){
     if(lua_gettop(L) == 2 && lua_isstring(L, 1) && lua_isnumber(L, 2)){
         const char *format = (const char *)lua_tostring(L, 1);
@@ -512,6 +333,52 @@ static int urlencode(const char *str, const int str_len, char *result, const int
     return j;
 }
 
+static int lclose(lua_State *L){
+    int sockfd;
+    int error;
+    sockfd = (int)lua_tonumber(L, 1);
+    error = close(sockfd);
+    lua_pushinteger(L, error);
+    return 1;
+}
+
+static int lsocket(lua_State *L){
+    int sockfd;
+    int domain;
+    int type;
+    int protocol;
+    domain = (int)lua_tointeger(L, 1);
+    type = (int)lua_tointeger(L, 2);
+    protocol = (int)lua_tointeger(L, 3);
+    domain = (int)lua_tointeger(L, 1);
+    sockfd = socket(domain, type, protocol);
+    lua_pushinteger(L, sockfd);
+    return 1;
+}
+
+static int llisten(lua_State *L){
+    int sockfd;
+    char *host;
+    unsigned short port;
+    int error;
+    sockfd = (int)lua_tointeger(L, 1);
+    host = (char *)lua_tostring(L, 2);
+    port = (unsigned short)lua_tointeger(L, 3);
+    lua_pushinteger(L, 1);
+    return 1;
+}
+
+static int lsend(lua_State *L){
+    size_t len;
+    int error;
+    char *str;
+    int sockfd;
+    sockfd = (int)lua_tonumber(L, 1);
+    str = (char *)lua_tolstring(L, 2, &len);
+    error = send(sockfd, str, len, 0);
+    lua_pushinteger(L, error);
+    return 1;
+}
 
 static luaL_Reg lua_lib[] ={
     {"fork", lfork},
@@ -529,22 +396,10 @@ static luaL_Reg lua_lib[] ={
     {"close", lclose},
     {"rename", lrename},
     {"time", ltimenow},
-    {"access_time", laccess_time},
-    {"cmd", lcmd},
     {"waitpid", lwaitpid},
-    {"readline", lreadline},
-    {"str2func", lstr2func},
     {"sleep", lsleep},
     {"nanosleep", lnanosleep},
-    {"gethost", lgethost},
-    {"from_timestr", lfrom_timestr},
-    {"days_after", ldays_after},
-    {"settime", lsettime},
-    {"resettime", lresettime},
-    {"history_add", lhistory_add},
-    {"md5", lmd5},
-    {"shorturl", lshorturl},
-    {"usec", lusec},
+    {"gettimeofday", gettimeofday},
     {"strftime", lstrftime},
     {NULL, NULL}
 };
@@ -553,6 +408,3 @@ int luaopen_os(lua_State *L){
 	luaL_register(L, "os", (luaL_Reg*)lua_lib);
 	return 1;
 }
- 
-
-

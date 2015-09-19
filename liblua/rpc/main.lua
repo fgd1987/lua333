@@ -53,7 +53,6 @@ function recv_method(src_stubid, src_entityid, dst_entityid, mod_str, method_str
     end
 end
 
-
 _G['RPC'] = function(entityid, src_entityid)
     local obj = {entityid, src_entityid}
     return obj
