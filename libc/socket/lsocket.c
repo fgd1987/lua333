@@ -28,7 +28,13 @@ static int lclose(lua_State *L){
 
 static int lsocket(lua_State *L){
     int sockfd;
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    int domain;//AF_INET
+    int type;//SOCK_STREAM
+    int protocol;//0
+    domain = (int)lua_tointeger(L, 1);
+    type = (int)lua_tointeger(L, 2);
+    protocol = (int)lua_tointeger(L, 3);
+    sockfd = socket(domain, type, protocol);
     lua_pushinteger(L, sockfd);
     return 1;
 }
@@ -68,7 +74,7 @@ static luaL_Reg lua_lib[] ={
 };
 
 int luaopen_os(lua_State *L){
-	luaL_register(L, "Date", (luaL_Reg*)lua_lib);
+	luaL_register(L, "Socket", (luaL_Reg*)lua_lib);
 	return 1;
 }
 

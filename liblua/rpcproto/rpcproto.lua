@@ -20,18 +20,43 @@ module('RpcProto', package.seeall)
     RPC.send(sockfd, mod_name, func_name, ...)
 --]]
 
-local xx = {
-    __index = function(t, mod_name)
-        t.mod_name 
+RMIMessage = {
+    sockfd = nil,
+    mod_name = nil,
+    action_name = nil
+}
+
+PostAction = {
+    __call = function(self, ...)
+        local mod_name = self.mod_name
+        local action_name = self.action_name
+        local uid = self.sockfd
+        --CenterSrvPost.Game_srv.invoke(mod_name, action_name, uid, unpack(arg))
     end
 }
 
-local tt
+PostModIndex = {
+    __index = function(self, k)
+        RMIMessage.mod_name = k
+        setmetatable(RMIMessage, PostActionIndex)
+        return RMIMessage
+    end
+}
+
+PostActionIndex = {
+    __index = function(self, k)
+        RMIMessage.action_name = k
+        setmetatable(RMIMessage, PostAction)
+        return RMIMessage
+    end
+}
 
 function POST(sockfd)
-    tt.sockfd = sockfd
-    return tt
+    RMIMessage.sockfd = sockfd
+    setmetatable(RMIMessage, PostModIndex)    
+    return RMIMessage
 end
+
 
 
 
