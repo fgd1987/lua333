@@ -1,0 +1,10 @@
+#!/usr/local/bin/lua
+
+require('application')
+require('mod')
+
+Mod.load('clientsrv')
+Mod.load('globalclient')
+Mod.load('gameclient')
+
+
