@@ -1,6 +1,6 @@
-libc        C实现的LUA模块
-liblua      lua模块
-libs        一些公用的函数库
+src         C实现的LUA模块
+mod         lua模块
+3rd          一些公用的函数库
 framework   游戏架构
 game        具体游戏
 
