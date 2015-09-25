@@ -163,10 +163,10 @@ static luaL_Reg lua_lib[] = {
     //{"write_str", lwrite_str},
 
    // {"seek", lseek},
-    {NULL, NULL}
+    {0, 0}
 };
 
 int luaopen_ar(lua_State *L){
-    luaL_newlib(L, lua_lib);
+	luaL_register(L, "Ar", lua_lib);
     return 1;
 }

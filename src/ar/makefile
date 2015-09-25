@@ -1,12 +1,11 @@
 
 CC=gcc
-INCLUDE_DIRS=-I../../libs/lua/src
-LIB_DIRS=-L../../libs/lua/src
-LIB_DIRS=-L/opt/local/lib
+INCLUDE_DIRS=-I../../3rd/lua/src
+LIB_DIRS=-L../../lib
 CFLAGS=-fPIC -shared -O2 -Wall 
 SO=ar.so
 
-${SO}:
+${SO}:ar.c
 	gcc -o ${SO} ${CFLAGS} ar.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua
 
 clean:

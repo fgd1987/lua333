@@ -171,6 +171,6 @@ static luaL_Reg lua_lib[] = {
 };
 
 int luaopen_json(lua_State *L){
-    luaL_newlib(L, lua_lib);
+	luaL_register(L, "Json", lua_lib);
     return 1;
 }

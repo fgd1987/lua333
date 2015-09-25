@@ -314,7 +314,7 @@ static luaL_Reg lua_lib[] ={
 };
 
 int luaopen_ae(lua_State *L){
-    luaL_newlib(L, lua_lib);
+	luaL_register(L, "Ae", lua_lib);
 
     lua_pushstring(L, "AE_NONE");
     lua_pushinteger(L, AE_NONE);

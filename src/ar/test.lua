@@ -1,6 +1,3 @@
-
-
-
-local Ar = require('ar')
+require('ar')
 Ar.test()
 

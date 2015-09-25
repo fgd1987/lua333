@@ -1,5 +1,4 @@
 
 
-local Json = require('json')
-print(Json.encode({'a', 'b', ljw = 333}))
-
+require('ae')
+print(Ae.get_api_name())

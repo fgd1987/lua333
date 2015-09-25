@@ -1,8 +1,7 @@
 CC=gcc
 INCLUDE_DIRS=-I../../3rd/lua/src
-LIB_DIRS=-L../../3rd/lua/src
-LIB_DIRS=-L/opt/local/lib
-CFLAGS=-fPIC -shared -O2 -Wall 
+LIB_DIRS=-L../../lib
+CFLAGS=-fPIC -shared -O1 -Wall 
 SO=ae.so
 
 ${SO}:lae.c

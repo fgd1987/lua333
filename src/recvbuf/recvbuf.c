@@ -218,6 +218,6 @@ static luaL_Reg lua_lib[] ={
 };
 
 int luaopen_recvbuf(lua_State *L){
-    luaL_newlib(L, lua_lib);
+	luaL_register(L, "RecvBuf", lua_lib);
 	return 1;
 }

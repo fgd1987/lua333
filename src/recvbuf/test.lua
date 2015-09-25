@@ -1,5 +1,5 @@
 
 
-local RecvBuf = require('recvbuf')
+require('recvbuf')
 RecvBuf.test()
 
