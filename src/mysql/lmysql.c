@@ -9,7 +9,7 @@ static int lconnect(lua_State *L){
         const char *dbname = lua_tostring(L, 2);
         const char *user = lua_tostring(L, 3);
         const char *passwd = lua_tostring(L, 4);
-        my_bool b = true;
+        my_bool b = 1;
         MYSQL *conn = mysql_init(NULL);
         mysql_options(conn, MYSQL_OPT_RECONNECT, &b);
         conn = mysql_real_connect(conn, host, user, passwd, dbname, 0, NULL, MYSQL_OPT_RECONNECT);
@@ -30,21 +30,21 @@ static int lcommand(lua_State *L){
         MYSQL *conn = (MYSQL *)lua_touserdata(L, 1);
         if(conn == NULL){
             LOG_ERROR("checkuserdata fail");
-            lua_pushboolean(L, false);
+            lua_pushboolean(L, 0);
             return 1;
         }
         mysql_query(conn, "set names utf8");
         const char *command = lua_tostring(L, 2);
         if(mysql_query(conn, command) != 0){
             LOG_ERROR("%s", mysql_error(conn));
-            lua_pushboolean(L, false);
+            lua_pushboolean(L, 0);
             lua_pushstring(L, mysql_error(conn));
             return 2;
         }
-        lua_pushboolean(L, true);
+        lua_pushboolean(L, 1);
         return 1;
     }
-    lua_pushboolean(L, false);
+    lua_pushboolean(L, 0);
     return 1;
 }
 
@@ -155,8 +155,7 @@ static int lrealescapestring(lua_State *L){
             escape_buf = (char *)malloc(str_len * 2);
             if(escape_buf == NULL){
                 LOG_ERROR("malloc fail");
-                lua_pushboolean(L, false);
-                return 1;
+                return 0;
             }
             escape_buf_len = str_len * 2;
         }
@@ -164,8 +163,7 @@ static int lrealescapestring(lua_State *L){
         lua_pushlstring(L, escape_buf, len);
         return 1;
     }
-    lua_pushboolean(L, false);
-    return 1;
+    return 0;
 }
 
 
@@ -177,11 +175,10 @@ static int lclose(lua_State *L){
             return 0;
         }
         mysql_close(conn);
-        lua_pushboolean(L, true);
+        lua_pushboolean(L, 1);
         return 1;
     }
-    lua_pushboolean(L, false);
-    return 1;
+    return 0;
 }
 
 /*
@@ -190,7 +187,6 @@ static int lclose(lua_State *L){
  *
  */
 static luaL_Reg lua_lib[] = {
-    {"create", lcreate},
     {"connect", lconnect},
     {"Select", lselect},
     {"Command", lcommand},
@@ -201,6 +197,6 @@ static luaL_Reg lua_lib[] = {
 };
 
 int luaopen_mysql(lua_State *L){
-	luaL_register(L, "MySql", (luaL_Reg*)lua_lib);
+	luaL_register(L, "Mysql", (luaL_Reg*)lua_lib);
     return 1;
 }
