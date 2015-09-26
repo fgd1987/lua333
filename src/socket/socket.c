@@ -86,8 +86,7 @@ static luaL_Reg lua_lib[] ={
 };
 
 int luaopen_socket(lua_State *L){
-	//luaL_register(L, "Socket", (luaL_Reg*)lua_lib);
-    luaL_newlib(L, lua_lib);
+	luaL_register(L, "Socket", lua_lib);
 	return 1;
 }
 

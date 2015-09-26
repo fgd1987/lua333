@@ -11,4 +11,5 @@ ${SO}:ar.c
 clean:
 	rm -rf ${SO}
 
-
+install:
+	cp -r ${SO} ../../lib
