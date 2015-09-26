@@ -4,6 +4,10 @@ listenfd = listen or nil
 pollfd = pollfd or nil
 socket_table = socket_table or {}
 
+function test()
+    print('test')
+end
+
 function main()
     pollfd = Poll.create()
     listenfd = Socket.create()

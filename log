@@ -26,7 +26,26 @@ socket.c 做socket系统调用的封装
 2.mongodb
 
 
-if(true || getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &len) != 0){
-aeCreateFileEvent(evt_loop(), sockfd, AE_READABLE, port_on_connect_error, (void*)line);
-aeCreateFileEvent(evt_loop(), sockfd, AE_WRITABLE, port_on_connect_success, (void*)line);
+Sat Sep 26 19:06:19 CST 2015
+lua的makefile不会生成so,
+需要修改src/Makefile
+MYCFLAGS=-fPIC
++LUA_SO= liblua.so
+ALL_T= $(LUA_A) $(LUA_T) $(LUAC_T) $(LUA_SO)
++$(LUA_SO): $(CORE_O) $(LIB_O)
++	$(CC) -o $@ -shared $?
+
+
+Sat Sep 26 18:56:40 CST 2015
+lua版本5.1.5， lua_newtable时会报下面的错
+static int ltest(lua_State *L){
+    printf("test\n");
+    lua_newtable(L);
+    return 1;
+}
+lua(1738,0x7fff7c37d300) malloc: *** error for object 0x1018bae60: pointer being freed was not allocated
+*** set a breakpoint in malloc_error_break to debug
+
+
+
 

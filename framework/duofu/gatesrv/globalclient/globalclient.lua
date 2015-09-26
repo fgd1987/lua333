@@ -1,4 +1,4 @@
-module('GlobalClient', package.seeall)
+module('Globalclient', package.seeall)
 
 pollfd = nil
 socket_array = socket_array or {}

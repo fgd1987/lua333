@@ -27,7 +27,7 @@ function update()
                 Log.log(TAG, 'unable connect to ip(%s) port(%d)', ip, port)
             end
         else
-            lcoal error = nil
+            local error = nil
             if error_event then
                 error = true
             end
