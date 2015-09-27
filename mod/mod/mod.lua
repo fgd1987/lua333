@@ -31,15 +31,19 @@ function load(mod_path)
                 local require_path = string.sub(file_path, 1, index - 1)
                 print(string.format('scan file(%s)', file_path))
                 local mod = require(require_path)
-                print(mod)
             else
                 print(string.format('ignore file(%s)!!!!!', file_path))
             end
         end
     end
     local mod = _G[string.cap(mod_name)]
-    mod_table[#mod_table] = mod
-    print('ee', mod, string.cap(mod_name))
+    if not mod then
+        print(string.format('mod(%s) not found, please check mod name!!!', mod_path))
+        os.exit(1)
+    end
+    mod_table[#mod_table + 1] = mod
+    mod.TAG = mod_name
+    --mod.log = function(...) Log.log(mod_name, ...) end
 end
 
 function reload(mod_path)
@@ -47,17 +51,9 @@ end
 
 function call(func_name, ...)
     for _, mod in pairs(mod_table) do
-        print(mod)
         local func = mod[func_name]
         if func then
             func(unpack(arg))
         end
-    end
-end
-
-function call(mod, func_name, ...)
-    local func = mod[func_name]
-    if func then
-        func(unpack(arg))
     end
 end

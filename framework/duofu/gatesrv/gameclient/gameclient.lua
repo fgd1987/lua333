@@ -1,13 +1,17 @@
-module('GlobalClient', package.seeall)
+module('Gameclient', package.seeall)
 
 pollfd = nil
 socket_array = socket_array or {}
---socket_table = socket_table or {}
+socket_table = socket_table or {}
 connecting_socket_array = connecting_socket_array or {}
 connecting_socket_table = connecting_socket_table or {}
 
+function test()
+    Log.log(TAG, 'i am gameclientv %s', '333')
+end
+
 function main()
-    pollfd = Poll.create()
+    pollfd = Ae.create()
     check_connections()
 end
 
@@ -46,12 +50,12 @@ end
 
 --重连
 function check_connections()
-    local globalsrv_list = Config.globalsrv_list
-    for k, conf in pairs(globalsrv_list) do
+    local gamesrv_list = Config.gameclient.gamesrv_list
+    for k, conf in pairs(gamesrv_list) do
         --查看是否已经连接，或者正在连接
         if not socket_table[k] and not connecting_socket_table[k] then
             --去连接
-            local sockfd = Socket.create()
+            local sockfd = Socket.socket(Socket.AF_INET, Socket.SOCK_STREAM, 0)
             Socket.setnonblock(sockfd)
             local error = Socket.connect(sockfd, conf.ip, conf.port)
             if not error then

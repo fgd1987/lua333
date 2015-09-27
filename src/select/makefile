@@ -1,6 +1,17 @@
 CC=gcc
-include_dirs=-I../../libs/lua/src
-lib_dirs=-L../../libs/lua/src
+INCLUDE_DIRS=-I../../3rd/lua/src
+LIB_DIRS=-L../../lib/
 CFLAGS=-fPIC -shared -O2 -Wall 
-select.o:
-	gcc ${CFLAGS} select.c ${include_dirs} ${lib_dirs} -llua
+SO=select.so
+
+${SO}:lselect.c
+	gcc -o ${SO} ${CFLAGS} lselect.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua
+
+clean:
+	rm -rf ${SO}
+
+install:
+	cp -r ${SO} ../../lib
+
+test:
+	../../bin/lua test.lua

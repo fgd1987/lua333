@@ -8,7 +8,7 @@
 /* 
  * rptr rlen rskip 配合使用，用于写socket
  * rptr = SendBuf.rptr()
- * rlen = SendBuf.rlen()
+ * rlen = SendBuf.datalen()
  * sent = send sockfd rptr rlen
  * SendBuf.rskip(sent)
  *
@@ -122,7 +122,7 @@ static int lrptr(lua_State *L){
     return 1;
 }
 
-static int lrlen(lua_State *L){
+static int ldatalen(lua_State *L){
     int sockfd;
     sockfd = (int)lua_tointeger(L, 1);
 	BBuf *self = fd2bbuf(sockfd);
@@ -196,7 +196,7 @@ static int lalloc(lua_State *L){
 	int idx = hash(real_size);
 	if(block_table[idx] == NULL){
         int malloc_size = 1<<idx;
-        printf("malloc size: %d/%d\n", need_size, malloc_size - sizeof(BBuf_Block));
+        //printf("malloc size: %d/%d\n", need_size, malloc_size - sizeof(BBuf_Block));
 		BBuf_Block *block = (BBuf_Block *)malloc(malloc_size);
 		if(block == NULL){
             printf("malloc fail\n");
@@ -242,12 +242,12 @@ static luaL_Reg lua_lib[] ={
     {"alloc", lalloc},
     {"flush", lflush},
     {"rptr", lrptr},
-    {"rlen", lrlen},
+    {"datalen", ldatalen},
     {"rskip", lrskip},
     {NULL, NULL}
 };
 
 int luaopen_sendbuf(lua_State *L){
-	luaL_register(L, "SendBuf", lua_lib);
+	luaL_register(L, "Sendbuf", lua_lib);
 	return 1;
 }

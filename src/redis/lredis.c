@@ -389,8 +389,12 @@ static int lhmset(lua_State *L){
     return 1;
 }
 
-static int lcommand(lua_State *L)
-{
+static int ltest(lua_State *L) {
+    printf("test ok!!\n");
+    return 0;
+}
+
+static int lcommand(lua_State *L) {
     if (!lua_isuserdata(L, 1) || !lua_isstring(L, 2)) {
         LOG_ERROR("arg error");
         return 0;
@@ -425,6 +429,7 @@ static luaL_Reg lua_lib[] = {
     {"hset", lhset},
     {"lpush", llpush},
     {"close", lclose},
+    {"test", ltest},
     {NULL, NULL}
 };
 

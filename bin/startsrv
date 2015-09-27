@@ -24,10 +24,22 @@ print(string.format('package.cpath(%s)', package.cpath))
 print('----------导入函数库----------')
 --导入必须的c库
 require('stringpatch')
+require('bitpatch')
 require('sys')
 require('json')
+require('ae')
+require('ar')
+require('redis')
+require('mysql')
+require('socket')
+require('pbc')
+require('sendbuf')
+require('recvbuf')
+require('select')
+require('date')
 --导入必须的lua库
 require('mod.mod')
+require('log.log')
 --print('Config =')
 --print(Json.encode(Config))
 
@@ -55,5 +67,8 @@ for _, mod_path in pairs(srvconf.mod) do
     print(string.format('finish load mod(%s)', mod_path))
     print('')
 end
-
 Mod.call('test')
+Mod.call('main')
+
+Framesrv.mainloop()
+

@@ -2,66 +2,34 @@
 #include <time.h>
 #include <lua.h>
 #include <lualib.h>
+#include <stdlib.h>
 #include <lauxlib.h>
 #include "ae.h"
 
 /*
  * 
- *  local loop = Ae.create_event_loop(1024)
+ *  local loop = Ae.create(1024)
  *  Ae.create_file_event(loop, sockfd, Ae.AE_READABLE, on_read)
- *
+ *  Ae.run_once()
  */
 
 #define LOG_ERROR printf
 
-//这个东西不会太多的, 回调用的
-#define MAX_CLIENT_DATA 1024
+#define MAX_FILE_DATA 10240
 
-typedef struct ClientData {
+typedef struct FileData {
     lua_State *L;
-    char file_proc[64]; //MAX_PATH
-    char finalizer_proc[64];
+    char file_read_proc[64]; //MAX_PATH
+    char file_writ_proc[64]; //MAX_PATH
     char time_proc[64];
-}ClientData;
+}FileData;
 
-int last_client_data_id = -1;
+typedef struct TimeData {
+    lua_State *L;
+    char time_proc[64];
+}TimeData;
 
-static ClientData client_data_array[MAX_CLIENT_DATA];
-
-static ClientData* get_client_data(int idx) {
-    if (idx < 0 || idx >= MAX_CLIENT_DATA) {
-        return NULL;
-    }
-    return &client_data_array[idx];
-}
-
-static int get_client_data_idx(lua_State *L, char *file_proc, char *time_proc, char *finalizer_proc) {
-    for (int i = 0; i < last_client_data_id; i++) {
-        if (client_data_array[i].L == L 
-            &&(file_proc != NULL && 0 == strcmp(client_data_array[i].file_proc, file_proc))
-            &&(time_proc != NULL && 0 == strcmp(client_data_array[i].time_proc, time_proc))
-            &&(finalizer_proc != NULL && 0 == strcmp(client_data_array[i].finalizer_proc, finalizer_proc))
-        ) {
-            return i;
-        }
-    }
-    int idx = last_client_data_id + 1;
-    if (idx >= MAX_CLIENT_DATA) {
-        LOG_ERROR("inc the array?");
-        return -1;
-    }
-    client_data_array[idx].L = L;
-    if (file_proc != NULL) {
-        strcpy(client_data_array[idx].file_proc, file_proc);
-    }
-    if (time_proc != NULL) {
-        strcpy(client_data_array[idx].time_proc, time_proc);
-    }
-    if (finalizer_proc != NULL) {
-        strcpy(client_data_array[idx].finalizer_proc, finalizer_proc);
-    }
-    return idx;
-}
+static FileData file_data_array[MAX_FILE_DATA];
 
 
 //login.hello_world
@@ -110,41 +78,48 @@ int lua_pushluafunction(lua_State *L, const char *func){
 }
 
 static void file_proc(struct aeEventLoop *eventLoop, int sockfd, void *clientData, int mask) {
-    int id = (int)clientData;
-    ClientData *client_data = get_client_data(id);
-    lua_State *L = client_data->L;
-    lua_pushluafunction(L, client_data->file_proc);
-    lua_pushnumber(L, sockfd);
-    if (lua_pcall(L, 1, 0, 0) != 0){
-        LOG_ERROR("error running function %s: %s", client_data->file_proc, lua_tostring(L, -1));
-     }
+    FileData *filedata = (FileData *)clientData;
+    lua_State *L = filedata->L;
+    if (mask & AE_READABLE && filedata->file_read_proc) {
+        lua_pushluafunction(L, filedata->file_read_proc);
+        lua_pushinteger(L, sockfd);
+        lua_pushinteger(L, mask);
+        if (lua_pcall(L, 2, 0, 0) != 0){
+            LOG_ERROR("error running function %s: %s", filedata->file_read_proc, lua_tostring(L, -1));
+        }
+    }
+    if (mask & AE_WRITABLE && filedata->file_writ_proc) {
+        lua_pushluafunction(L, filedata->file_writ_proc);
+        lua_pushinteger(L, sockfd);
+        lua_pushinteger(L, mask);
+        if (lua_pcall(L, 2, 0, 0) != 0){
+            LOG_ERROR("error running function %s: %s", filedata->file_writ_proc, lua_tostring(L, -1));
+        }
+    }
 }
 
 static int time_proc(struct aeEventLoop *eventLoop, long long id, void *clientData) {
-    int idx = (int)clientData;
-    ClientData *client_data = get_client_data(idx);
-    lua_State *L = client_data->L;
-    lua_pushluafunction(L, client_data->time_proc);
+    TimeData *timedata = (TimeData *)clientData;
+    lua_State *L = timedata->L;
+    lua_pushluafunction(L, timedata->time_proc);
     lua_pushnumber(L, id);
     if (lua_pcall(L, 1, 0, 0) != 0){
-        LOG_ERROR("error running function %s: %s", client_data->time_proc, lua_tostring(L, -1));
+        LOG_ERROR("error running function %s: %s", timedata->time_proc, lua_tostring(L, -1));
      }
     return AE_NOMORE;
 }
 
 static void finalizer_proc(struct aeEventLoop *eventLoop, void *clientData) {
-    int idx = (int)clientData;
-    ClientData *client_data = get_client_data(idx);
-    lua_State *L = client_data->L;
-    lua_pushluafunction(L, client_data->finalizer_proc);
-    if (lua_pcall(L, 0, 0, 0) != 0){
-        LOG_ERROR("error running function %s: %s", client_data->finalizer_proc, lua_tostring(L, -1));
-     }
+    TimeData *timedata = (TimeData *)clientData;
+    if (timedata) {
+        free(timedata);
+    }
 }
+
 /*  
 static void before_sleep_proc(struct aeEventLoop *eventLoop) {
     int idx = (int)clientData;
-    ClientData *client_data = get_client_data(idx);
+    FileData *client_data = get_client_data(idx);
     lua_State *L = client_data->L;
     char *func_name = client_data->func_name;
     lua_pushluafunction(L, func_name);
@@ -154,7 +129,10 @@ static void before_sleep_proc(struct aeEventLoop *eventLoop) {
 }
 */
 
-
+/*
+ * 跑一帧
+ * @arg1 event loop
+ */
 static int lrun_once(lua_State *L) {
     aeEventLoop *event_loop;
     event_loop = (aeEventLoop *)lua_touserdata(L, 1); 
@@ -168,6 +146,9 @@ static int lget_api_name(lua_State *L) {
     return 1;
 }
 
+/*
+ * 主循环
+ */
 static int lmain(lua_State *L) {
     aeEventLoop *event_loop;
     event_loop = (aeEventLoop *)lua_touserdata(L, 1); 
@@ -175,6 +156,11 @@ static int lmain(lua_State *L) {
     return 0;
 }
 
+/*
+ * @arg1 fd
+ * @arg2 mask
+ * @arg3 milliseconds
+ */
 static int lwait(lua_State *L) {
     int fd;
     int mask;
@@ -188,6 +174,10 @@ static int lwait(lua_State *L) {
     return 1;
 }
 
+/*
+ *  @arg1 event looop
+ *  @arg2 flag2  AE_FILE_EVENTS AE_TIME_EVENTS AE_ALL_EVENTS AE_DONT_WAIT
+ */
 static int lprocess_events(lua_State *L) {
     aeEventLoop *event_loop;
     int flags;
@@ -199,6 +189,10 @@ static int lprocess_events(lua_State *L) {
     return 1;
 }
 
+/*
+ *  @arg1 event loop
+ *  @arg2 timeid
+ */
 static int ldelete_time_event(lua_State *L) {
     aeEventLoop *event_loop;
     long long id;
@@ -210,25 +204,38 @@ static int ldelete_time_event(lua_State *L) {
     return 1;
 }
 
+/*
+ * @arg1 event loop
+ * @arg2 milliseconds
+ * @arg3 time proc name 
+ */
+
 static int lcreate_time_event(lua_State *L) {
     aeEventLoop *event_loop;
     long long milliseconds;
     char *time_proc_name;
-    char *finalizer_proc_name;
     event_loop = (aeEventLoop *)lua_touserdata(L, 1); 
     milliseconds = (long long)lua_tonumber(L, 2);
     time_proc_name = (char *)lua_tostring(L, 3);
-    if (lua_isstring(L, 4)) {
-        finalizer_proc_name = (char *)lua_tostring(L, 4);
-    } else {
-        finalizer_proc_name = NULL;
+    TimeData *timedata = (TimeData *)malloc(sizeof(TimeData));
+    if (!timedata) {
+        lua_pushinteger(L, AE_ERR);
+        return 1;
     }
-    int idx = get_client_data_idx(L, NULL, time_proc_name, finalizer_proc_name);
-    int id = aeCreateTimeEvent(event_loop, id, time_proc, (void *)idx, NULL);
+    if (time_proc_name) {
+        strcpy(timedata->time_proc, time_proc_name);
+    }
+    timedata->L = L;
+    int id = aeCreateTimeEvent(event_loop, milliseconds, time_proc, (void *)timedata, finalizer_proc);
     lua_pushnumber(L, id);
     return 1;
 }
 
+/*
+ * @arg1 event loop
+ * @arg2 socket
+ * @return mask   AE_READABLE AE_WRITABLE AE_NONE
+ */
 static int lget_file_events(lua_State *L) {
     aeEventLoop *event_loop;
     int sockfd;
@@ -239,6 +246,11 @@ static int lget_file_events(lua_State *L) {
     return 1;
 }
 
+/*
+ *  @arg1 event loop
+ *  @arg2 sockfd
+ *  @arg3 mask  AE_READABLE AE_WRITABLE AE_NONE
+ */
 static int ldelete_file_event(lua_State *L) {
     aeEventLoop *event_loop;
     int sockfd;
@@ -250,6 +262,13 @@ static int ldelete_file_event(lua_State *L) {
     return 0;
 } 
 
+/*
+ * @arg1 event loop
+ * @arg2 sockfd
+ * @arg3 mask
+ * @arg4 file proc name
+ *
+ */
 static int lcreate_file_event(lua_State *L) {
     aeEventLoop *event_loop;
     int sockfd;
@@ -260,13 +279,31 @@ static int lcreate_file_event(lua_State *L) {
     sockfd = (int)lua_tointeger(L, 2);
     mask = (int)lua_tointeger(L, 3);
     file_proc_name = (char *)lua_tostring(L, 4);
-    int idx = get_client_data_idx(L, file_proc_name, NULL, NULL);
-    error = aeCreateFileEvent(event_loop, sockfd, mask, file_proc, (int)idx);
+    if (sockfd >= MAX_FILE_DATA) {
+        //可以考虑用MALLOC
+        LOG_ERROR("333");
+        lua_pushinteger(L, AE_ERR);
+        return 1;
+    }
+    if (mask & AE_READABLE) {
+        strcpy(file_data_array[sockfd].file_read_proc, file_proc_name);
+    }
+    if (mask & AE_WRITABLE) {
+        strcpy(file_data_array[sockfd].file_writ_proc, file_proc_name);
+    }
+    file_data_array[sockfd].L = L;
+    error = aeCreateFileEvent(event_loop, sockfd, mask, file_proc, &file_data_array[sockfd]);
+    //printf("file_proc_name(%s) sockfd(%d) error(%d) mask(%d)\n", file_proc_name, sockfd, error, mask);
     lua_pushinteger(L, error);
     return 1;
 }
 
-static int lcreate_event_loop(lua_State *L) {
+/*
+ * 
+ * @arg1 max sock size
+ * @return event loop
+ */
+static int lcreate(lua_State *L) {
     int setsize;
     setsize = (int)lua_tointeger(L, 1);
     aeEventLoop *event_loop = aeCreateEventLoop(setsize);
@@ -274,7 +311,7 @@ static int lcreate_event_loop(lua_State *L) {
     return 1;
 }
 
-static int ldelete_event_loop(lua_State *L) {
+static int lfree(lua_State *L) {
     aeEventLoop *event_loop;
     event_loop = (aeEventLoop *)lua_touserdata(L, 1); 
     aeDeleteEventLoop(event_loop);
@@ -288,13 +325,13 @@ static int lstop(lua_State *L) {
     return 0;
 }
 
+/*  
 static int lset_before_sleep_proc(lua_State *L) {
     //aeEventLoop *event_loop;
     //event_loop = (aeEventLoop *)lua_touserdata(L, 1); 
     //aeSetBeforeSleepProc(event_loop, before_sleep_proc);  
     return 0;
-}
-
+}*/
 
 static luaL_Reg lua_lib[] ={
     {"get_api_name", lget_api_name},
@@ -308,26 +345,53 @@ static luaL_Reg lua_lib[] ={
     {"delete_file_event", ldelete_file_event},
     {"create_time_event", lcreate_time_event},
     {"delete_time_event", ldelete_time_event},
-    {"create_event_loop", lcreate_event_loop},
-    {"delete_event_loop", ldelete_event_loop},
+    {"create", lcreate},
+    {"free", lfree},
     {NULL, NULL}
 };
 
 int luaopen_ae(lua_State *L){
 	luaL_register(L, "Ae", lua_lib);
 
-    lua_pushstring(L, "AE_NONE");
+    lua_pushstring(L, "NONE");
     lua_pushinteger(L, AE_NONE);
     lua_settable(L, -3);
 
-    lua_pushstring(L, "AE_READABLE");
+    lua_pushstring(L, "READABLE");
     lua_pushinteger(L, AE_READABLE);
     lua_settable(L, -3);
 
-    lua_pushstring(L, "AE_WRITABLE");
+    lua_pushstring(L, "WRITABLE");
     lua_pushinteger(L, AE_WRITABLE);
     lua_settable(L, -3);
 
+    lua_pushstring(L, "OK");
+    lua_pushinteger(L, AE_OK);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "ERR");
+    lua_pushinteger(L, AE_ERR);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "FILE_EVENTS");
+    lua_pushinteger(L, AE_FILE_EVENTS);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "TIME_EVENTS");
+    lua_pushinteger(L, AE_TIME_EVENTS);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "ALL_EVENTS");
+    lua_pushinteger(L, AE_ALL_EVENTS);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "DONT_WAIT");
+    lua_pushinteger(L, AE_DONT_WAIT);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "NOMORE");
+    lua_pushinteger(L, AE_NOMORE);
+    lua_settable(L, -3);
 	return 1;
 }
 

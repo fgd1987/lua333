@@ -1,0 +1,6 @@
+
+
+require('redis')
+
+
+Redis.test()

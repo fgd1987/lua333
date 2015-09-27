@@ -6,6 +6,7 @@
 #define int16 short
 #define int32 int
 #define int64 long long
+
 /*
  *   local arfd = Ar.create(buf, buflen)
  *   local uid = Ar.read_int(arfd)
@@ -34,19 +35,32 @@ int ar_create(char *buf, int buf_len){
     return fd;
 }
 
-void ar_free(int fd){
+static int lrewind(lua_State *L){
+    int fd = (int)lua_tointeger(L, 1);
     ar_t *self = fd2ar(fd);
-    self->used = 0;
+    self->rptr = 0;
+    return 0;
 }
 
-int ar_remain(int fd){
+static int ldatalen(lua_State *L){
+    int fd = (int)lua_tointeger(L, 1);
     ar_t *self = fd2ar(fd);
-    return self->buf_len - self->rptr;
+    lua_pushinteger(L, self->rptr);
+    return 1;
 }
 
-char *ar_ptr(int fd){
+static int lremain(lua_State *L){
+    int fd = (int)lua_tointeger(L, 1);
     ar_t *self = fd2ar(fd);
-    return self->buf + self->rptr;
+    lua_pushinteger(L, self->buf_len - self->rptr);
+    return 1;
+}
+
+static int lptr(lua_State *L){
+    int fd = (int)lua_tointeger(L, 1);
+    ar_t *self = fd2ar(fd);
+    lua_pushlightuserdata(L, self->buf + self->rptr);
+    return 1;
 }
 
 static int ar_write(int fd, void *vbuf, int buf_len){
@@ -64,6 +78,24 @@ static int ltest(lua_State *L){
     printf("test\n");
     return 0;
 }
+
+/*
+ * for test
+ */
+static int lmalloc(lua_State *L) {
+    int len = (int)lua_tointeger(L, 1);
+    char *buf = (char *)malloc(len);
+    lua_pushlightuserdata(L, buf);
+    return 1;
+}
+
+static int lfree(lua_State *L){
+    int fd = (int)lua_tointeger(L, 1);
+    ar_t *self = fd2ar(fd);
+    self->used = 0;
+    return 0;
+}
+
 static int lcreate(lua_State *L){
 	if (lua_gettop(L) == 2 && lua_isuserdata(L, 1) && lua_isnumber(L, 2)){
         char *buf = (char *)lua_touserdata(L, 1);
@@ -75,7 +107,45 @@ static int lcreate(lua_State *L){
     return 0;
 }
 
-static int lwrite_int8(lua_State *L){
+static int lwritestr(lua_State *L){
+	if (lua_gettop(L) == 2 && lua_isnumber(L, 1) && lua_isstring(L, 2)){
+        char *str;
+        size_t str_len;
+        int fd = (int)lua_tointeger(L, 1);
+        str = (char *)lua_tolstring(L, 2, &str_len);
+        ar_t *self = fd2ar(fd);
+        if (self->buf_len - self->rptr < str_len) {
+            lua_pushinteger(L, 0); 
+            return 1;
+        }
+        ar_write(fd, str, str_len);
+        lua_pushinteger(L, str_len); 
+        return 1;
+	}
+    return 0;
+}
+
+static int lwritelstr(lua_State *L){
+	if (lua_gettop(L) == 2 && lua_isnumber(L, 1) && lua_isstring(L, 2)){
+        int fd = (int)lua_tointeger(L, 1);
+        char *str;
+        size_t str_len;
+        str = (char *)lua_tolstring(L, 2, &str_len);
+        ar_t *self = fd2ar(fd);
+        if (self->buf_len - self->rptr < str_len + sizeof(int16)) {
+            lua_pushinteger(L, 0); 
+            return 1;
+        }
+        int16 val = str_len;;
+        ar_write(fd, (char *)&val, sizeof(int16));
+        ar_write(fd, str, str_len);
+        lua_pushinteger(L, str_len); 
+        return 1;
+	}
+    return 0;
+}
+
+static int lwriteint8(lua_State *L){
 	if (lua_gettop(L) == 2 && lua_isnumber(L, 1) && lua_isnumber(L, 2)){
         int fd = (int)lua_tointeger(L, 1);
         int8 val = (int8)lua_tointeger(L, 2);
@@ -86,7 +156,7 @@ static int lwrite_int8(lua_State *L){
     return 0;
 }
 
-static int lwrite_int16(lua_State *L){
+static int lwriteint16(lua_State *L){
 	if (lua_gettop(L) == 2 && lua_isnumber(L, 1) && lua_isnumber(L, 2)){
         int fd = (int)lua_tointeger(L, 1);
         int16 val = (int16)lua_tointeger(L, 2);
@@ -97,7 +167,7 @@ static int lwrite_int16(lua_State *L){
     return 0;
 }
 
-static int lwrite_int32(lua_State *L){
+static int lwriteint32(lua_State *L){
 	if (lua_gettop(L) == 2 && lua_isnumber(L, 1) && lua_isnumber(L, 2)){
         int fd = (int)lua_tointeger(L, 1);
         int32 val = (int32)lua_tointeger(L, 2);
@@ -108,15 +178,64 @@ static int lwrite_int32(lua_State *L){
     return 0;
 }
 
+static int lwriteint64(lua_State *L){
+	if (lua_gettop(L) == 2 && lua_isnumber(L, 1) && lua_isnumber(L, 2)){
+        int fd = (int)lua_tointeger(L, 1);
+        int64 val = (int64)lua_tointeger(L, 2);
+        ar_write(fd, (char *)&val, sizeof(int64));
+        lua_pushinteger(L, val); 
+        return 1;
+	}
+    return 0;
+}
 static int ar_read(int fd, void *vbuf, int buf_len){
     ar_t *self = fd2ar(fd);
+    if (self->buf_len - self->rptr < buf_len) {
+        return 0;
+    }
     char *buf = self->buf + self->rptr;
     memcpy(vbuf, buf, buf_len);
     self->rptr += buf_len;
     return buf_len;
 }
 
-static int lread_int8(lua_State *L){
+static int lreadstr(lua_State *L){
+    if (lua_gettop(L) == 2 && lua_isnumber(L, 1) && lua_isnumber(L, 2)){
+        int fd = (int)lua_tointeger(L, 1);
+        int str_len = (int)lua_tointeger(L, 2);
+        ar_t *self = fd2ar(fd);
+        if (self->buf_len - self->rptr < str_len) {
+            return 0;
+        }
+        lua_pushlstring(L, self->buf + self->rptr, str_len);
+        self->rptr += str_len;
+        return 1;
+	}
+    return 0;
+}
+
+
+static int lreadlstr(lua_State *L){
+    if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
+        int fd = (int)lua_tointeger(L, 1);
+        ar_t *self = fd2ar(fd);
+        int16 str_len;
+        if (self->buf_len - self->rptr < sizeof(int16)) {
+            return 0;
+        }
+        str_len = *((int16 *)(self->buf + self->rptr));
+        if (self->buf_len - self->rptr < str_len + sizeof(int16)) {
+            return 0;
+        }
+        self->rptr += sizeof(int16);
+        lua_pushlstring(L, self->buf + self->rptr, str_len);
+        self->rptr += str_len;
+        return 1;
+	}
+    return 0;
+}
+
+static int lreadint8(lua_State *L){
 	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
         int fd = (int)lua_tointeger(L, 1);
         int8 val = 0;
@@ -127,7 +246,7 @@ static int lread_int8(lua_State *L){
     return 0;
 }
 
-static int lread_int16(lua_State *L){
+static int lreadint16(lua_State *L){
 	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
         int fd = (int)lua_tointeger(L, 1);
         int16 val = 0;
@@ -138,7 +257,7 @@ static int lread_int16(lua_State *L){
     return 0;
 }
 
-static int lread_int32(lua_State *L){
+static int lreadint32(lua_State *L){
 	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
         int fd = (int)lua_tointeger(L, 1);
         int32 val = 0;
@@ -149,20 +268,40 @@ static int lread_int32(lua_State *L){
     return 0;
 }
 
+static int lreadint64(lua_State *L){
+	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
+        int fd = (int)lua_tointeger(L, 1);
+        int64 val = 0;
+        ar_read(fd, (char *)&val, sizeof(int64));
+        lua_pushinteger(L, val); 
+        return 1;
+	}
+    return 0;
+}
+
 static luaL_Reg lua_lib[] = {
+    {"malloc",      lmalloc},
     {"create",      lcreate},
+    {"free",        lfree},
+    {"datalen",     ldatalen},
+    {"remain",      lremain},
+    {"ptr",         lptr},
+    {"rewind",      lrewind},
     {"test",        ltest},
-    {"read_int8",   lread_int8},
-    {"read_int16",  lread_int16},
-    {"read_int32",  lread_int32},
-    //{"read_str",  lread_str},
+    {"readint8",    lreadint8},
+    {"readint16",   lreadint16},
+    {"readint32",   lreadint32},
+    {"readint64",   lreadint64},
+    {"readlstr",    lreadlstr},
+    {"readstr",     lreadstr},
 
-    {"write_int8",  lwrite_int8},
-    {"write_int16", lwrite_int16},
-    {"write_int32", lwrite_int32},
-    //{"write_str", lwrite_str},
+    {"writeint8",   lwriteint8},
+    {"writeint16",  lwriteint16},
+    {"writeint32",  lwriteint32},
+    {"writeint64",  lwriteint64},
+    {"writelstr",   lwritelstr},
+    {"writestr",    lwritestr},
 
-   // {"seek", lseek},
     {0, 0}
 };
 

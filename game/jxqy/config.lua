@@ -5,9 +5,9 @@ local engine_path = '/Users/lujingwei/lua333'
 --需要绝对路径, 因为要搜索下面的文件
 
 local gatesrv_mod = {
-    ClientSrv = 'framework/duofu/gatesrv/clientsrv',
-    GameClient = 'framework/duofu/gatesrv/gameclient',
-    GlobalClient = 'framework/duofu/gatesrv/globalclient',
+    'mod/strproto',
+    'mod/framesrv',
+    'framework/duofu/gatesrv/clientsrv',
 }
 
 local gamesrv_mod = {
@@ -35,7 +35,13 @@ Config = {
     },
 
     --各个模块的配置
+    clientsrv = {
+        host = '0.0.0.0', port = 3333,
+        check_interval = 120,
+    },
+
     dbsrv_conf = {
+
 
     },
 
@@ -51,7 +57,7 @@ Config = {
         },
     },
 
-    gameclient_conf = {
+    gameclient = {
         gamesrv_list = {
             {srvid = 1, host = '0.0.0.0', port = 333},
             {srvid = 2, host = '0.0.0.0', port = 333},

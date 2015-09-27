@@ -41,15 +41,6 @@ static int ltime(lua_State *L){
     return 1;
 }
 
-static int lgettimeofday(lua_State *L){
-    struct timeval tv; 
-    struct timezone tz; 
-    gettimeofday(&tv,&tz);
-    lua_pushinteger(L,tv.tv_sec);
-    lua_pushinteger(L,tv.tv_usec);
-    return 2;
-}
-
 static int lgetcwd(lua_State *L){
     char buf[128];
     buf[0] = 0;
@@ -65,7 +56,11 @@ static int lchdir(lua_State *L){
     return 1;
 }
 
-static int lnanosleep(lua_State *L){
+/*
+ * @arg1 number 毫秒数
+ * @return bool
+ */
+static int lsleepmsec(lua_State *L){
 	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
 		int t = (int)lua_tonumber(L, 1);
         int sec = t / 1000;
@@ -74,8 +69,7 @@ static int lnanosleep(lua_State *L){
         slptm.tv_sec = sec;
         slptm.tv_nsec = nsec;
         nanosleep(&slptm, NULL);
-        lua_pushboolean(L, 1);
-        return 1;
+        return 0;
 	}
     return 0;
 }
@@ -213,21 +207,6 @@ static int llistdir(lua_State *L){
     return 0;
 }
 
-static int lstrftime(lua_State *L){
-    if(lua_gettop(L) == 2 && lua_isstring(L, 1) && lua_isnumber(L, 2)){
-        const char *format = (const char *)lua_tostring(L, 1);
-        time_t time = (time_t)lua_tonumber(L, 2);
-        struct tm *tm;
-        tm = localtime(&time);
-        char str[32];
-        if(strftime(str, sizeof(str), format, tm)){
-        }
-        lua_pushstring(L, str);
-        return 1;
-    }
-    return 0;
-}
-
 static int ltest(lua_State *L){
     printf("test\n");
     //lua_pushinteger(L, 1);
@@ -261,9 +240,7 @@ static luaL_Reg lua_lib[] ={
     {"time", ltime},
     {"waitpid", lwaitpid},
     {"sleep", lsleep},
-    {"nanosleep", lnanosleep},
-    {"gettimeofday", lgettimeofday},
-    {"strftime", lstrftime},
+    {"sleepmsec", lsleepmsec},
     {NULL, NULL}
 };
 

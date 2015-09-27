@@ -5,6 +5,12 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
+/*
+ *  Recvbuf.create(sockfd, size)
+ *  Recvbuf.free(sockfd)
+ */
+
+#define int8 char
 #define int16 short
 #define int32 int
 #define int64 long long
@@ -49,15 +55,17 @@ static int lfree(lua_State *L){
     return 0;
 }
 
-static int lbuf_remain(lua_State *L){
+static int lbufremain(lua_State *L){
     int sockfd;
     sockfd = (int)lua_tointeger(L, 1);
     assert_sockfd(sockfd);
     RBuf *self = fd2rbuf(sockfd);
-    return self->buf_len - self->wptr;
+    //printf("sockfd(%d) bufremain buf_len(%d) wptr(%d)\n", sockfd, self->buf_len, self->wptr);
+    lua_pushinteger(L, self->buf_len - self->wptr);
+    return 1;
 }
 
-static int lget_len(lua_State *L){
+static int lbuflen(lua_State *L){
     int sockfd;
     sockfd = (int)lua_tointeger(L, 1);
     assert_sockfd(sockfd);
@@ -65,17 +73,17 @@ static int lget_len(lua_State *L){
     return self->buf_len;
 }
 
-static int lget_size(lua_State *L){
+static int ldatalen(lua_State *L){
     int sockfd;
     sockfd = (int)lua_tointeger(L, 1);
     assert_sockfd(sockfd);
     RBuf *self = fd2rbuf(sockfd);
-    int size = self->wptr - self->rptr;
-    lua_pushinteger(L, size);
+    int datalen = self->wptr - self->rptr;
+    lua_pushinteger(L, datalen);
     return 1;
 }
 
-static int lget_rptr(lua_State *L){
+static int lgetrptr(lua_State *L){
     int sockfd;
     sockfd = (int)lua_tointeger(L, 1);
     assert_sockfd(sockfd);
@@ -85,7 +93,36 @@ static int lget_rptr(lua_State *L){
     return 1;
 }
 
-static int lget_wptr(lua_State *L){
+static int lfind(lua_State *L) {
+    int sockfd;
+    size_t str_len;
+    char *str;
+    int startpos;
+    sockfd = (int)lua_tointeger(L, 1);
+    str = (char *)lua_tolstring(L, 2, &str_len);
+    if (lua_isnumber(L, 3)) {
+        startpos = (int)lua_tointeger(L, 3);
+    } else {
+        startpos = 0;
+    } 
+    RBuf *self = fd2rbuf(sockfd);
+    if (self->rptr + str_len >= self->wptr) {
+        return 0;
+    }
+    //printf("i(%d) wptr(%d)\n", self->rptr + startpos, self->wptr);
+    for (int i = self->rptr + startpos; i < self->wptr; i++) {
+        if (!strncmp(self->buf + i, str, str_len)) {
+            lua_pushinteger(L, i - self->rptr);
+            return 1;
+        }
+        //printf("ee %d c(%c)\n", i, *(self->buf + i));
+    }
+    return 0;
+}
+/*
+ * @arg1 sockfd
+ */
+static int lgetwptr(lua_State *L){
     int sockfd;
     sockfd = (int)lua_tointeger(L, 1);
     RBuf *self = fd2rbuf(sockfd);
@@ -100,6 +137,9 @@ static int lrskip(lua_State *L){
     sockfd = (int)lua_tointeger(L, 1);
     len = (int)lua_tointeger(L, 2);
     RBuf *self = fd2rbuf(sockfd);
+    if (self->wptr - self->rptr < len) {
+        return 0;
+    }
     self->rptr += len;
     lua_pushinteger(L, len);
     return 1;
@@ -130,7 +170,30 @@ static int lbuf2line(lua_State *L){
     return 0;
 }
 
-static int lread_int16(lua_State *L){
+static int lreadbuf(lua_State *L){
+    int sockfd;
+    int buflen;
+    sockfd = (int)lua_tointeger(L, 1);
+    buflen = (int)lua_tointeger(L, 2);
+    RBuf *self = fd2rbuf(sockfd);
+    if (self->wptr - self->rptr < buflen) {
+        return 0;
+    }
+    lua_pushlstring(L, self->buf + self->rptr, buflen);
+    self->rptr += buflen;
+    return 1;
+}
+
+static int lreadint8(lua_State *L){
+    int sockfd;
+    sockfd = (int)lua_tointeger(L, 1);
+    int8 val = 0;
+    read_buf(sockfd, (char *)&val, sizeof(int8));
+    lua_pushinteger(L, val);
+    return 1;
+}
+
+static int lreadint16(lua_State *L){
     int sockfd;
     sockfd = (int)lua_tointeger(L, 1);
     int16 val = 0;
@@ -139,7 +202,7 @@ static int lread_int16(lua_State *L){
     return 1;
 }
 
-static int lread_int32(lua_State *L){
+static int lreadint32(lua_State *L){
     int sockfd;
     sockfd = (int)lua_tointeger(L, 1);
     int32 val = 0;
@@ -148,8 +211,16 @@ static int lread_int32(lua_State *L){
     return 1;
 }
 
+static int lgetint8(lua_State *L){
+    int sockfd;
+    sockfd = (int)lua_tointeger(L, 1);
+    int8 val = 0;
+    get_buf(sockfd, (char *)&val, sizeof(int8));
+    lua_pushinteger(L, val);
+    return 1;
+}
 
-static int lget_int16(lua_State *L){
+static int lgetint16(lua_State *L){
     int sockfd;
     sockfd = (int)lua_tointeger(L, 1);
     int16 val = 0;
@@ -158,7 +229,7 @@ static int lget_int16(lua_State *L){
     return 1;
 }
 
-static int lget_int32(lua_State *L){
+static int lgetint32(lua_State *L){
     int sockfd;
     sockfd = (int)lua_tointeger(L, 1);
     int32 val = 0;
@@ -167,6 +238,11 @@ static int lget_int32(lua_State *L){
     return 1;
 }
 
+/*
+ *  @arg1 sockfd
+ *  @arg2 size
+ *
+ */
 static int lcreate(lua_State *L){
     int sockfd;
     int size;
@@ -190,6 +266,7 @@ static int lcreate(lua_State *L){
     }
     self->rptr = 0;
     self->wptr = 0;
+    //printf("recvbuf create sockfd(%d) buf_len(%d)\n", sockfd, self->buf_len);
     return 0;
 }
 
@@ -202,22 +279,26 @@ static luaL_Reg lua_lib[] ={
     {"test", ltest},
     {"create", lcreate},
     {"free", lfree},
-    {"read_int16", lread_int16},
-    {"read_int32", lread_int32},
-    {"get_int16", lget_int16},
-    {"get_int32", lget_int32},
+    {"readint8", lreadint8},
+    {"readint16", lreadint16},
+    {"readint32", lreadint32},
+    {"readbuf", lreadbuf},
+    {"getint8", lgetint8},
+    {"getint16", lgetint16},
+    {"getint32", lgetint32},
     {"buf2line", lbuf2line},
     {"wskip", lwskip},
     {"rskip", lrskip},
-    {"get_wptr", lget_wptr},
-    {"get_rptr", lget_rptr},
-    {"get_size", lget_size},
-    {"get_len", lget_len},
-    {"buf_remain", lbuf_remain},
+    {"getwptr", lgetwptr},
+    {"getrptr", lgetrptr},
+    {"datalen", ldatalen},
+    {"buflen", lbuflen},
+    {"find", lfind},
+    {"bufremain", lbufremain},
     {NULL, NULL}
 };
 
 int luaopen_recvbuf(lua_State *L){
-	luaL_register(L, "RecvBuf", lua_lib);
+	luaL_register(L, "Recvbuf", lua_lib);
 	return 1;
 }

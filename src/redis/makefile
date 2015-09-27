@@ -12,3 +12,6 @@ clean:
 
 install:
 	cp -r ${SO} ../../lib
+
+test:
+	../../bin/lua test.lua
