@@ -1,16 +1,13 @@
 module('Mod', package.seeall)
 --[[
-
-
+usage:
 Mod.load('scene')
 Mod.reload('scene')
 Mod.reload()
 Mod.call('update')
-
-
 --]]
 
-
+search_path = {'.'}
 mod_table = {}
 
 function test()
@@ -18,11 +15,17 @@ function test()
 end
 
 function load(mod_path)
-    --TODO根据模块路径进行搜索
+    local real_path = mod_path
+    for _, root_path in pairs(search_path) do
+        real_path = string.format('%s/%s', root_path, mod_path)
+        if Sys.exists(real_path) then
+            break
+        end
+    end
     local pats = string.split(mod_path, '/')
     local mod_name = pats[#pats]
-    print(string.format('mod_name(%s)', mod_name))
-    local files = Sys.listdir(mod_path)
+    print(string.format('mod_path(%s) mod_name(%s)', mod_path, mod_name))
+    local files = Sys.listdir(real_path)
     for _, file in pairs(files) do
         if file.type == 'file' then
             local file_path = string.format('%s/%s', mod_path, file.name)
@@ -44,6 +47,10 @@ function load(mod_path)
     mod_table[#mod_table + 1] = mod
     mod.TAG = mod_name
     --mod.log = function(...) Log.log(mod_name, ...) end
+end
+
+function cap(str)
+    return string.upper(string.sub(str, 1, 1))..string.sub(str, 2)
 end
 
 function reload(mod_path)

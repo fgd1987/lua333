@@ -14,4 +14,4 @@ install:
 	cp -r ${SO} ../../lib
 
 test:
-	../../lib/lua test.lua
+	../../bin/lua test.lua

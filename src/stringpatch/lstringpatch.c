@@ -20,10 +20,12 @@
 
 static int lcap(lua_State *L){
     if (lua_isstring(L, 1)) {
+        char dst[1024];
         size_t str_len;
         char *str = (char *)lua_tolstring(L, 1, &str_len);
-        str[0] = toupper(str[0]);
-        lua_pushlstring(L, str, str_len);
+        strcpy(dst, str);
+        dst[0] = toupper(dst[0]);
+        lua_pushlstring(L, dst, str_len);
         return 1;
     }
     return 0;

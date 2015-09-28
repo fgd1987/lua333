@@ -11,41 +11,13 @@ function test()
 end
 
 function main()
-    pollfd = Ae.create()
+    pollfd = Ae.create(1024)
     check_connections()
 end
 
 function update()
-    while true do
-        local sockfd, read_event, write_event, error_event = Poll.select(pollfd)
-        if not sockfd then break end
-        if connecting_socket_table[sockfd] then
-            local socket_info = connecting_socket_table[sockfd]
-            connecting_socket_table[sockfd] = nil
-            if read_event then
-                --连接成功
-                socket_table[socket_info.idx] = socket_info
-                Log.log(TAG, 'connect success to ip(%s) port(%d)', ip, port)
-            else
-                --连接失败
-                Log.log(TAG, 'unable connect to ip(%s) port(%d)', ip, port)
-            end
-        else
-            local error = nil
-            if error_event then
-                error = true
-            end
-            if read_event then
-                error = RpcDecoder.dispatch(sockfd)
-            end
-            if write_event then
-                error = ProtobufEncoder.flush(sockfd)
-            end
-            if error then
-                Log.log(TAG, 'disconnect from %s reason(%s)', Socket.getpeerip(sockfd), Socket.error_string(sockfd))
-            end
-        end
-    end
+    Log.log(TAG, 'update')
+    Ae.run_once(pollfd)
 end
 
 --重连
@@ -57,15 +29,72 @@ function check_connections()
             --去连接
             local sockfd = Socket.socket(Socket.AF_INET, Socket.SOCK_STREAM, 0)
             Socket.setnonblock(sockfd)
-            local error = Socket.connect(sockfd, conf.ip, conf.port)
-            if not error then
-                Poll.add(pollfd, sockfd)
-                connecting_socket_table[k] = {ip = conf.ip, port = conf.port, sockfd = sockfd, idx = k}
+            local error = Socket.connect(sockfd, conf.host, conf.port)
+            Log.log(TAG, 'connect to sockfd(%d) host(%s) port(%d) error(%d)', sockfd, conf.host, conf.port, error)
+            if error == -1 and Sys.errno() == Sys.EINPROGRESS then
+                Log.log(TAG, 'create file event sockfd(%d)', sockfd)
+                if Ae.create_file_event(pollfd, sockfd, Ae.READABLE, 'Gameclient.on_connect_err') ~= Ae.OK then
+                    Log.error(Tag, 'create file event fail sockfd(%d)', sockfd)
+                    Socket.close(sockfd)
+                    return
+                end
+                if Ae.create_file_event(pollfd, sockfd, Ae.WRITABLE, 'Gameclient.on_connect_suc') ~= Ae.OK then
+                    Log.error(Tag, 'create file event fail sockfd(%d)', sockfd)
+                    Socket.close(sockfd)
+                    return
+                end
+                connecting_socket_table[k] = {host = conf.host, port = conf.port, sockfd = sockfd, idx = k}
             end
         end
         --如果地址已经变化，马上关闭
-        if socket_table[k] and (socket_table[k].ip ~= conf.ip or socket_table[k].port ~= conf.port) then
+        if socket_table[k] and (socket_table[k].host ~= conf.host or socket_table[k].port ~= conf.port) then
+            Log.log('config changed!!')
             Socket.close(socket_table[k].sockfd)
         end
     end
 end
+
+function on_write(sockfd)
+    Log.log(TAG, 'on_write')
+end
+
+function on_read(sockfd)
+    Log.log(TAG, 'on_read')
+end
+
+function on_connect_suc(sockfd)
+    --[[
+     if(true || getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &len) != 0){
+        LOG_ERROR("connect success, but sockfd %d, error %d, strerror:%s", sockfd, error,  strerror(errno));
+    }else if(error == 128){
+        LOG_LOG("operation now in progress");
+        return;
+    }
+    else if(error != 0){
+        LOG_ERROR("connect success, but sockfd %d, error %d, strerror:%s", sockfd, error,  strerror(errno));
+        line->status = LINE_STATUS_DISCONNECT;
+        port_close_line(linefd, strerror(errno));
+        return;
+    }
+    --]]
+    Log.log(TAG, 'on_connect_suc sockfd(%d)', sockfd)
+    Ae.delete_file_event(pollfd, sockfd, Ae.READABLE)
+    Ae.delete_file_event(pollfd, sockfd, Ae.WRITABLE)
+    if Ae.create_file_event(pollfd, sockfd, Ae.READABLE, 'Gameclient.on_read') ~= Ae.OK then
+        Log.error(Tag, 'create file event fail sockfd(%d)', sockfd)
+        Socket.close(sockfd)
+        return
+    end
+    if Ae.create_file_event(pollfd, sockfd, Ae.WRITABLE, 'Gameclient.on_write') ~= Ae.OK then
+        Log.error(Tag, 'create file event fail sockfd(%d)', sockfd)
+        Socket.close(sockfd)
+        return
+     end
+end
+
+function on_connect_err(sockfd)
+    Log.log(TAG, 'on_connect_err')
+end
+
+
+

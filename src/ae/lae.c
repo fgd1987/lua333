@@ -78,6 +78,7 @@ int lua_pushluafunction(lua_State *L, const char *func){
 }
 
 static void file_proc(struct aeEventLoop *eventLoop, int sockfd, void *clientData, int mask) {
+    printf("file_proc sockfd(%d)\n", sockfd);
     FileData *filedata = (FileData *)clientData;
     lua_State *L = filedata->L;
     if (mask & AE_READABLE && filedata->file_read_proc) {
@@ -293,7 +294,7 @@ static int lcreate_file_event(lua_State *L) {
     }
     file_data_array[sockfd].L = L;
     error = aeCreateFileEvent(event_loop, sockfd, mask, file_proc, &file_data_array[sockfd]);
-    //printf("file_proc_name(%s) sockfd(%d) error(%d) mask(%d)\n", file_proc_name, sockfd, error, mask);
+    printf("file_proc_name(%s) sockfd(%d) error(%d) mask(%d)\n", file_proc_name, sockfd, error, mask);
     lua_pushinteger(L, error);
     return 1;
 }

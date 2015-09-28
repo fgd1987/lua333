@@ -108,6 +108,7 @@ static int limport(lua_State* L){
             LOG_ERROR("import fail %s", file_name);
             return 0;
         }
+        lua_pushboolean(L, 1);
         return 1;
         for(int i = 0; i < file->enum_type_count(); i++){
             const google::protobuf::EnumDescriptor *enum_type = file->enum_type(i);
@@ -152,6 +153,42 @@ static int lmappath(lua_State* L)
     }
     return 0;
 }
+/*
+ * 
+ * @arg1 msg
+ * @arg2 buf
+ * @arg3 buflen
+ */
+static int lmsg_parse_from_buf(lua_State *L){
+    LuaMessage *message_lua;
+    char *buf;
+    size_t str_len;
+    message_lua = (LuaMessage *)luaL_checkudata(L, 1, "LuaMessage");
+    if(message_lua == NULL){
+        LOG_ERROR("null");
+        return 0;
+    }
+    google::protobuf::Message *message = message_lua->message;
+    if(message == NULL){
+        LOG_ERROR("null");
+        return 0;
+    }
+    buf = (char *)lua_touserdata(L, 2);
+    if(buf == NULL){
+        LOG_ERROR("null");
+        return 0;
+    }
+    str_len = (int)lua_tointeger(L, 3);
+    google::protobuf::io::ArrayInputStream stream(buf, str_len);
+    if(message->ParseFromZeroCopyStream(&stream) == 0){
+        LOG_ERROR("parse fail\n");
+        lua_pushboolean(L, false);
+        return 1;
+    }
+    lua_pushboolean(L, true);
+    return 1;
+}
+
 
 static int lmsg_parse_from_string(lua_State *L){
     LuaMessage *message_lua = (LuaMessage *)luaL_checkudata(L, 1, "LuaMessage");
@@ -183,8 +220,41 @@ static int lmsg_parse_from_string(lua_State *L){
     lua_pushboolean(L, true);
     return 1;
 }
+/*
+ * @arg1 msg
+ * @arg2 buf
+ */
+static int lmsg_serialize(lua_State *L){
+    LuaMessage *message_lua = (LuaMessage *)luaL_checkudata(L, 1, "LuaMessage");
+    if(message_lua == NULL){
+        LOG_ERROR("null");
+        return 0;
+    }
+    if (message_lua->message == NULL) {
+        LOG_ERROR("null");
+        return 0;
+    }
+    char *buf = (char *)lua_touserdata(L, 2);
+    char * buf_end = (char *)message_lua->message->SerializeWithCachedSizesToArray((google::protobuf::uint8 *)buf);
+    lua_pushinteger(L, buf_end - buf);
+    return 1;
+}
 
-static int lmsg_is_dirty(lua_State *L){
+static int lmsg_bytesize(lua_State *L){
+    LuaMessage *message_lua = (LuaMessage *)luaL_checkudata(L, 1, "LuaMessage");
+    if(message_lua == NULL){
+        LOG_ERROR("null");
+        return 0;
+    }
+    if (message_lua->message == NULL) {
+        LOG_ERROR("null");
+        return 0;
+    }
+    lua_pushinteger(L, message_lua->message->ByteSize());
+    return 1;
+}
+
+static int lmsg_isdirty(lua_State *L){
     LuaMessage *message_lua = (LuaMessage *)luaL_checkudata(L, 1, "LuaMessage");
     if(message_lua == NULL){
         LOG_ERROR("null");
@@ -309,7 +379,7 @@ static int lmsg_debug_string(lua_State *L){
     return 1;
 }
 
-static int lmsg_set_dirty(lua_State *L){
+static int lmsg_setdirty(lua_State *L){
     LuaMessage *message_lua = (LuaMessage *)luaL_checkudata(L, 1, "LuaMessage");
     if(message_lua == NULL){
         LOG_ERROR("null");
@@ -321,7 +391,7 @@ static int lmsg_set_dirty(lua_State *L){
     return 1;
 }
 
-static int lmsg_merge_from(lua_State *L){
+static int lmsg_mergefrom(lua_State *L){
     LuaMessage *message_lua1 = (LuaMessage *)luaL_checkudata(L, 1, "LuaMessage");
     if(message_lua1 == NULL){
         LOG_ERROR("null");
@@ -434,7 +504,7 @@ static int lmsg_repeated_merge_from(lua_State *L){
 }
 
 
-static int lmsg_copy_from(lua_State *L){
+static int lmsg_copyfrom(lua_State *L){
     LuaMessage *message_lua1 = (LuaMessage *)luaL_checkudata(L, 1, "LuaMessage");
     if(message_lua1 == NULL){
         LOG_ERROR("null");
@@ -472,7 +542,7 @@ static int lmsg_copy_from(lua_State *L){
     return 1;
 }
 
-static int lmsg_msg_name(lua_State *L){
+static int lmsg_msgname(lua_State *L){
     LuaMessage *message_lua = (LuaMessage *)luaL_checkudata(L, 1, "LuaMessage");
     if(message_lua == NULL){
         LOG_ERROR("null");
@@ -487,7 +557,7 @@ static int lmsg_msg_name(lua_State *L){
     return 1;
 }
 
-static int lmsg_to_string(lua_State *L){
+static int lmsg_tostring(lua_State *L){
     LuaMessage *message_lua = (LuaMessage *)luaL_checkudata(L, 1, "LuaMessage");
     if(message_lua == NULL){
         LOG_ERROR("null");
@@ -529,37 +599,8 @@ static int lmsg_get(lua_State* L){
     }
     const google::protobuf::FieldDescriptor *field = descriptor->FindFieldByName(field_name);
     if(field == NULL){
-        if(strcmp(field_name, "tostring") == 0){
-            lua_pushcfunction(L, lmsg_to_string);
-            return 1;
-        }else if(strcmp(field_name, "msg_name") == 0){
-            lua_pushcfunction(L, lmsg_msg_name);
-            return 1;
-        }else if(strcmp(field_name, "parse_from_string") == 0){
-            lua_pushcfunction(L, lmsg_parse_from_string);
-            return 1;
-        }else if(strcmp(field_name, "is_dirty") == 0){
-            lua_pushcfunction(L, lmsg_is_dirty);
-            return 1;
-        }else if(strcmp(field_name, "set_dirty") == 0){
-            lua_pushcfunction(L, lmsg_set_dirty);
-            return 1;
-        }else if(strcmp(field_name, "copy_from") == 0){
-            lua_pushcfunction(L, lmsg_copy_from);
-            return 1;
-        }else if(strcmp(field_name, "debug_string") == 0){
-            lua_pushcfunction(L, lmsg_debug_string);
-            return 1;
-        }else if(strcmp(field_name, "totable") == 0){
-            lua_pushcfunction(L, lmsg_totable);
-            return 1;
-        }else if(strcmp(field_name, "merge_from") == 0){
-            lua_pushcfunction(L, lmsg_merge_from);
-            return 1;
-        }else{
-            LOG_ERROR("unknow field %s", field_name);
-            return 0;
-        }
+        LOG_ERROR("unknow field %s", field_name);
+        return 0;
     }
     if(field->is_repeated()){
         RepeatedField *repeated_field = (RepeatedField *)lua_newuserdata(L, sizeof(RepeatedField));
@@ -1501,13 +1542,27 @@ static luaL_Reg lua_lib[] =
     {"msgnew", lmsgnew},
     {"msgclean", lmsgclean},
     {"get_descriptor", lget_descriptor},
+    //msg
+    {"debug_string", lmsg_debug_string},
+    {"tostring", lmsg_tostring},
+    {"msgname", lmsg_msgname},
+    {"parse_from_string", lmsg_parse_from_string},
+    {"parse_from_buf", lmsg_parse_from_buf},
+    {"isdirty", lmsg_isdirty},
+    {"setdirty", lmsg_setdirty},
+    {"copyfrom", lmsg_copyfrom},
+    {"totable", lmsg_totable},
+    {"mergefrom", lmsg_mergefrom},
+    {"bytesize", lmsg_bytesize},
+    {"serialize", lmsg_serialize},
+
     {NULL, NULL}
 };
 
 extern "C"{
 int luaopen_pbc(lua_State *L)
 {
-	luaL_register(L, "Pbc", (luaL_Reg*)lua_lib);
+	luaL_register(L, "pbc", (luaL_Reg*)lua_lib);
 
     sourceTree = new google::protobuf::compiler::DiskSourceTree();
     errorCollector = new MyMultiFileErrorCollector();

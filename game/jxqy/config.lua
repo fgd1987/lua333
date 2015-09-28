@@ -6,8 +6,10 @@ local engine_path = '/Users/lujingwei/lua333'
 
 local gatesrv_mod = {
     'mod/strproto',
+    'mod/pbproto',
     'mod/framesrv',
     'framework/duofu/gatesrv/clientsrv',
+--    'framework/duofu/gatesrv/gameclient',
 }
 
 local gamesrv_mod = {
@@ -38,14 +40,12 @@ Config = {
     clientsrv = {
         host = '0.0.0.0', port = 3333,
         check_interval = 120,
+        protodir = 'proto',
+        maxsock = 65536,
     },
 
     dbsrv_conf = {
 
-
-    },
-
-    clientsrv_conf = {
 
     },
 
@@ -59,9 +59,7 @@ Config = {
 
     gameclient = {
         gamesrv_list = {
-            {srvid = 1, host = '0.0.0.0', port = 333},
-            {srvid = 2, host = '0.0.0.0', port = 333},
-            {srvid = 3, host = '0.0.0.0', port = 333},
+            {srvid = 1, host = '112.80.248.74', port = 80},
         },
     },
 }

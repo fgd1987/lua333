@@ -61,3 +61,8 @@ Sun Sep 27 10:57:52 CST 2015
 lae.c 里的filedata里的file_read_proc file_writep_proc是没有清理的，注意一下
 ae.c里，如果rfileProc和wfileProc相同，wfileProc是不会被触发的
 
+
+
+Sun Sep 27 21:19:09 CST 2015
+luajit的lua_pushlstring的问题
+比如，看看string.cap的实现，如果修改了，原字符串也会改变，而不是新生成一个

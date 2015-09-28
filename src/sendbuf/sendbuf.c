@@ -127,7 +127,8 @@ static int ldatalen(lua_State *L){
     sockfd = (int)lua_tointeger(L, 1);
 	BBuf *self = fd2bbuf(sockfd);
 	if(!self->block_head){
-		return 0;
+        lua_pushinteger(L, 0);
+		return 1;
 	}
 	int len = self->block_head->buf_len - self->block_head->rptr;
     lua_pushinteger(L, len);

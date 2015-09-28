@@ -1,4 +1,3 @@
-
 #include "port.h"
 #include "luas.h"
 #include "bbuf.h"
@@ -20,8 +19,6 @@ Line s_lines[MAX_LINE];
 #define fd2line(fd)  (&s_lines[fd])
 
 static fdset_t fdset;
-
-
 
 Port* port_from_fd(int portfd){
     if(portfd <= 0 || portfd >= MAX_PORT){

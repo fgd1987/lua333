@@ -17,6 +17,15 @@
 
 #define LOG_ERROR printf
 
+static int lgetpeerip(lua_State *L){
+    int sockfd;
+    sockfd = (int)lua_tonumber(L, 1);
+    struct sockaddr_in addr;
+    socklen_t addr_len = sizeof(addr);
+    getpeername(sockfd, (struct sockaddr *)&addr, &addr_len);
+    lua_pushstring(L, inet_ntoa(addr.sin_addr));
+    return 1;
+}
 static int lsetnonblock(lua_State *L){
     int sockfd;
     int error;
@@ -61,6 +70,40 @@ static int laccept(lua_State *L){
 	socklen_t addrlen = sizeof(addr);	
     sockfd = accept(listenfd, (struct sockaddr*)&addr, &addrlen);
     lua_pushinteger(L, sockfd);
+    return 1;
+}
+
+static int lconnect(lua_State *L){
+    if (lua_gettop(L) != 3 || !lua_isnumber(L, 1) || !lua_isstring(L, 2) || !lua_isnumber(L, 3)) {
+        printf("arg invalid\n");
+        return 0;
+    }
+    int sockfd;
+    char *host;
+    unsigned short port;
+    int error;
+    sockfd = (int)lua_tointeger(L, 1);
+    host = (char *)lua_tostring(L, 2);
+    port = (unsigned short)lua_tointeger(L, 3);
+	struct sockaddr_in addr;
+	addr.sin_family = AF_INET;	
+    if(inet_addr(host) != (in_addr_t)-1){
+        addr.sin_addr.s_addr = inet_addr(host);   
+    }else{
+        struct hostent *hostent;
+        hostent = gethostbyname(host);
+        if(hostent->h_addr_list[0] == NULL){
+            LOG_ERROR("connect fail %s", host);
+            return 0;
+        }
+        memcpy(&addr.sin_addr, (struct in_addr *)hostent->h_addr_list[0], sizeof(struct in_addr));
+    } 
+    addr.sin_port = htons(port);        
+    error = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr));
+    lua_pushinteger(L, error);
+    if(error < 0){
+        LOG_ERROR("connect fail errno:%d:%s\n", errno, strerror(errno));
+    }
     return 1;
 }
 
@@ -125,11 +168,13 @@ static luaL_Reg lua_lib[] ={
     {"test", ltest},
     {"socket", lsocket},
     {"listen", llisten},
+    {"connect", lconnect},
     {"accept", laccept},
     {"recv", lrecv},
     {"send", lsend},
     {"close", lclose},
     {"setnonblock", lsetnonblock},
+    {"getpeerip", lgetpeerip},
     {NULL, NULL}
 };
 
@@ -142,6 +187,18 @@ int luaopen_socket(lua_State *L){
 
     lua_pushstring(L, "SOCK_STREAM");
     lua_pushinteger(L, SOCK_STREAM);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "SOL_SOCKET");
+    lua_pushinteger(L, SOL_SOCKET);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "SO_ERROR");
+    lua_pushinteger(L, SO_ERROR);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "EAGAIN");
+    lua_pushinteger(L, EAGAIN);
     lua_settable(L, -3);
 
 	return 1;

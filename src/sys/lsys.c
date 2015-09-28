@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <ifaddrs.h>
+#include <errno.h>
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
@@ -133,12 +134,13 @@ static int lmkdir(lua_State *L){
 static int lexists(lua_State *L){
     int amode;
 	const char *dir;
-    int error;
     dir = (const char *)lua_tostring(L, 1);
     amode = (int)lua_tointeger(L, 2);
-    error = access(dir, amode);
-    lua_pushinteger(L, error);
-    return 1;
+    if(!access(dir, amode)) {
+        lua_pushboolean(L, 1);
+        return 1;
+    }
+    return 0;
 }
 
 
@@ -207,6 +209,16 @@ static int llistdir(lua_State *L){
     return 0;
 }
 
+static int lstrerror(lua_State *L){
+    lua_pushstring(L, strerror(errno));
+    return 1;
+}
+
+static int lerrno(lua_State *L){
+    lua_pushinteger(L, errno);
+    return 1;
+}
+
 static int ltest(lua_State *L){
     printf("test\n");
     //lua_pushinteger(L, 1);
@@ -225,6 +237,8 @@ static int lclose(lua_State *L){
 
 static luaL_Reg lua_lib[] ={
     {"test", ltest},
+    {"errno", lerrno},
+    {"strerror", lstrerror},
     {"fork", lfork},
     {"getpid", lgetpid},
     {"setsid", lsetsid},
@@ -246,5 +260,9 @@ static luaL_Reg lua_lib[] ={
 
 int luaopen_sys(lua_State *L){
 	luaL_register(L, "Sys", lua_lib);
+
+    lua_pushstring(L, "EINPROGRESS");
+    lua_pushinteger(L, EINPROGRESS);
+    lua_settable(L, -3);
 	return 1;
 }

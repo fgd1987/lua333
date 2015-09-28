@@ -1,12 +1,12 @@
 require('pbc')
 
-print(Pbc.mappath('', ''))
-Pbc.import('proto/login.proto')
-local msg = Pbc.msgnew('login.ENTER')
+print(pbc.mappath('', ''))
+pbc.import('proto/login.proto')
+local msg = pbc.msgnew('login.ENTER')
 msg.uid = 333
 msg.params = '333'
-print(msg:debug_string())
-
-local t = msg:totable()
+print('debug_string', pbc.debug_string(msg))
+print('bytesize', pbc.bytesize(msg))
+local t = pbc.totable(msg)
 print(t.uid)
 print('over')

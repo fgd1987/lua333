@@ -56,7 +56,7 @@ static int lremain(lua_State *L){
     return 1;
 }
 
-static int lptr(lua_State *L){
+static int lgetptr(lua_State *L){
     int fd = (int)lua_tointeger(L, 1);
     ar_t *self = fd2ar(fd);
     lua_pushlightuserdata(L, self->buf + self->rptr);
@@ -285,7 +285,7 @@ static luaL_Reg lua_lib[] = {
     {"free",        lfree},
     {"datalen",     ldatalen},
     {"remain",      lremain},
-    {"ptr",         lptr},
+    {"getptr",      lgetptr},
     {"rewind",      lrewind},
     {"test",        ltest},
     {"readint8",    lreadint8},
