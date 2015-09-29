@@ -1,0 +1,24 @@
+
+dofile('Config.lua')
+package.path = string.format('%s/?.lua;', Config.engine_path)..package.path
+package.cpath = string.format('%s/lib/?.so;', Config.engine_path)..package.cpath
+--导入必须的c库
+require('stringpatch')
+require('bitpatch')
+require('sys')
+require('json')
+require('ae')
+require('ar')
+require('redis')
+require('mysql')
+require('socket')
+require('pbc')
+require('sendbuf')
+require('recvbuf')
+require('select')
+require('date')
+--导入必须的lua库
+require('mod.mod.mod')
+table.insert(Mod.search_path, Config.engine_path)
+Mod.load('mod/log')
+Mod.load('mod/pbc')

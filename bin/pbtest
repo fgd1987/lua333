@@ -1,0 +1,55 @@
+#!/Users/lujingwei/lua333/bin/luajit
+dofile('/Users/lujingwei/lua333/bin/lua333')
+--[[
+pbtest login
+pbtest login.login
+--]]
+Mod.load('mod/pbtest')
+Mod.load('mod/pbproto')
+local url = arg[1]
+
+local mod_name = nil
+local func_name = nil
+if url then
+    local pats = string.split(url, '.')
+    mod_name = pats[1]
+    func_name = pats[2]
+end
+
+Pbc.import_dir('proto')
+
+function main(dir)
+    local files = Sys.listdir(dir)
+    for _, file in pairs(files) do
+        if file.type == 'dir' and (not mod_name or mod_name == file.name)then
+            run_mod(dir, mod_name, func_name)
+        end
+    end
+end
+
+function run_func(mod_name, func_name, func)
+    local player = {uid = 333}
+    func(player)
+    print(string.format('(ok)run %s.%s', mod_name, func_name))
+end
+
+function run_mod(dir, mod_name, func_name)
+    --print('run mod', mod_name, func_name)
+    local files = Sys.listdir(string.format('%s/%s', dir, mod_name))
+    for _, file in pairs(files) do
+        if file.type == 'file' then
+            local index = string.find(file.name, '.lua$')
+            if index and index + 3 == string.len(file.name) then
+                require(string.format('%s.%s.%s', dir, mod_name, string.sub(file.name, 1, index - 1)))
+            end
+        end
+    end
+    local mod = _G[string.cap(mod_name)]
+    for varname, var in pairs(mod) do
+        if type(var) == 'function' and (not func_name or func_name == varname) then
+            run_func(mod_name, func_name, var)
+        end
+    end
+end
+
+main('pbtest')

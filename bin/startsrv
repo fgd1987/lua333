@@ -1,0 +1,54 @@
+#!/usr/local/bin/lua333
+dofile('/Users/lujingwei/lua333/bin/lua333')
+
+local srvname = arg[1]
+
+print('=================================')
+print('       lua333 gamesrv            ')
+print('=================================')
+
+print(string.format('srvname(%s)', srvname))
+
+print('----------引擎信息----------')
+print(string.format('engine_path(%s)', Config.engine_path))
+
+print('----------初始化环境----------')
+print(string.format('package.path(%s)', package.path))
+print(string.format('package.cpath(%s)', package.cpath))
+
+print('----------导入函数库----------')
+--导入必须的c库
+--导入必须的lua库
+--print('Config =')
+--print(Json.encode(Config))
+
+local srvconf = nil
+for _, _srvconf in pairs(Config.srvlist) do
+    if _srvconf.srvname == srvname then
+        srvconf = _srvconf
+        break
+    end
+end
+
+if not srvconf then
+    print(string.format('srvname(%s) not found', srvname))
+    return
+end
+
+print(string.format('start %s', srvconf.srvname))
+
+--加载模块
+print('----------加载模块----------')
+print(Json.encode(srvconf.mod))
+table.insert(Mod.search_path, Config.engine_path)
+for _, mod_path in pairs(srvconf.mod) do
+    print(string.format('load mod(%s)', mod_path))
+    Mod.load(mod_path)
+    print(string.format('finish load mod(%s)', mod_path))
+    print('')
+end
+Mod.call('test')
+Mod.call('main')
+
+Framesrv.mainloop()
+
