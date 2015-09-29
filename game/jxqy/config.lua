@@ -1,22 +1,18 @@
 --配置
-local engine_path = '/Users/lujingwei/lua333'
-
---配置也分模块，这样比较清晰
---需要绝对路径, 因为要搜索下面的文件
 
 local gatesrv_mod = {
     'mod/strproto',
     'mod/pbproto',
     'mod/framesrv',
-    'framework/duofu/gatesrv/clientsrv',
---    'framework/duofu/gatesrv/gameclient',
+    'framework/distsrv/gatesrv/clientsrv',
+--    'framework/distsrv/gatesrv/gameclient',
 }
 
 local gamesrv_mod = {
     'mod/strproto',
     'mod/pbproto',
     'mod/framesrv',
-    'framework/duofu/gamesrv/gatesrv',
+    'framework/distsrv/gamesrv/gatesrv',
 }
 
 local globalsrv_mod = {
@@ -24,13 +20,11 @@ local globalsrv_mod = {
 }
 
 Config = {
-    engine_path = engine_path,
+    engine_path = '/Users/lujingwei/lua333',
     --模块搜索路径
-    mod_path = {
-    },
+    mod_path = {},
     --lua文件搜索路径
-    package = {
-    },
+    package = {},
 
     --服务器列表
     srvlist = {
@@ -52,12 +46,12 @@ Config = {
         host = '0.0.0.0', port = 3333,
     },
 
-    dbsrv_conf = {
+    dbsrv = {
 
 
     },
 
-    globalclient_conf = {
+    globalclient = {
         globalsrv_list = {
             {srvid = 1, host = '0.0.0.0', port = 333},
             {srvid = 2, host = '0.0.0.0', port = 333},

@@ -28,6 +28,7 @@ function on_close(sockfd)
     Socket.close(sockfd)
     Sendbuf.free(sockfd)
     Recvbuf.free(sockfd)
+    Select.remove(sockfd)
 end
 
 function on_accept(listenfd)
