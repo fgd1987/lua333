@@ -4,7 +4,7 @@ descriptors = {}
 
 function main()
     --构建descriptor
-    for table_name, table_conf in pairs(Config.table_conf) do
+    for table_name, table_conf in pairs(Config.dbsrv.table_conf) do
         if table_conf.binary == false then
             Db_srv.descriptors[table_name] = pbc.get_descriptor(table_conf.file)
         end
@@ -167,7 +167,7 @@ function MSG_SET(sockfd, msg)
         table.insert(mset_args, table_name)
         table.insert(mset_args, table_bin)
         save_list = save_list..' '..table_name
-        logger:log(string.format('save %d.%s(%d) to redis', uid, table_name, string.len(table_bin)))
+        Log.log(TAG, 'save %d.%s(%d) to redis', uid, table_name, string.len(table_bin))
         total_size = total_size + string.len(table_bin)
     end
     if msg.tables:count() <= 0 then
@@ -176,11 +176,10 @@ function MSG_SET(sockfd, msg)
     end
     logger:db(140002, uid, 0, msg.tables:count(), total_size, 0, 0, 0)
 
-    local redis = RedisPort.select_connection(uid)
-
+    local redis = select_redis(uid)
 
     --存redis
-    local redis_reply = redis:hmset(uid, unpack(mset_args))
+    local redis_reply = Redis.hmset(redis, uid, unpack(mset_args))
 
     if not redis_reply or (redis_reply.type == 'status' and redis_reply.value ~= 'OK') then
         logger:error(string.format('cache %d fail', uid))
@@ -189,17 +188,17 @@ function MSG_SET(sockfd, msg)
     end
 
     --EXPIRE
-    local redis_reply = redis:command(string.format('EXPIRE %d %d', uid, Config.db_srv.expire_sec))
+    local redis_reply = redis:command(string.format('EXPIRE %d %d', uid, Config.dbsrv.expire_sec))
     if not redis_reply or redis_reply.value ~= 1 then
         logger:error(string.format('expire %d fail', uid))
         PBPort.post(sockfd, msg)
         return
     end
     
-    if Config.db_srv.delay_write then
+    if Config.dbsrv.delay_write then
         --存SAVE LIST
-        if save_list ~= '' then
-            local redis_reply = redis:lpush('save_list', save_list)
+        if savelist ~= '' then
+            local redis_reply = redis:lpush('savelist', savelist)
             if not redis_reply or redis_reply.type ~= 'integer' then
                 logger:error(string.format('queue %d FAIL', uid))
                 PBPort.post(sockfd, msg)
@@ -207,7 +206,7 @@ function MSG_SET(sockfd, msg)
             end
         end
     else
-        local mysql = MySqlPort.select_connection(uid)
+        local mysql = select_mysql(uid)
         if not mysql then
             logger:error(string.format('select mysql FAIL', uid))
             PBPort.post(sockfd, msg)
@@ -305,8 +304,6 @@ function MSG_MGET(sockfd, msg)
     end
     PBPort.post(sockfd, msg)
 end
-
-
 
 --功能:修改K,V属性(只能修改展开的表)
 function MSG_KVSET(sockfd, msg)

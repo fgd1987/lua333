@@ -188,8 +188,8 @@ static int lclose(lua_State *L){
  */
 static luaL_Reg lua_lib[] = {
     {"connect", lconnect},
-    {"Select", lselect},
-    {"Command", lcommand},
+    {"select", lselect},
+    {"command", lcommand},
     {"affectedrows", laffectedrows},
     {"escape", lrealescapestring},
     {"close", lclose},
