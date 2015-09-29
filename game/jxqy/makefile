@@ -1,6 +1,11 @@
 
+all:
+	../../bin/startsrv gamesrv1
 
-run:
+gamesrv:
+	../../bin/startsrv gamesrv1
+
+gatesrv:
 	../../bin/startsrv gatesrv1
 
 

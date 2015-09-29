@@ -23,7 +23,6 @@ time = 0
 msectime = 0
 
 function main()
-
 end
 
 --停止

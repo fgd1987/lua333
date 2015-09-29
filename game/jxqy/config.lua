@@ -13,6 +13,10 @@ local gatesrv_mod = {
 }
 
 local gamesrv_mod = {
+    'mod/strproto',
+    'mod/pbproto',
+    'mod/framesrv',
+    'framework/duofu/gamesrv/gatesrv',
 }
 
 local globalsrv_mod = {
@@ -42,6 +46,10 @@ Config = {
         check_interval = 120,
         protodir = 'proto',
         maxsock = 65536,
+    },
+
+    gatesrv = {
+        host = '0.0.0.0', port = 3333,
     },
 
     dbsrv_conf = {
