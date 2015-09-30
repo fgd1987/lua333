@@ -4,7 +4,7 @@ local gatesrv_mod = {
     'mod/strproto',
     'mod/pbproto',
     'mod/framesrv',
-    'framework/distsrv/gatesrv/clientsrv',
+--    'framework/distsrv/gatesrv/clientsrv',
 --    'framework/distsrv/gatesrv/gameclient',
 }
 
@@ -16,11 +16,22 @@ local gamesrv_mod = {
 }
 
 local globalsrv_mod = {
-
+    'mod/strproto',
+    'mod/pbproto',
+    'mod/framesrv',
+    'framework/distsrv/dbsrv/dbsrv',
 }
 
 Config = {
-    engine_path = '/Users/lujingwei/lua333',
+    mysql_conf = {
+        dbname = {
+            host = '127.0.0.1', user = 'root', password = '333',
+            tables = {
+                xx = {binary = true, file = 'xxx'},
+            },
+        },
+    },
+    engine_path = '/Volumes/NO NAME/lua333',
     --模块搜索路径
     mod_path = {},
     --lua文件搜索路径
@@ -29,6 +40,7 @@ Config = {
     --服务器列表
     srvlist = {
         {srvid = 1001, srvname = 'gatesrv1', mod = gatesrv_mod},
+        {srvid = 2001, srvname = 'globalsrv1', mod = globalsrv_mod},
         {srvid = 1,    srvname = 'gamesrv1', mod = gamesrv_mod},
         {srvid = 2,    srvname = 'gamesrv1', mod = gamesrv_mod},
         {srvid = 3,    srvname = 'gamesrv1', mod = gamesrv_mod},
@@ -47,8 +59,17 @@ Config = {
     },
 
     dbsrv = {
-
-
+        delay_write = false,
+        dbprotodir = 'dbproto',
+        redis_conf = {
+            {dbname = 'xxx', host = '127.0.0.1', port = 333, password = '333'},
+        },
+        mysql_conf = {
+            {dbname = 'xxx', host = '127.0.0.1', port = 333, password = '333'},
+        },
+        table_conf = {
+            user = {binary = true, file = 'db.user'},
+        },
     },
 
     globalclient = {

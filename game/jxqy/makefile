@@ -1,6 +1,6 @@
 
 all:
-	../../bin/startsrv gamesrv1
+	../../bin/startsrv globalsrv1
 
 gamesrv:
 	../../bin/startsrv gamesrv1
