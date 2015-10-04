@@ -1,6 +1,6 @@
 
 all:
-	../../bin/startsrv globalsrv1
+	../../bin/startsrv gamesrv1
 
 gamesrv:
 	../../bin/startsrv gamesrv1
@@ -8,7 +8,9 @@ gamesrv:
 gatesrv:
 	../../bin/startsrv gatesrv1
 
-
 test:
 	../../bin/pbtest login.login
 
+
+initdb:
+	../../bin/initdb

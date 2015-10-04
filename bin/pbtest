@@ -1,9 +1,10 @@
 #!/Users/lujingwei/lua333/bin/luajit
-dofile('/Users/lujingwei/lua333/bin/lua333')
+dofile('/Volumes/NO NAME/lua333//bin/lua333')
 --[[
 pbtest login
 pbtest login.login
 --]]
+
 Mod.load('mod/pbtest')
 Mod.load('mod/pbproto')
 local url = arg[1]

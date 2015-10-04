@@ -1,79 +1,61 @@
 module('Gatesrv', package.seeall)
 
-listenfd = listen or nil
-pollfd = pollfd or nil
+portfd = port or nil
 
-connection_table = connection_table or {}
+gate_manager = {}
 
 function main()
-    pollfd = Select.create()
-    listenfd = Socket.socket(Socket.AF_INET, Socket.SOCK_STREAM, 0)
-    if listenfd < 0 then
-        Log.error(TAG, 'socket fail')
-        os.exit(1)
-    end
-    Log.log(TAG, 'listen on sockfd(%d) host(%s) port(%d)', listenfd, Config.gatesrv.host, Config.gatesrv.port)
-    if Socket.listen(listenfd, Config.gatesrv.host, Config.gatesrv.port) < 0 then
-        Log.error(TAG, 'listen fail error(%s)', Sys.strerror())
-        os.exit(1)
-    end
-    Socket.setnonblock(listenfd)
-    Select.add_read_event(pollfd, listenfd)
+    portfd = Port.create(Framesrv.loop)
+    listen()
 end
 
-function on_close(sockfd)
-    Log.log(TAG, 'on close sockfd(%d)', sockfd)
-    Select.remove(pollfd, sockfd)
-    Log.log(TAG, 'disconnect from ip(%s) reason(%s)', Socket.getpeerip(sockfd), os.last_errorstr())
-    Socket.close(sockfd)
-    Sendbuf.free(sockfd)
-    Recvbuf.free(sockfd)
-    Select.remove(sockfd)
+function ev_read(sockfd)
+    log('ev_read sockfd(%d)', sockfd)
+    local err = Srvproto.dispatch(sockfd)
+    if err then
+        Port.close(portfd, sockfd)
+    end
 end
 
-function on_accept(listenfd)
-    Log.log(TAG, 'on accept sockfd(%d)', listenfd)
-    local sockfd = Socket.accept(listenfd)
-    if sockfd < 0 then
+function ev_close(sockfd, reason)
+    log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
+end
+
+function select(srv_name)
+    local gate = gate_manager[srv_name]
+    if not gate then
+        logerr('srv_name(%s) not found', srv_name)
         return
     end
-    Socket.setnonblock(sockfd)
-    Sendbuf.create(sockfd, 10240)
-    Recvbuf.create(sockfd)
-    Select.add_read_event(pollfd, sockfd)
-    Select.add_write_event(pollfd, sockfd)
-    Log.log(TAG, 'accept a sockfd(%d)', sockfd)
+    return gate.sockfd
 end
 
-function on_read(sockfd)
-    Log.log(TAG, 'on read sockfd(%d)', sockfd)
-    --local error = ProtobufDecoder.dispatch(sockfd)
+function ev_accept(sockfd)
+    log('accept a gate sockfd(%d)', sockfd)
 end
 
-function on_write(sockfd)
-    Log.log(TAG, 'on write sockfd(%d)', sockfd)
-    --local error = ProtobufEncoder.flush(sockfd)
-end
-
-function update()
-    --Log.log(TAG, 'update')
-    local numevents = Select.poll(pollfd)
-    --Log.log(TAG, 'numevents(%d)', numevents)
-    for i = 1, numevents do
-        local sockfd, read_ev, write_ev = Select.getevent(pollfd, i)
-        if not sockfd then break end
-        if sockfd == listenfd then
-            on_accept(sockfd)
-        elseif read_ev then
-            on_read(sockfd)
-        elseif write_ev then
-            on_write(sockfd)
-        end
+function listen()
+    log('listen on host(%s) port(%d)', Config.gatesrv.host, Config.gatesrv.port)
+    Port.rename(portfd, "Gatesrv")
+    if not Port.listen(portfd, Config.gatesrv.port) then
+        error('listen fail')
     end
+    Port.on_accept(portfd, 'Gatesrv.ev_accept')
+    Port.on_close(portfd, 'Gatesrv.ev_close')
+    Port.on_read(portfd, 'Gatesrv.ev_read')
 end
 
-function destory()
-    Poll.free(pollfd)
+--功能:game_srv上线
+--@srv_name 服务名称
+function SRV_ONLINE(sockfd, srv_name)
+    if gate_manager[srv_name] ~= nil then
+        logerr('game(%s) is connected yet', srv_name)
+        return 
+    end
+    local srv = {
+        srv_name = srv_name,
+        sockfd = sockfd,
+        time = os.time()
+    }
+    gate_manager[srv_name] = srv 
 end
-
-

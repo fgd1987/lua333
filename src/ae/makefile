@@ -4,8 +4,8 @@ LIB_DIRS=-L../../lib
 CFLAGS=-fPIC -shared -O1 -Wall 
 SO=ae.so
 
-${SO}:lae.c
-	gcc -o ${SO} ${CFLAGS} lae.c ae.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua
+${SO}:lae.c lport.c lrecvbuf.c lsendbuf.c
+	gcc -o ${SO} ${CFLAGS} lae.c lport.c ae.c lrecvbuf.c lsendbuf.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua
 
 clean:
 	rm -rf ${SO}

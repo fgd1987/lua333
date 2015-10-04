@@ -1,38 +1,64 @@
-module('GameClient', package.seeall)
+module('Gamesrv', package.seeall)
+portfd = nil
 
-listenfd = listen or nil
-pollfd = pollfd or nil
+gamesrv_manager = gamesrv_manager or {}
+gamesrv_session = gamesrv_session or {}
 
 function main()
-    local pollfd = Poll.create()
-    local conf = Config.gateway.client
-    listenfd = Socket.create()
-    Socket.listen(listenfd, conf.ip, conf.port)
-    Socket.setnonblock(listenfd)
+    portfd = Port.create(Framesrv.loop)
+    listen()
 end
 
-function update()
-    local sockfd = Socket.accept(listenfd)
-    if sockfd then
-        Poll.add(pollfd, sockfd)
-    end
-    while true do
-        local sockfd, event = Poll.poll(pollfd)
-        if not sockfd then break end
-        local error = nil
-        if event == Poll.EV_ERROR then
-            error = Poll.EV_READ
-        elseif event == Poll.EV_READ then
-            error = ProtobufDecoder.dispatch(sockfd)
-        elseif event == Poll.EV_WRITE then
-            error = ProtobufEncoder.flush(sockfd)
-        end
-        if error then
-           Log.log(TAG, 'disconnect from ip(%s) reason(%s)', Socket.getpeerip(sockfd), os.last_errorstr())
-        end
+function ev_read(sockfd, reason)
+    log('ev_read sockfd is %d', sockfd)
+    log('ev_read sockfd(%d)', sockfd)
+    local err = Strproto.dispatch(sockfd)
+    if err then
+        Port.close(portfd, sockfd)
     end
 end
 
-function destory()
-    Poll.destory(pollfd)
+function ev_close(sockfd, reason)
+    log('ev_close sockfd is %d', sockfd)
+end
+
+function select(srv_name)
+    local gamesrv = gamesrv_manager[srv_name]
+    if not gamesrv then
+        logerr('srv_name(%s) not found', srv_name)
+        return
+    end
+    return gamesrv.sockfd
+end
+
+function ev_accept(sockfd)
+    log('accept a game sockfd(%d)', sockfd)
+end
+
+function listen()
+    log('listen on host(%s) port(%d)', Config.gamesrv.host, Config.gamesrv.port)
+    Port.rename(portfd, "GameSrv")
+    if not Port.listen(portfd, Config.gamesrv.port) then
+        error('listen fail')
+    end
+    Port.on_accept(portfd, 'Gamesrv.ev_accept')
+    Port.on_close(portfd, 'Gamesrv.ev_close')
+    Port.on_read(portfd, 'Gamesrv.ev_read')
+end
+
+
+--功能:game_srv上线
+--@srv_name 服务名称
+function SRV_ONLINE(sockfd, srv_name)
+    if gamesrv_manager[srv_name] ~= nil then
+        logerr('%s is connected yet', srv_name)
+        return 
+    end
+    local srv = {
+        srv_name = srv_name,
+        sockfd = sockfd,
+        time = os.time()
+    }
+    gamesrv_manager[srv_name] = srv 
+    gamesrv_session[sockfd] = srv 
 end

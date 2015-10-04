@@ -1,141 +1,128 @@
 module('Clientsrv', package.seeall)
---[[
-主动关闭socket时，优化一下，不要调用close, 要调用shutdown rd 将读端关闭，然后将全部数据发送后，再close
---]]
-listenfd = listen or nil
-pollfd = pollfd or nil
-socket_session = socket_session or {}
 
-function test()
-    Log.log(TAG, 'i am clientsrv %s', '333')
-end
+portfd = nil
+
+socket_manager = {}
 
 function main()
-    pollfd = Ae.create(Config.clientsrv.maxsock)
-    listenfd = Socket.socket(Socket.AF_INET, Socket.SOCK_STREAM, 0)
-    if listenfd < 0 then
-        Log.error(TAG, 'socket fail')
-        os.exit(1)
-    end
-    local conf = Config.clientsrv
-    Log.log(TAG, 'listen on host(%s) port(%d)', conf.host, conf.port)
-    if Socket.listen(listenfd, conf.host, conf.port) < 0 then
-        Log.error(TAG, 'listen fail host(%s) port(%d)', conf.host, conf.port)
-        os.exit(1)
-    end
-    if Socket.setnonblock(listenfd) < 0 then
-        Log.error('setnonblock fail')
-        os.exit(1)
-    end
-    if Ae.create_file_event(pollfd, listenfd, Ae.READABLE, 'Clientsrv.onread') ~= Ae.OK then
-        Log.error(TAG, 'create file event fail sockfd(%d)', listenfd)
-        os.exit(1)
-    end
-    --加载协议
-    Pbc.import_dir(Config.clientsrv.protodir)
+    portfd = Port.create(Framesrv.loop)
+    listen()
 end
 
-function onwrite(sockfd)
-    Log.log(TAG, 'onwrite sockfd(%d)', sockfd)
-    --跑帧的话，可写事件就一直加在SOCKET里吧，不会出现CPU空转的情况的
-    --但这样可能效果会不高， 因为每帧都会通知所有SOCKET可写事件
-    local sent = Pbproto.flush(sockfd)
-    if sent <= 0 then
-        Ae.delete_file_event(pollfd, sockfd, Ae.WRITABLE)
+function ev_read(sockfd, reason)
+    log('ev_read sockfd(%d)', sockfd)
+    local err = Pbproto.dispatch(sockfd)
+    if err then
+        Port.close(portfd, sockfd)
     end
-end
-
-function onclose(sockfd)
-    socket_session[sockfd] = nil
-    Log.log(TAG, 'disconnect from ip(%s) reason(%s)', Socket.getpeerip(sockfd), Sys.strerror())
-    Sendbuf.free(sockfd)
-    Recvbuf.free(sockfd)
-    Ae.delete_file_event(pollfd, sockfd, Ae.READABLE)
-    Ae.delete_file_event(pollfd, sockfd, Ae.WRITABLE)
-    Socket.close(sockfd)
-end
-
-function onaccept(listenfd)
-    local sockfd = Socket.accept(listenfd)
-    if Socket.setnonblock(listenfd) < 0 then
-        Log.error(Tag, 'set nonblock sockfd(%d)', sockfd)
-        Socket.close(sockfd)
-        return
-    end
-    --加事件
-    if Ae.create_file_event(pollfd, sockfd, Ae.READABLE, 'Clientsrv.onread') ~= Ae.OK then
-        Log.error(Tag, 'create file event fail sockfd(%d)', sockfd)
-        Socket.close(sockfd)
-        return
-    end
-    if Ae.create_file_event(pollfd, sockfd, Ae.WRITABLE, 'Clientsrv.onwrite') ~= Ae.OK then
-        Log.error(Tag, 'create file event fail sockfd(%d)', sockfd)
-        Socket.close(sockfd)
-        return
-    end
-    --会话
-    socket_session[sockfd] = {next_check_time = Framesrv.time + Config.clientsrv.check_interval}
-    --buf
-    Recvbuf.create(sockfd, 1024)
-    Sendbuf.create(sockfd)
-end
-
-function onread(sockfd)
-    Log.log(TAG, 'onread sockfd(%d)', sockfd)
-    if sockfd == listenfd then
-        onaccept(listenfd)
-        return
-    end
-    local socket_info = socket_session[sockfd]
-    socket_info.next_check_time = Framesrv.time + Config.clientsrv.check_interval 
-    local error, msgbuf, msglen, msgname = Pbproto.decodebuf(sockfd)
-    if error then
-        onclose(sockfd)
-        return
-    end
-    local msg = pbc.msgnew(msgname)
-    pbc.parse_from_buf(msg, msgbuf, msglen)
-    Log.log(TAG, 'recv msg(%s)', msgname)
-    print(pbc.debug_string(msg))
-    Recvbuf.buf2line(sockfd)
-    --部分消息不用解包，直接发给gamesrv
-    reply(sockfd, msg)
-end
-
-function reply(sockfd, msg)
-    local sent =  Pbproto.send(sockfd, msg)
-    if sent <= 0 then
-        return
-    end
-    if Ae.create_file_event(pollfd, sockfd, Ae.WRITABLE, 'Clientsrv.onwrite') ~= Ae.OK then
-        Log.error(Tag, 'create file event fail sockfd(%d)', sockfd)
-        Socket.close(sockfd)
-        return
-    end
-end
-
-function update()
-    --Log.log(TAG, 'update')
-    Ae.run_once(pollfd)
-    check_connections()
-end
-
-function check_connections()
-    for socket, info in pairs(socket_session) do
-        if Framesrv.time > info.next_check_time then
-            Socket.close(sockfd)
+    local timenow = os.time()
+    local mod_name, action_name = string.split(msgname, '.')
+    local player = socket_manager[sockfd]
+    local route = Config.clientsrv.route[mod_name]
+    route = route or Config.clientsrv.route[msgname]
+    --防止刷包
+    if player then
+        player.packet_counter = player.packet_counter + 1
+        if player.packet_counter > Config.clientsrv.packet_count_threshold then
+            if timenow - player.last_check_packet_time < Config.clientsrv.packet_time_threshold then
+                logwarn('packet hack')
+                local msg = pbc.msgname('login.DISCONNECT')
+                msg.errno = 14
+                Pbproto.send(player.sockfd,  msg)
+                disconnect(player.sockfd, 'packet hack')
+                return
+            end
+            player.last_check_packet_time = timenow
+            player.packet_counter = 0
         end
     end
-end
-
-function destory()
-    Poll.free(pollfd)
-end
-
-function closesocket(sockfd)
-    if not socket_session[sockfd] then
-        Log.log(TAG, 'sockfd not found sockfd(%d)', sockfd)
+    --验证
+    if not player and  mod_name == 'login' and action_name == 'LOGIN' then
+        local uid = msg.uid
+        if uid == nil then 
+            logerr('uid not found, sockfd(%d)', sockfd)
+            return
+        end
+        Port.setuid(portfd, sockfd, uid)
+        Login.player_connected(sockfd, msg)
         return
     end
-    Socket.close(sockfd)
+    --转发到global_srv的优化级更高
+    if route then
+        --末认证
+        if route.need_auth and not player then
+            logerr('not auth')
+            return
+        end
+        --自己处理
+        if route.target == 'self' then
+            _G[string.cap(mod_name)]['MSG_'..action_name](player, msg)
+            return
+        end
+        local uid = player and player.uid or -sockfd
+        local sockfd = nil
+        if type(route.target) == 'string' then
+            sockfd = _G[route.target]
+        elseif type(route.target) == 'table' then
+            local srv_name = route.target[math.random(1, #route.target)]
+            sockfd = GlobalSrv.select(srv_name)
+        end
+        FORWARD(sockfd, uid, msg)
+        return
+    end
+    --验证了的玩家才能转发消息到game_srv
+    if player and not route then
+        Gameclient.forward(player.srv_name, player.uid, msg)
+        return
+    end
+end
+
+function disconnect(sockfd, reason) 
+    Port.close(portfd, sockfd, reason);
+end
+
+function ev_close(sockfd, reason)
+    log('ev_close sockfd(%d)', sockfd)
+    local player = socket_manager[sockfd]
+    if player then
+        log('client close from uid(%d) ip(%s) reason(%s)', player.uid, Port.getpeerip(sockfd), reason))
+        --保存数据 
+        Login.player_disconnect(player)
+        player.sockfd = nil
+        socket_manager[sockfd] = nil
+        return
+    end
+    if tmp_socket_manager[sockfd] then
+        tmp_socket_manager[sockfd] = nil
+    end
+end
+
+function ev_accept(sockfd, host, port)
+    log('accept a client sockfd(%d) host(%s) port(%d)', sockfd, host, port)
+    tmp_socket_manager[sockfd] = {time = os.time()}
+end
+
+function listen()
+    log('listen on host(%s) port(%d)', Config.clientsrv.host, Config.clientsrv.port)
+    Port.rename(portfd, "Clientsrv")
+    if not Port.listen(portfd, Config.clientsrv.port) then
+        error('listen fail')
+    end
+    Port.on_accept(portfd, 'Clientsrv.ev_accept')
+    Port.on_close(portfd, 'Clientsrv.ev_close')
+    Port.on_read(portfd, 'Clientsrv.ev_read')
+end
+
+--功能:定时检测链接上来后, 没有发消息登陆的socket
+function timer_check()
+    local timenow = os.time()
+    for sockfd, v in pairs(tmp_socket_manager) do
+        local timebefore = v.time
+        if timenow - timebefore > Config.clientsrv.tmp_sock_idle_sec then
+            --太久没有验证成功的socket, 要关闭了
+            Port.close(portfd, sockfd, 'tmp to long')
+            log('tmp to long ip(%s)', Port.getpeerip(sockfd))
+        end
+    end
+    return 1
 end

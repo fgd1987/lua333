@@ -12,7 +12,7 @@ destory
 --]]
 
 --每秒多少帧
-FRAME_PER_SEC = 100
+FRAME_PER_SEC = 10
 --每帧多少毫秒
 MSEC_PER_FRAME = math.floor(1000/FRAME_PER_SEC)
 --固定帧(单位：毫秒）
@@ -22,7 +22,10 @@ running = true
 time = 0
 msectime = 0
 
+loop = loop or nil
+
 function main()
+    loop = Ae.create(10240)
 end
 
 --停止
@@ -46,6 +49,7 @@ function mainloop()
                 func(msectime)
             end
         end
+        Ae.run_once(loop)
         --固定时间
         if msectime - last_loop_time > FIXED_UPDATE then
             --Log.log(TAG, 'fixedtick')

@@ -1,64 +1,84 @@
-module('GlobalClient', package.seeall)
+module('Globalclient', package.seeall)
 
-pollfd = nil
-socket_array = socket_array or {}
---socket_table = socket_table or {}
-connecting_socket_array = connecting_socket_array or {}
-connecting_socket_table = connecting_socket_table or {}
+portfd = nil
+socket_table = socket_table or {}
 
 function main()
-    pollfd = Poll.create()
+    portfd = Port.create(Framesrv.loop)
+    Port.rename(portfd, "Globalclient")
+    Port.on_close(portfd, 'Globalclient.ev_close')
+    Port.on_connect_err(portfd, 'Globalclient.ev_connect_err')
+    Port.on_connect_suc(portfd, 'Globalclient.ev_connect_suc')
+    Port.on_read(portfd, 'Globalclient.ev_read')
     check_connections()
 end
 
-function update()
-    while true do
-        local sockfd, event = Poll.select(pollfd)
-        if not sockfd then break end
-        if connecting_socket_table[sockfd] then
-            local conn = connecting_socket_table[sockfd]
-            connecting_socket_table[sockfd] = nil
-            if event == Poll.EV_READ then
-                --连接成功
-                socket_table[conn.idx] = conn
-                Log.log(TAG, 'connect success to ip(%s) port(%d)', ip, port)
-            else
-                --连接失败
-                Log.log(TAG, 'unable connect to ip(%s) port(%d)', ip, port)
-            end
-        else
-            if event == Poll.EV_ERROR then
-                Log.log(TAG, 'disconnect from %s reason(%s)', Socket.getpeerip(sockfd), Socket.error_string(sockfd))
-                return
-            end
-            local error = RpcDecoder.dispatch(sockfd)
-            if error then
-                Log.log(TAG, 'disconnect from %s reason(%s)', Socket.getpeerip(sockfd), Socket.error_string(sockfd))
-                return
-            end
+function ev_read(sockfd)
+    log('ev_read sockfd(%d)', sockfd)
+end
+
+function ev_connect_err(sockfd, host, port)
+    socket_table[sockfd] = nil
+    check_connections()
+end
+
+function ev_connect_suc(sockfd, host, port)
+    log('ev_connect_suc sockfd(%d)', sockfd)
+    local globalsrv_list = Config.globalclient.globalsrv_list
+    for index, conf in pairs(globalsrv_list) do
+        if conf.host == host and port == conf.port then
+            _G[conf.alias] = sockfd  
+            log('alias sockfd(%d) to alias(%s)', sockfd, conf.alias)
+            break
         end
     end
+    --Strproto.reply(sockfd, 'hello')
+end
+
+function ev_close(sockfd, reason)
+    log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
+    local globalsrv_list = Config.globalclient.globalsrv_list
+    for index, conf in pairs(globalsrv_list) do
+        if conf.host == host and port == conf.port then
+            _G[conf.alias] = nil
+            log('del sockfd(%d) to alias(%s)', sockfd, conf.alias)
+            break
+        end
+    end
+    socket_table[sockfd] = nil
+    check_connections()
 end
 
 --重连
 function check_connections()
-    local globalsrv_list = Config.globalsrv_list
-    for k, conf in pairs(globalsrv_list) do
-        --查看是否已经连接，或者正在连接
-        if not socket_table[k] and not connecting_socket_table[k] then
-            --去连接
-            local sockfd = Socket.create()
-            Socket.setnonblock(sockfd)
-            local error = Socket.connect(sockfd, conf.ip, conf.port)
-            if error then
-            else
-                Poll.add(pollfd, sockfd)
-                connecting_socket_table[k] = {ip = conf.ip, port = conf.port, sockfd = sockfd, idx = k}
+    local globalsrv_list = Config.globalclient.globalsrv_list
+    for sockfd, info in pairs(socket_table) do
+        local find = false
+        for index, conf in pairs(globalsrv_list) do
+            if conf.host == info.host and conf.port == info.port then
+                find = true
+                break
             end
         end
-        --如果地址已经变化，马上关闭
-        if socket_table[k] and (socket_table[k].ip ~= conf.ip or socket_table[k].port ~= conf.port) then
-            Socket.close(socket_table[k].sockfd)
+        if not find then
+            log('config changed!!')
+            Port.close(socket_table[index].sockfd, 'config changed')
+        end
+    end
+    for index, conf in pairs(globalsrv_list) do
+        local find = false
+        for sockfd, info in pairs(socket_table) do
+            if conf.host == info.host and conf.port == info.port then
+                find = true
+                break
+            end
+        end
+        if not find then
+            local sockfd = Port.connect(portfd, conf.host, conf.port)
+            log('to connect sockfd(%d) host(%s) port(%d)', sockfd, conf.host, conf.port)
+            if sockfd then
+                socket_table[sockfd] = {sockfd = sockfd, host = conf.host, port = conf.port}
+            end
         end
     end
 end

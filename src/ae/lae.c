@@ -1,9 +1,12 @@
 #include <string.h>
 #include <time.h>
+#include <stdlib.h>
 #include <lua.h>
 #include <lualib.h>
-#include <stdlib.h>
 #include <lauxlib.h>
+#include "lport.h"
+#include "lsendbuf.h"
+#include "lrecvbuf.h"
 #include "ae.h"
 
 /*
@@ -34,7 +37,7 @@ static FileData file_data_array[MAX_FILE_DATA];
 
 //login.hello_world
 //hello_world
-int lua_pushluafunction(lua_State *L, const char *func){
+static int lua_pushluafunction(lua_State *L, const char *func){
     char *start = (char *)func;
     char *class_name = start;
     char *pfunc = start;
@@ -352,6 +355,9 @@ static luaL_Reg lua_lib[] ={
 };
 
 int luaopen_ae(lua_State *L){
+    luaopen_port(L);
+    luaopen_sendbuf(L);
+    luaopen_recvbuf(L);
 	luaL_register(L, "Ae", lua_lib);
 
     lua_pushstring(L, "NONE");

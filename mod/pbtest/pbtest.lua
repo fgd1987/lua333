@@ -56,4 +56,3 @@ function recv(player, msgname)
         end
     end
 end
-

@@ -1,6 +1,5 @@
 module('Xmlsrv', package.seeall)
 
-logger = Logger.get_logger('ClientSrv')
 --侦听socket
 sock_listen = nil
 
@@ -69,7 +68,6 @@ function timer_check()
     end
     return Config.xml_srv.tmp_sock_idle_interval * 1000
 end
-
 
 function main()
     listen()

@@ -9,18 +9,18 @@ function dispatch(sockfd)
         Recvbuf.buf2line(sockfd)
         return
     end
-    Log.log(TAG, '%s %s', msgname, pbc.debug_string(msg))
+    log('%s %s', msgname, pbc.debug_string(msg))
     local pats = string.split(msgname, '.')
     local modname = pats[1]
     local funcname = pats[2]
     local mod = _G[string.cap(modname)]
     if not mod then
-        Log.error(TAG, 'mod(%s) not found', modname)
+        logerr('mod(%s) not found', modname)
         return
     end
     local func = mod['MSG_'..funcname]
     if not func then
-        Log.error(TAG, 'func(%s) not found', funcname)
+        logerr('func(%s) not found', funcname)
         return
     end
     func()
@@ -37,16 +37,16 @@ function decodebuf(sockfd)
     if real_recv > 0 then
         Recvbuf.wskip(sockfd, real_recv)
     end
-    Log.log(TAG, 'real_recv(%d) bufremain(%d)', real_recv, bufremain)
+    log('real_recv(%d) bufremain(%d)', real_recv, bufremain)
     local datalen = Recvbuf.datalen(sockfd) 
     if datalen < 2 then
-        Log.log(TAG, 'header not enough(%d)', datalen)
+        log('header not enough(%d)', datalen)
         return
     end
     local plen = Recvbuf.getint16(sockfd)
-    Log.log(TAG, 'plen(%d)', plen)
+    log('plen(%d)', plen)
     if Recvbuf.datalen(sockfd) < plen then
-        Log.log(TAG, 'data not enough(%d/%d)', datalen, plen)
+        log('data not enough(%d/%d)', datalen, plen)
         return
     end
     local arfd = Ar.create(buf, plen)
@@ -55,7 +55,7 @@ function decodebuf(sockfd)
     local msgname = Ar.readlstr(arfd)
     local msgbuf = Ar.getptr(arfd)
     local msglen = Ar.remain(arfd)
-    Log.log(TAG, 'plen(%d) seq(%d) msgname(%s) msglen(%d)', plen, seq, msgname, msglen)
+    log('plen(%d) seq(%d) msgname(%s) msglen(%d)', plen, seq, msgname, msglen)
     Ar.free(arfd)
     Recvbuf.rskip(sockfd, plen)
     return nil, msgbuf, msglen, msgname
@@ -72,13 +72,13 @@ function decode(sockfd)
 end
 
 function flush(sockfd)
-    local rptr = Sendbuf.rptr(sockfd)
+    local rptr = Sendbuf.get_read_ptr(sockfd)
     local datalen = Sendbuf.datalen(sockfd)
     if datalen < 0 then
         return 0
     end
     local sent = Socket.send(sockfd, rptr, datalen)
-    Log.log(TAG, 'sockfd(%d) datalen(%d) sent(%d) error(%s)', sockfd, datalen, sent, Sys.strerror())
+    log('sockfd(%d) datalen(%d) sent(%d) error(%s)', sockfd, datalen, sent, Sys.strerror())
     if sent < 0 then
         return 0
     end
@@ -100,6 +100,6 @@ function send(sockfd, msg)
     pbc.serialize(msg, Ar.getptr(arfd))
     Sendbuf.flush(sockfd, buf, plen)
     Ar.free(arfd)
-    Log.log(TAG, 'plen(%d) msgname(%s) msglen(%d)', plen, msgname, msglen)
+    log('plen(%d) msgname(%s) msglen(%d)', plen, msgname, msglen)
     return plen
 end

@@ -4,15 +4,29 @@ local gatesrv_mod = {
     'mod/strproto',
     'mod/pbproto',
     'mod/framesrv',
---    'framework/distsrv/gatesrv/clientsrv',
---    'framework/distsrv/gatesrv/gameclient',
+    'framework/distsrv/gatesrv/clientsrv',
+    'framework/distsrv/gatesrv/gameclient',
 }
 
 local gamesrv_mod = {
     'mod/strproto',
+    'mod/srvproto',
+    'mod/postproto',
+    'mod/callproto',
     'mod/pbproto',
     'mod/framesrv',
+    --'framework/distsrv/gatesrv/clientsrv',
+    'framework/distsrv/gatesrv/gameclient',
+
     'framework/distsrv/gamesrv/gatesrv',
+    --'framework/distsrv/gamesrv/globalclient',
+
+    --'framework/distsrv/globalsrv/globalsrv',
+    --'framework/distsrv/globalsrv/gamesrv',
+
+--    'framework/distsrv/globalsrv/globalclient',
+--    'framework/distsrv/gamesrv/dbclient',
+--    'framework/distsrv/gamesrv/gatesrv',
 }
 
 local globalsrv_mod = {
@@ -48,14 +62,33 @@ Config = {
 
     --各个模块的配置
     clientsrv = {
-        host = '0.0.0.0', port = 3333,
+        host = '0.0.0.0', port = 3331,
         check_interval = 120,
         protodir = 'proto',
         maxsock = 65536,
     },
 
-    gatesrv = {
+    globalsrv = {
         host = '0.0.0.0', port = 3333,
+    },
+
+    gatesrv = {
+        host = '0.0.0.0', port = 3332,
+    },
+
+    gamesrv = {
+        host = '0.0.0.0', port = 3334,
+    },
+
+    initdb = {
+        mysql_conf = {
+            actordb = {
+                host = '127.0.0.1', user = 'root', password = '333',
+                tables = {
+                    user = {binary = true, file = 'db.user'}
+                },
+            },
+        },
     },
 
     dbsrv = {
@@ -74,15 +107,13 @@ Config = {
 
     globalclient = {
         globalsrv_list = {
-            {srvid = 1, host = '0.0.0.0', port = 333},
-            {srvid = 2, host = '0.0.0.0', port = 333},
-            {srvid = 3, host = '0.0.0.0', port = 333},
+            {alias = 'CentersrvSock', srvid = 1, host = '127.0.0.1', port = 3333},
         },
     },
 
     gameclient = {
         gamesrv_list = {
-            {srvid = 1, host = '112.80.248.74', port = 80},
+            {srvid = 1, host = '127.0.0.1', port = 3332},
         },
     },
 }

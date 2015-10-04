@@ -1,4 +1,4 @@
-package playerdata.user;
+package db.user;
 
 //用户
 message User{
