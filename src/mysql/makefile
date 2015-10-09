@@ -1,6 +1,6 @@
 CC=gcc
 INCLUDE_DIRS=-I../../3rd/lua/src -I../../3rd/mysql-connector-c64-mac/include
-LIB_DIRS=-L../../lib/
+LIB_DIRS=-L../../lib/ 
 CFLAGS=-fPIC -shared -O2 -Wall 
 SO=mysql.so
 
@@ -14,4 +14,4 @@ install:
 	cp -r ${SO} ../../lib
 
 test:
-	../../lib/lua test.lua
+	../../bin/lua test.lua
