@@ -31,46 +31,50 @@ function dispatch(sockfd)
         return
     end
     Recvbuf.wskip(sockfd, recv)
-    --读buf
-    local datalen = Recvbuf.datalen(sockfd)
-    if datalen <= 4 then
-        return
-    end
-    local plen = Recvbuf.getint32(sockfd)
-    log('plen(%d) datalen(%d)', plen, datalen)
-    if datalen < plen then
-        return
-    end
-    local arfd = Ar.create(Recvbuf.getrptr(sockfd), datalen)
-    local plen = Ar.readint32(arfd)
-    local argcount = Ar.readint16(arfd)
-    local args = {}
-    log('argcount(%d)', argcount)
-    for i = 1, argcount do
-        local tag = Ar.readint8(arfd)
-        if tag == INT_TYPE then
-            local val = Ar.readint32(arfd)
-            table.insert(args, val)
-        elseif tag == NIL_TYPE then
-            table.insert(args, nil)
-        elseif tag == STR_TYPE then
-            local val = Ar.readlstr(arfd)
-            table.insert(args, val)
-        elseif tag == JSON_TYPE then
-            local val = Ar.readlstr(arfd)
-            local json = Json.decode(val)
-            table.insert(args, val)
+    --拆包
+    while true do
+        --读buf
+        local datalen = Recvbuf.datalen(sockfd)
+        if datalen <= 4 then
+            return
         end
-    --    log('tag(%d)', tag)
+        local plen = Recvbuf.getint32(sockfd)
+        log('plen(%d) datalen(%d)', plen, datalen)
+        if datalen < plen then
+            return
+        end
+        local arfd = Ar.create(Recvbuf.getrptr(sockfd), datalen)
+        local plen = Ar.readint32(arfd)
+        local argcount = Ar.readint16(arfd)
+        local args = {}
+        log('argcount(%d)', argcount)
+        for i = 1, argcount do
+            local tag = Ar.readint8(arfd)
+            if tag == INT_TYPE then
+                local val = Ar.readint32(arfd)
+                table.insert(args, val)
+            elseif tag == NIL_TYPE then
+                table.insert(args, nil)
+            elseif tag == STR_TYPE then
+                local val = Ar.readlstr(arfd)
+                table.insert(args, val)
+            elseif tag == JSON_TYPE then
+                local val = Ar.readlstr(arfd)
+                local json = Json.decode(val)
+                table.insert(args, val)
+            end
+        --    log('tag(%d)', tag)
+        end
+        print(Json.encode(args))
+        --print(sockfd, plen)
+        --分发到不同的协议层
+        local proto = args[1]
+        if proto == POST_PROTO then
+            Postproto.dispatch(sockfd, unpack(args))
+        end
+        Recvbuf.rskip(sockfd, plen)
     end
-    print(Json.encode(args))
-    Recvbuf.rskip(sockfd, plen)
     Recvbuf.buf2line(sockfd)
-    --分发到不同的协议层
-    local proto = args[1]
-    if proto == POST_PROTO then
-        Postproto.dispatch(sockfd, unpack(args))
-    end
 end
 
 local function calc_len(args)

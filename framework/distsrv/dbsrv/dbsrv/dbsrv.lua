@@ -3,13 +3,15 @@ module('Dbsrv', package.seeall)
 descriptors = {}
 
 function main()
-    Pbc.import_dir(Config.dbsrv.dbprotodir)
+    Pbc.import_dir(Config.dbsrv.dbproto_dir)
     --构建descriptor
     for table_name, table_conf in pairs(Config.dbsrv.table_conf) do
-        if table_conf.binary == false then
+        if not table_conf.binary then
             Dbsrv.descriptors[table_name] = pbc.get_descriptor(table_conf.file)
         end
     end
+    check_redis_connections()
+    check_mysql_connections()
 end
 
 function update()
@@ -32,7 +34,7 @@ local function select_from_mysql(uid, table_name)
     end
     local result = cursor[1] and cursor[1] or nil
     if not cursor then
-        Log.error(TAG, 'select %d.%s fail', uid, table_name)
+        logerr('select %d.%s fail', uid, table_name)
         return false
     elseif not result then
         return nil
@@ -54,7 +56,7 @@ local function select_from_mysql(uid, table_name)
             end
             local table_bin = pbc.tostring(msg)
             if not table_bin then
-                Log.error(TAG, 'load from mysql %d.%s tostring fail', uid, table_name)
+                logerr('load from mysql %d.%s tostring fail', uid, table_name)
                 return false
             end
             log('load from mysql %d.%s(%d)', uid, table_name, string.len(table_bin))
@@ -77,7 +79,7 @@ function GET(sockfd, uid, callback, ...)
     local table_array = {...}
     local msg_array = {}
     local hmget_str = string.format('HMGET %d ', uid)
-    for _, table_name in pbpairs(tables) do
+    for _, table_name in pairs(table_array) do
         hmget_str = hmget_str..' '..table_name..' '
     end
     --从redis拉数据
@@ -118,10 +120,9 @@ function GET(sockfd, uid, callback, ...)
     --从mysql拉数据
     local mset_args = {}
     for _, table_name in pairs(mysql_tables) do
-        local table_name = user_table.table_name
         local table_bin = select_from_mysql(uid, table_name)
         if table_bin == false then
-            POST(sockfd, callback, uid, 0))
+            POST(sockfd, callback, uid, 0)
             return
         elseif table_bin == nil then
             user_table.table_status = 1

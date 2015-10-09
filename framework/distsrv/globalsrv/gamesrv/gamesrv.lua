@@ -1,8 +1,8 @@
 module('Gamesrv', package.seeall)
 portfd = nil
 
-gamesrv_manager = gamesrv_manager or {}
-gamesrv_session = gamesrv_session or {}
+game_manager = game_manager or {}
+game_session = game_session or {}
 
 function main()
     portfd = Port.create(Framesrv.loop)
@@ -10,9 +10,8 @@ function main()
 end
 
 function ev_read(sockfd, reason)
-    log('ev_read sockfd is %d', sockfd)
     log('ev_read sockfd(%d)', sockfd)
-    local err = Strproto.dispatch(sockfd)
+    local err = Srvproto.dispatch(sockfd)
     if err then
         Port.close(portfd, sockfd)
     end
@@ -22,10 +21,10 @@ function ev_close(sockfd, reason)
     log('ev_close sockfd is %d', sockfd)
 end
 
-function select(srv_name)
-    local gamesrv = gamesrv_manager[srv_name]
+function select(srvname)
+    local gamesrv = game_manager[srvname]
     if not gamesrv then
-        logerr('srv_name(%s) not found', srv_name)
+        logerr('srvname(%s) not found', srvname)
         return
     end
     return gamesrv.sockfd
@@ -48,17 +47,18 @@ end
 
 
 --功能:game_srv上线
---@srv_name 服务名称
-function SRV_ONLINE(sockfd, srv_name)
-    if gamesrv_manager[srv_name] ~= nil then
-        logerr('%s is connected yet', srv_name)
+--@srvname 服务名称
+function REGIST(sockfd, srvname)
+    if game_manager[srvname] ~= nil then
+        logerr('%s is connected yet', srvname)
         return 
     end
     local srv = {
-        srv_name = srv_name,
+        srvname = srvname,
         sockfd = sockfd,
         time = os.time()
     }
-    gamesrv_manager[srv_name] = srv 
-    gamesrv_session[sockfd] = srv 
+    game_manager[srvname] = srv 
+    game_session[sockfd] = srv 
+    log('a game regist srvname(%s)', srvname)
 end

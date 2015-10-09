@@ -3,7 +3,7 @@ package login;
 
 //上线
 //@SEND @RECV
-message ENTER {
+message LOGIN {
     optional int32 uid = 1[default = 0];
     optional string params = 2;
     optional int32 errno = 3[default = 0];

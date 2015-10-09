@@ -1,5 +1,5 @@
 #!/usr/local/bin/luajit
-dofile('/Volumes/NO NAME/lua333//bin/lua333')
+dofile('/usr/local/bin/luaenv')
 
 --功能:创建表
 function create_binary_table(conn, dbname, table_name)
@@ -10,12 +10,12 @@ end
 --功能:修改表
 function alter_table(conn, dbname, table_name, pb_file)
     local descriptor = pbc.get_descriptor(pb_file)
-    if not command(mysql_conn, 'USE information_schema') then
+    if not command(conn, 'USE information_schema') then
         return
     end
     local str = string.format("SELECT table_schema, table_name, data_type, column_name FROM columns WHERE table_schema='%s' and table_name='%s'", dbname, table_name)
     local table_desc = Mysql.select(conn, str)
-    if not command(mysql_conn, string.format('USE %s', dbname)) then
+    if not command(conn, string.format('USE %s', dbname)) then
         return
     end
     for _, field in pairs(table_desc) do
@@ -37,14 +37,14 @@ function alter_table(conn, dbname, table_name, pb_file)
             elseif type(field.default) == 'number' then
                 sql = sql..' DEFAULT '..field.default
             end
-            command(mysql_conn, sql)
+            command(conn, sql)
         end
     end
     return true
 end
 
 --功能:创建开表
-function create_table(mysql_conn, table_name, pb_file)
+function create_table(conn, table_name, pb_file)
     local descriptor = pbc.get_descriptor(pb_file)
     local sql = string.format('CREATE TABLE %s (', table_name)
     for field_name, field in pairs(descriptor) do
@@ -72,7 +72,7 @@ function create_table(mysql_conn, table_name, pb_file)
     else
         sql = sql..' PRIMARY KEY(`id`)) ENGINE=INNODB DEFAULT CHARSET=utf8;'
     end
-    command(mysql_conn, sql)
+    command(conn, sql)
 end
 
 --功能:表是否存在
@@ -81,7 +81,7 @@ function is_table_exist(conn, dbname, table_name)
         os.exit(1)
     end
     local str = string.format("SELECT table_name FROM TABLES WHERE table_schema = '%s'", dbname)
-    local reply = Mysqlselect(conn, str)
+    local reply = Mysql.select(conn, str)
     if not Mysql.command(conn, 'USE '..dbname) then
         os.exit(1)
     end
@@ -94,35 +94,40 @@ function is_table_exist(conn, dbname, table_name)
 end
 
 function command(conn, sql)
-    print(sql)
-    --return Mysql.command(conn, sql)
+    print('command:', sql)
+    return Mysql.command(conn, sql)
 end
 
-
-for dbname, mysql_conf in pairs(Config.initdb.mysql_conf) do
-    print(string.format('test db(%s)', dbname))
-    local conn = Mysql.connect(mysql_conf.host, '', mysql_conf.user, mysql_conf.password)
-    if conn then
-        print(string.format('connect host(%s) user(%s) dbname(%s) fail', mysql_conf.host, mysql_conf.user, dbname))
-        return
-    end
-    --创建数据库
-    command(conn, string.format('CREATE DATABASE IF NOT EXISTS %s DEFAULT CHARSET=UTF8', dbname))
-    command(conn, string.format('USE %s', dbname))
-    --建表
-    for table_name, table_conf in pairs(mysql_conf.tables) do
-        if table_conf.binary then
-            if not is_table_exist(conn, dbname, table_name) then
-                create_binary_table(conn, dbname, table_name)
-            end
-        else
-            if is_table_exist(conn, dbname, table_name) then
-                alter_table(conn, dbname, table_name, table_conf.file)
+function main()
+    for dbname, mysql_conf in pairs(Config.initdb.mysql_conf) do
+        Pbc.import_dir(mysql_conf.dbproto_dir)
+        print(string.format('test db(%s)', dbname))
+        local conn = Mysql.connect(mysql_conf.host, '', mysql_conf.user, mysql_conf.password)
+        if not conn then
+            print(string.format('connect host(%s) user(%s) dbname(%s) fail', mysql_conf.host, mysql_conf.user, dbname))
+            return
+        end
+        --创建数据库
+        command(conn, string.format('CREATE DATABASE IF NOT EXISTS %s DEFAULT CHARSET=UTF8', dbname))
+        command(conn, string.format('USE %s', dbname))
+        --建表
+        for table_name, table_conf in pairs(mysql_conf.tables) do
+            if table_conf.binary then
+                if not is_table_exist(conn, dbname, table_name) then
+                    create_binary_table(conn, dbname, table_name)
+                end
             else
-                create_table(conn, table_name, table_conf.file)
+                if is_table_exist(conn, dbname, table_name) then
+                    alter_table(conn, dbname, table_name, table_conf.file)
+                else
+                    create_table(conn, table_name, table_conf.file)
+                end
             end
         end
+        Mysql.close(conn)
     end
-    Mysql.close(conn)
+    os.exit(0)
 end
-os.exit(1)
+
+main()
+

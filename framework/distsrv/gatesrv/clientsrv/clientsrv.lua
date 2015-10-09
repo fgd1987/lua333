@@ -2,21 +2,26 @@ module('Clientsrv', package.seeall)
 
 portfd = nil
 
-socket_manager = {}
+socket_manager = socket_manager or {}
+tmp_socket_manager = tmp_socket_manager or {}
 
 function main()
     portfd = Port.create(Framesrv.loop)
+    Pbc.import_dir(Config.clientsrv.protodir)
     listen()
 end
 
 function ev_read(sockfd, reason)
     log('ev_read sockfd(%d)', sockfd)
-    local err = Pbproto.dispatch(sockfd)
+    local err, msgname, msg = Pbproto.decode(sockfd)
     if err then
         Port.close(portfd, sockfd)
+        return
     end
+    local pats = string.split(msgname, '.')
+    local mod_name = pats[1]
+    local action_name = pats[2]
     local timenow = os.time()
-    local mod_name, action_name = string.split(msgname, '.')
     local player = socket_manager[sockfd]
     local route = Config.clientsrv.route[mod_name]
     route = route or Config.clientsrv.route[msgname]
@@ -81,11 +86,11 @@ function disconnect(sockfd, reason)
     Port.close(portfd, sockfd, reason);
 end
 
-function ev_close(sockfd, reason)
+function ev_close(sockfd, host, port, reason)
     log('ev_close sockfd(%d)', sockfd)
     local player = socket_manager[sockfd]
     if player then
-        log('client close from uid(%d) ip(%s) reason(%s)', player.uid, Port.getpeerip(sockfd), reason))
+        log('client close from uid(%d) ip(%s) reason(%s)', player.uid, host, reason)
         --保存数据 
         Login.player_disconnect(player)
         player.sockfd = nil
@@ -125,4 +130,8 @@ function timer_check()
         end
     end
     return 1
+end
+
+function reply(sockfd, msg)
+    Pbproto.send(sockfd, msg)
 end

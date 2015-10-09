@@ -32,7 +32,7 @@ end
 
 function ev_connect_suc(sockfd, host, port)
     log('ev_connect_suc sockfd(%d)', sockfd)
-    POST(sockfd, 'Login.login', host, port, {'hello', 'world'})
+    POST(sockfd, 'Gatesrv.REGIST', Config.srvconf.srvname)
 end
 
 function ev_close(sockfd)

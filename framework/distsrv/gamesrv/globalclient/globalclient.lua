@@ -32,7 +32,9 @@ function ev_connect_suc(sockfd, host, port)
             break
         end
     end
-    --Strproto.reply(sockfd, 'hello')
+    POST(sockfd, 'Gamesrv.REGIST', Config.srvconf.srvname)
+    --POST(sockfd, 'Gamesrv.REGIST', Config.srvconf.srvname)
+    POST(sockfd, 'Dbsrv.GET', 333, 'hello', 'user')
 end
 
 function ev_close(sockfd, reason)

@@ -5,7 +5,7 @@ function import_dir(dir)
     local files = Sys.listdir(dir)
     for _, file in pairs(files) do
         if file.type == 'file' and string.find(file.name, '.proto$') then
-            --Log.log(TAG, 'load proto(%s)', file.name)
+            log('load proto(%s)', file.name)
             pbc.import(file.name)
         end
     end

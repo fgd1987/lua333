@@ -19,6 +19,12 @@ end
 
 function ev_close(sockfd, reason)
     log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
+    for _, gate in pairs(gate_manager) do
+        if gate.sockfd == sockfd then
+            gate_manager[sockfd] = nil
+            break
+        end
+    end
 end
 
 function select(srv_name)
@@ -46,16 +52,17 @@ function listen()
 end
 
 --功能:game_srv上线
---@srv_name 服务名称
-function SRV_ONLINE(sockfd, srv_name)
-    if gate_manager[srv_name] ~= nil then
-        logerr('game(%s) is connected yet', srv_name)
+--@srvname 服务名称
+function REGIST(sockfd, srvname)
+    if gate_manager[srvname] ~= nil then
+        logerr('game(%s) is connected yet', srvname)
         return 
     end
     local srv = {
-        srv_name = srv_name,
+        srvname = srvname,
         sockfd = sockfd,
         time = os.time()
     }
-    gate_manager[srv_name] = srv 
+    gate_manager[srvname] = srv 
+    log('a gate regist srvname(%s)', srvname)
 end
