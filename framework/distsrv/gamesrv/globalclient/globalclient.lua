@@ -15,6 +15,10 @@ end
 
 function ev_read(sockfd)
     log('ev_read sockfd(%d)', sockfd)
+    local err = Srvproto.dispatch(sockfd)
+    if err then
+        Port.close(portfd, sockfd)
+    end
 end
 
 function ev_connect_err(sockfd, host, port)
@@ -34,7 +38,17 @@ function ev_connect_suc(sockfd, host, port)
     end
     POST(sockfd, 'Gamesrv.REGIST', Config.srvconf.srvname)
     --POST(sockfd, 'Gamesrv.REGIST', Config.srvconf.srvname)
-    POST(sockfd, 'Dbsrv.GET', 333, 'hello', 'user')
+    POST(sockfd, 'Dbsrv.GET', 333, 'Globalclient.test_db_get', 'user')
+end
+
+function test_db_set(sockfd, uid, result)
+end
+
+function test_db_get(sockfd, uid, result, msg)
+    print(msg)
+    print(uid, result)
+    print(pbc.debug_string(msg))
+    POST(sockfd, 'Dbsrv.SET', 333, 'Globalclient.test_db_set', msg) 
 end
 
 function ev_close(sockfd, reason)

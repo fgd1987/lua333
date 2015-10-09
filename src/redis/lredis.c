@@ -3,6 +3,7 @@
 #define LOG_ERROR printf
 
 static void getCallback_push_reply(lua_State *L, redisReply *reply){
+    unsigned int i;
     lua_newtable(L);
 
     lua_pushstring(L, "type");
@@ -36,7 +37,7 @@ static void getCallback_push_reply(lua_State *L, redisReply *reply){
     }else if (reply->type == REDIS_REPLY_ARRAY) {
         lua_newtable(L);
         redisReply **elements = reply->element;
-        for(unsigned int i = 0; i < reply->elements; i++){
+        for(i = 0; i < reply->elements; i++){
            redisReply *reply = elements[i];
            lua_pushnumber(L, i + 1);
            getCallback_push_reply(L, reply);
@@ -277,6 +278,7 @@ static char s_hmset_cmd[] = "HMSET";
 static char s_mset_cmd[] = "MSET";
 
 static int lmset(lua_State *L){
+    int i;
     struct redisContext *c = lua_touserdata(L, 1);
     if(c == NULL){
         LOG_ERROR("userdata is null");
@@ -305,7 +307,7 @@ static int lmset(lua_State *L){
     }
     redis_argv[0] = s_mset_cmd;
     redis_argvlen[0] = 4;
-    for(int i = 0; i < (argc - 1)/2; i++){
+    for(i = 0; i < (argc - 1)/2; i++){
         size_t k_len = 0;
         size_t v_len = 0;
         const char *k = (const char *)lua_tolstring(L, (i*2) + 2, &k_len);
@@ -327,6 +329,7 @@ static int lmset(lua_State *L){
 }
 
 static int lhmset(lua_State *L){
+    int i;
     struct redisContext *c = lua_touserdata(L, 1);
     if(c == NULL){
         LOG_ERROR("userdata is null");
@@ -368,7 +371,7 @@ static int lhmset(lua_State *L){
     redis_argv[1] = (char *)key;
     redis_argvlen[1] = key_len;
 
-    for(int i = 0; i < (argc - 1)/2; i++){
+    for(i = 0; i < (argc - 1)/2; i++){
         size_t k_len = 0;
         size_t v_len = 0;
         const char *k = (const char *)lua_tolstring(L, (i * 2) + 3, &k_len);

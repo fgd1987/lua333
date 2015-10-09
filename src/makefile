@@ -10,6 +10,8 @@ all:
 	cd json;make
 	cd socket;make
 	cd stringpatch;make
+	cd bitpatch;make
+	cd date;make
 
 install:
 	cd sys;make install
@@ -23,6 +25,8 @@ install:
 	cd json;make install
 	cd socket;make install
 	cd stringpatch;make install
+	cd bitpatch;make install
+	cd date;make install
 
 clean:
 	cd sys;make clean
@@ -36,5 +40,7 @@ clean:
 	cd json;make clean
 	cd socket;make clean
 	cd stringpatch;make clean
+	cd bitpatch;make clean
+	cd date;make clean
 
 

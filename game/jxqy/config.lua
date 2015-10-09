@@ -98,6 +98,7 @@ Config = {
     },
 
     dbsrv = {
+        expire_sec = 100,
         delay_write = false,
         dbproto_dir = 'dbproto',
         redis_conf = {

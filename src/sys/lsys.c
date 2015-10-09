@@ -98,10 +98,11 @@ static int lwaitpid(lua_State *L){
 }
 
 static int lmkdirs(lua_State *L){
+    int i;
 	if (lua_gettop(L) == 1 && lua_isstring(L, 1)){
         size_t dir_len = 0;
 		char *dir = (char *)lua_tolstring(L, 1, &dir_len);
-        for(int i = 0; i < dir_len; i++){
+        for(i = 0; i < dir_len; i++){
             if(dir[i] == '/'){
                 char c = dir[i];
                 dir[i] = 0;

@@ -2,7 +2,6 @@
 
 #define LOG_ERROR printf
 
-
 static int lconnect(lua_State *L){
     if(lua_gettop(L) == 4 && lua_isstring(L, 1) && lua_isstring(L, 2) && lua_isstring(L, 3) && lua_isstring(L, 4)){
         const char *host = lua_tostring(L, 1);
@@ -14,7 +13,7 @@ static int lconnect(lua_State *L){
         mysql_options(conn, MYSQL_OPT_RECONNECT, &b);
         conn = mysql_real_connect(conn, host, user, passwd, dbname, 0, NULL, MYSQL_OPT_RECONNECT);
         if(conn == NULL){
-            LOG_ERROR("connect fail %s", mysql_error(conn));
+            LOG_ERROR("connect fail %s\n", mysql_error(conn));
             return 0;
         }
         mysql_query(conn, "set names utf8");
@@ -36,7 +35,7 @@ static int lcommand(lua_State *L){
         mysql_query(conn, "set names utf8");
         const char *command = lua_tostring(L, 2);
         if(mysql_query(conn, command) != 0){
-            LOG_ERROR("%s", mysql_error(conn));
+            LOG_ERROR("%s\n", mysql_error(conn));
             lua_pushboolean(L, 0);
             lua_pushstring(L, mysql_error(conn));
             return 2;
@@ -59,6 +58,7 @@ static int laffectedrows(lua_State *L){
 }
 
 static int lselect(lua_State *L){
+    int i;
     if(lua_gettop(L) == 2 && lua_isstring(L, 2)){
         MYSQL_RES *result;
         MYSQL_ROW row;
@@ -91,7 +91,7 @@ static int lselect(lua_State *L){
                 lua_pushnumber(L, index);
                 lua_newtable(L);
                 index++;
-                for(int i = 0; i < num_fields; i++){
+                for(i = 0; i < num_fields; i++){
                     lua_pushstring(L, fields[i].name);
                     if(row[i] != NULL){
                         if(fields[i].type == FIELD_TYPE_STRING
@@ -125,10 +125,8 @@ static int lselect(lua_State *L){
         }
         return 1;
     }
-    lua_pushnumber(L, -1);
-    return 1;
+    return 0;
 }
-
 
 
 static char *escape_buf;
@@ -182,8 +180,10 @@ static int lclose(lua_State *L){
 }
 
 /*
- *  MySql.connect(conn, ip, port)
- *
+ *  local conn = Mysql.connect(ip, dbname, user, password)
+ *  Mysql.command(conn, 'xx')
+ *  Mysql.select(conn, 'xxx')
+ *  Mysql.close(conn)
  *
  */
 static luaL_Reg lua_lib[] = {

@@ -32,6 +32,7 @@ static int lcap(lua_State *L){
 }
 
 static int lsplit(lua_State *L){
+    int i;
     if (lua_isstring(L, 1) && lua_isstring(L, 2)) {
         size_t str_len;
         size_t token_len;
@@ -40,7 +41,7 @@ static int lsplit(lua_State *L){
         char *last_str = str;
         lua_newtable(L);
         int index = 1;
-        for (int i = 0; i < str_len; i++) {
+        for (i = 0; i < str_len; i++) {
             if (!strncmp(str + i, token, token_len)) {
                 lua_pushinteger(L, index++); 
                 lua_pushlstring(L, last_str, str + i - last_str);

@@ -5,7 +5,7 @@ CFLAGS=-fPIC -shared -O2 -Wall
 SO=redis.so
 
 ${SO}:lredis.c
-	gcc -o ${SO} ${CFLAGS} lredis.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua -lhiredis
+	gcc -o ${SO} ${CFLAGS} lredis.c ../../3rd/hiredis/libhiredis.a ${INCLUDE_DIRS} ${LIB_DIRS} -llua 
 
 clean:
 	rm -rf ${SO}
