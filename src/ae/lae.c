@@ -84,7 +84,7 @@ static void file_proc(struct aeEventLoop *eventLoop, int sockfd, void *clientDat
     printf("file_proc sockfd(%d)\n", sockfd);
     FileData *filedata = (FileData *)clientData;
     lua_State *L = filedata->L;
-    if (mask & AE_READABLE && filedata->file_read_proc) {
+    if (mask & AE_READABLE && filedata->file_read_proc[0]) {
         lua_pushluafunction(L, filedata->file_read_proc);
         lua_pushinteger(L, sockfd);
         lua_pushinteger(L, mask);
@@ -92,7 +92,7 @@ static void file_proc(struct aeEventLoop *eventLoop, int sockfd, void *clientDat
             LOG_ERROR("error running function %s: %s", filedata->file_read_proc, lua_tostring(L, -1));
         }
     }
-    if (mask & AE_WRITABLE && filedata->file_writ_proc) {
+    if (mask & AE_WRITABLE && filedata->file_writ_proc[0]) {
         lua_pushluafunction(L, filedata->file_writ_proc);
         lua_pushinteger(L, sockfd);
         lua_pushinteger(L, mask);

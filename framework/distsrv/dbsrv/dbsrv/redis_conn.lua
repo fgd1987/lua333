@@ -5,7 +5,7 @@ redis_table = redis_table or {}
 function check_redis_connections()
     --关闭
     for index, info in pairs(redis_table) do
-        local conf = Config.dbsrv.redis_conf[index]
+        local conf = _CONF.redis_conf[index]
         if not conf or conf.host ~= info.host or conf.port ~= info.port or conf.dbname ~= info.dbname then
             Log.log(TAG, 'close redis connection index(%d) host(%s) port(%d) dbname(%s)', index, conf.host, conf.port, conf.dbname)
             Redis.close(info.redis)
@@ -13,7 +13,7 @@ function check_redis_connections()
         end
     end
     --连接
-    for index, conf in pairs(Config.dbsrv.redis_conf) do
+    for index, conf in pairs(_CONF.redis_conf) do
         if not redis_table[index] then
             local conn = Redis.connect(conf.host, conf.port)
             if not conn then

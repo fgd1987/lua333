@@ -46,7 +46,7 @@ function ev_accept(sockfd)
 end
 
 function listen()
-    local xml_srv = Config.xml_srv
+    local xml_srv = _CONF.xml_srv
     logger:log('listen on '..xml_srv.host..':'..xml_srv.port)
     sock_listen = RawPort.create()
     Port.rename(sock_listen, "ClientSrv")
@@ -62,14 +62,14 @@ end
 function timer_check()
     local timenow = os.time()
     for sockfd, player in pairs(socket_manager) do
-        if timenow - player.time >= Config.xml_srv.tmp_sock_idle_interval then
+        if timenow - player.time >= _CONF.tmp_sock_idle_interval then
             Port.close(sock_listen, sockfd, 'idle too long')
         end
     end
-    return Config.xml_srv.tmp_sock_idle_interval * 1000
+    return _CONF.tmp_sock_idle_interval * 1000
 end
 
 function main()
     listen()
-    Timer.AddTimer(Config.xml_srv.tmp_sock_idle_interval * 1000, "ClientSrv.timer_check")
+    Timer.AddTimer(_CONF.tmp_sock_idle_interval * 1000, "ClientSrv.timer_check")
 end

@@ -45,9 +45,9 @@ function load(mod_path)
         os.exit(1)
     end
     mod_table[#mod_table + 1] = mod
-    mod.TAG = mod_name
     mod.log = function(...) Log.log(mod_name, ...) end
     mod.logerr = function(...) Log.error(mod_name, ...) end
+    return mod
 end
 
 function cap(str)

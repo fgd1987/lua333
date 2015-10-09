@@ -1,103 +1,56 @@
 --配置
-
 local gatesrv_mod = {
-    'mod/strproto',
-    'mod/pbproto',
-    'mod/srvproto',
-    'mod/callproto',
-    'mod/postproto',
-    'mod/framesrv',
-    'framework/distsrv/gatesrv/clientsrv',
-    'framework/distsrv/gatesrv/login',
-    'framework/distsrv/gatesrv/gameclient',
-    'framework/distsrv/gamesrv/gatesrv',
-}
-
-local gamesrv_mod = {
-    'mod/strproto',
-    'mod/srvproto',
-    'mod/postproto',
-    'mod/callproto',
-    'mod/pbproto',
-    'mod/framesrv',
-    --'framework/distsrv/gatesrv/clientsrv',
---    'framework/distsrv/gatesrv/gameclient',
---    'framework/distsrv/gamesrv/gatesrv',
-    'framework/distsrv/gamesrv/globalclient',
-    'framework/distsrv/globalsrv/gamesrv',
-    'framework/distsrv/dbsrv/dbsrv',
-    --'framework/distsrv/globalsrv/globalsrv',
---    'framework/distsrv/globalsrv/globalclient',
---    'framework/distsrv/gamesrv/dbclient',
---    'framework/distsrv/gamesrv/gatesrv',
-}
-
-local globalsrv_mod = {
-    'mod/strproto',
-    'mod/pbproto',
-    'mod/framesrv',
-    'framework/distsrv/dbsrv/dbsrv',
-}
-
-Config = {
-    mysql_conf = {
-        dbname = {
-            host = '127.0.0.1', user = 'root', password = '333',
-            tables = {
-                xx = {binary = true, file = 'xxx'},
-            },
-        },
-    },
-    engine_path = '/root/lua333',
-    --engine_path = '/Volumes/NO NAME/lua333',
-    --模块搜索路径
-    mod_path = {},
-    --lua文件搜索路径
-    package = {},
-
-    --服务器列表
-    srvlist = {
-        {srvid = 1001, srvname = 'gatesrv1',    mod = gatesrv_mod},
-        {srvid = 2001, srvname = 'globalsrv1',  mod = globalsrv_mod},
-        {srvid = 1,    srvname = 'gamesrv1',    mod = gamesrv_mod},
-        {srvid = 2,    srvname = 'gamesrv1',    mod = gamesrv_mod},
-        {srvid = 3,    srvname = 'gamesrv1',    mod = gamesrv_mod},
-    },
-
-    --各个模块的配置
-    clientsrv = {
+    {'mod/strproto'},
+    {'mod/pbproto'},
+    {'mod/srvproto'},
+    {'mod/callproto'},
+    {'mod/postproto'},
+    {'mod/framesrv'},
+    {'framework/distsrv/gatesrv/clientsrv', 
         host = '0.0.0.0', port = 3331,
+        tmp_sock_idle_sec = 10,
+        packet_count_threshold = 10,
+        packet_time_threshold = 10,
         check_interval = 120,
         protodir = 'proto',
         maxsock = 65536,
         route = {},
     },
-
-    globalsrv = {
-        host = '0.0.0.0', port = 3333,
-    },
-
-    gatesrv = {
-        host = '0.0.0.0', port = 3332,
-    },
-
-    gamesrv = {
-        host = '0.0.0.0', port = 3334,
-    },
-
-    initdb = {
-        mysql_conf = {
-            actordb = {
-                dbproto_dir = 'dbproto',
-                host = '127.0.0.1', user = 'root', password = '',
-                tables = {
-                    user = {file = 'db.user.User'}
-                },
-            },
+    {'framework/distsrv/gatesrv/login'},
+    {'framework/distsrv/gatesrv/gameclient',
+        gamesrv_list = {
+            {srvid = 1, host = '127.0.0.1', port = 3332},
         },
     },
+}
 
-    dbsrv = {
+local gamesrv_mod = {
+    {'mod/strproto'},
+    {'mod/srvproto'},
+    {'mod/postproto'},
+    {'mod/callproto'},
+    {'mod/pbproto'},
+    {'mod/framesrv'},
+    {'framework/distsrv/gamesrv/gatesrv',
+        host = '0.0.0.0', port = 3332,
+    },
+    {'framework/distsrv/gamesrv/globalclient',
+        globalsrv_list = {
+            {alias = 'CentersrvSockfd', srvid = 1, host = '127.0.0.1', port = 3334},
+        },
+    },
+    {'framework/distsrv/gamesrv/login',
+        dbproto_dir = 'dbproto',
+    },
+}
+
+local globalsrv_mod = {
+    {'mod/strproto'},
+    {'mod/srvproto'},
+    {'mod/postproto'},
+    {'mod/callproto'},
+    {'mod/framesrv'},
+    {'framework/distsrv/dbsrv/dbsrv',
         expire_sec = 100,
         delay_write = false,
         dbproto_dir = 'dbproto',
@@ -111,17 +64,43 @@ Config = {
             user = {file = 'db.user.User'},
         },
     },
+    {'framework/distsrv/globalsrv/gamesrv',
+        host = '0.0.0.0', port = 3334,
+    },
+    {'framework/distsrv/globalsrv/globalsrv',
+        host = '0.0.0.0', port = 3333,
+    },
+    {'framework/distsrv/centersrv/login'},
+}
 
-    globalclient = {
-        globalsrv_list = {
-            {alias = 'CentersrvSock', srvid = 1, host = '127.0.0.1', port = 3334},
-        },
+Config = {
+    --engine_path = '/root/lua333',
+    --engine_path = '/Volumes/NO NAME/lua333',
+    engine_path = '/Users/lujingwei/Documents/360pan/Project/lua333',
+    --模块搜索路径
+    mod_path = {},
+    --lua文件搜索路径
+    package = {},
+    --服务器列表
+    srvlist = {
+        {srvid = 1001, srvname = 'gatesrv1',    mod = gatesrv_mod},
+        {srvid = 2001, srvname = 'globalsrv1',  mod = globalsrv_mod},
+        {srvid = 1,    srvname = 'gamesrv1',    mod = gamesrv_mod},
+        {srvid = 2,    srvname = 'gamesrv1',    mod = gamesrv_mod},
+        {srvid = 3,    srvname = 'gamesrv1',    mod = gamesrv_mod},
     },
 
-    gameclient = {
-        gamesrv_list = {
-            {srvid = 1, host = '127.0.0.1', port = 3332},
+    pbtest = {host = '127.0.0.1', port = 3331},
+
+    initdb = {
+        mysql_conf = {
+            actordb = {
+                dbproto_dir = 'dbproto',
+                host = '127.0.0.1', user = 'root', password = '',
+                tables = {
+                    user = {file = 'db.user.User'}
+                },
+            },
         },
     },
 }
-

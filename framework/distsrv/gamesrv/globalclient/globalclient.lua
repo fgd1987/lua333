@@ -28,7 +28,7 @@ end
 
 function ev_connect_suc(sockfd, host, port)
     log('ev_connect_suc sockfd(%d)', sockfd)
-    local globalsrv_list = Config.globalclient.globalsrv_list
+    local globalsrv_list = _CONF.globalsrv_list
     for index, conf in pairs(globalsrv_list) do
         if conf.host == host and port == conf.port then
             _G[conf.alias] = sockfd  
@@ -36,24 +36,25 @@ function ev_connect_suc(sockfd, host, port)
             break
         end
     end
-    POST(sockfd, 'Gamesrv.REGIST', Config.srvconf.srvname)
+    POST(sockfd, 'Gamesrv.REGIST', Config.srvconf.srvid, Config.srvconf.srvname)
     --POST(sockfd, 'Gamesrv.REGIST', Config.srvconf.srvname)
     POST(sockfd, 'Dbsrv.GET', 333, 'Globalclient.test_db_get', 'user')
 end
 
 function test_db_set(sockfd, uid, result)
+    log('test_db_set result(%d)', result)
 end
 
 function test_db_get(sockfd, uid, result, msg)
-    print(msg)
-    print(uid, result)
-    print(pbc.debug_string(msg))
-    POST(sockfd, 'Dbsrv.SET', 333, 'Globalclient.test_db_set', msg) 
+    --log(msg)
+    log(uid, result)
+    log(pbc.debug_string(msg))
+    POST(sockfd, 'Dbsrv.SET', 333, 'Globalclient.test_db_set', 'user', msg) 
 end
 
 function ev_close(sockfd, reason)
     log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
-    local globalsrv_list = Config.globalclient.globalsrv_list
+    local globalsrv_list = _CONF.globalsrv_list
     for index, conf in pairs(globalsrv_list) do
         if conf.host == host and port == conf.port then
             _G[conf.alias] = nil
@@ -67,7 +68,7 @@ end
 
 --重连
 function check_connections()
-    local globalsrv_list = Config.globalclient.globalsrv_list
+    local globalsrv_list = _CONF.globalsrv_list
     for sockfd, info in pairs(socket_table) do
         local find = false
         for index, conf in pairs(globalsrv_list) do

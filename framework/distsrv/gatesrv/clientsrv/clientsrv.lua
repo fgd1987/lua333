@@ -7,7 +7,7 @@ tmp_socket_manager = tmp_socket_manager or {}
 
 function main()
     portfd = Port.create(Framesrv.loop)
-    Pbc.import_dir(Config.clientsrv.protodir)
+    Pbc.import_dir(_CONF.protodir)
     listen()
 end
 
@@ -20,16 +20,14 @@ function ev_read(sockfd, reason)
     end
     local pats = string.split(msgname, '.')
     local mod_name = pats[1]
-    local action_name = pats[2]
+    local func_name = pats[2]
     local timenow = os.time()
     local player = socket_manager[sockfd]
-    local route = Config.clientsrv.route[mod_name]
-    route = route or Config.clientsrv.route[msgname]
     --防止刷包
     if player then
         player.packet_counter = player.packet_counter + 1
-        if player.packet_counter > Config.clientsrv.packet_count_threshold then
-            if timenow - player.last_check_packet_time < Config.clientsrv.packet_time_threshold then
+        if player.packet_counter > _CONF.packet_count_threshold then
+            if timenow - player.last_check_packet_time < _CONF.packet_time_threshold then
                 logwarn('packet hack')
                 local msg = pbc.msgname('login.DISCONNECT')
                 msg.errno = 14
@@ -41,48 +39,37 @@ function ev_read(sockfd, reason)
             player.packet_counter = 0
         end
     end
-    --验证
-    if not player and  mod_name == 'login' and action_name == 'LOGIN' then
-        local uid = msg.uid
-        if uid == nil then 
-            logerr('uid not found, sockfd(%d)', sockfd)
+    --1.分发消息
+    local mod = _G[string.cap(mod_name)]
+    if mod then
+        local func = mod['MSG_'..func_name]
+        if func then
+            func(player or sockfd, msg)
             return
         end
-        Port.setuid(portfd, sockfd, uid)
-        Login.player_connected(sockfd, msg)
+    end
+    local route = _CONF.route[mod_name]
+    route = route or _CONF.route[msgname]
+    --2.分发消息到gamesrv
+    if player and player.srvname and not route then
+        Gameclient.forward(player.srvname, player.uid, msg)
         return
     end
-    --转发到global_srv的优化级更高
+    --3.分发消息到globalsrv
     if route then
         --末认证
         if route.need_auth and not player then
             logerr('not auth')
             return
         end
-        --自己处理
-        if route.target == 'self' then
-            _G[string.cap(mod_name)]['MSG_'..action_name](player, msg)
-            return
-        end
-        local uid = player and player.uid or -sockfd
-        local sockfd = nil
-        if type(route.target) == 'string' then
-            sockfd = _G[route.target]
-        elseif type(route.target) == 'table' then
-            local srv_name = route.target[math.random(1, #route.target)]
-            sockfd = GlobalSrv.select(srv_name)
-        end
-        FORWARD(sockfd, uid, msg)
-        return
-    end
-    --验证了的玩家才能转发消息到game_srv
-    if player and not route then
-        Gameclient.forward(player.srv_name, player.uid, msg)
+        local sockfd = _G[route.target]
+        local uid = player and player.uid or 0
+        POST(sockfd, 'Gatesrv.FORWARD', uid, msg)
         return
     end
 end
 
-function disconnect(sockfd, reason) 
+function close(sockfd, reason) 
     Port.close(portfd, sockfd, reason);
 end
 
@@ -108,9 +95,9 @@ function ev_accept(sockfd, host, port)
 end
 
 function listen()
-    log('listen on host(%s) port(%d)', Config.clientsrv.host, Config.clientsrv.port)
+    log('listen on host(%s) port(%d)', _CONF.host, _CONF.port)
     Port.rename(portfd, "Clientsrv")
-    if not Port.listen(portfd, Config.clientsrv.port) then
+    if not Port.listen(portfd, _CONF.port) then
         error('listen fail')
     end
     Port.on_accept(portfd, 'Clientsrv.ev_accept')
@@ -118,12 +105,16 @@ function listen()
     Port.on_read(portfd, 'Clientsrv.ev_read')
 end
 
+function update()
+    timer_check()
+end
+
 --功能:定时检测链接上来后, 没有发消息登陆的socket
 function timer_check()
     local timenow = os.time()
     for sockfd, v in pairs(tmp_socket_manager) do
         local timebefore = v.time
-        if timenow - timebefore > Config.clientsrv.tmp_sock_idle_sec then
+        if timenow - timebefore > _CONF.tmp_sock_idle_sec then
             --太久没有验证成功的socket, 要关闭了
             Port.close(portfd, sockfd, 'tmp to long')
             log('tmp to long ip(%s)', Port.getpeerip(sockfd))

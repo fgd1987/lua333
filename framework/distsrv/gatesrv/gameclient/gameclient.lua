@@ -2,6 +2,7 @@ module('Gameclient', package.seeall)
 
 portfd = portfd or nil
 socket_table = socket_table or {}
+game_session = game_session or {}
 
 function main()
     portfd = Port.create(Framesrv.loop)
@@ -30,20 +31,31 @@ end
 function update()
 end
 
+--功能：随机选择一个
+function randselect()
+    print(Json.encode(game_session))
+    for k, v in pairs(game_session) do
+        return v.srvid, v.sockfd
+    end
+end
+
 function ev_connect_suc(sockfd, host, port)
     log('ev_connect_suc sockfd(%d)', sockfd)
-    POST(sockfd, 'Gatesrv.REGIST', Config.srvconf.srvname)
+    local game = socket_table[sockfd]
+    game_session[sockfd] = game
+    POST(sockfd, 'Gatesrv.REGIST', Config.srvconf.srvid, Config.srvconf.srvname)
 end
 
 function ev_close(sockfd)
     log('ev_close sockfd(%d)', sockfd)
     socket_table[sockfd] = nil
+    game_session[sockfd] = nil
     check_connections ();
 end
 
 --重连
 function check_connections()
-    local gamesrv_list = Config.gameclient.gamesrv_list
+    local gamesrv_list = _CONF.gamesrv_list
     for sockfd, info in pairs(socket_table) do
         local find = false
         for index, conf in pairs(gamesrv_list) do
@@ -69,7 +81,7 @@ function check_connections()
             local sockfd = Port.connect(portfd, conf.host, conf.port)
             log('to connect sockfd(%d) host(%s) port(%d)', sockfd, conf.host, conf.port)
             if sockfd then
-                socket_table[sockfd] = {sockfd = sockfd, host = conf.host, port = conf.port}
+                socket_table[sockfd] = {sockfd = sockfd, srvid = conf.srvid, host = conf.host, port = conf.port}
             end
         end
     end

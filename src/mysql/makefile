@@ -9,7 +9,7 @@ endif
 
 ifeq ($(shell uname), Darwin)
 INCLUDE_DIRS=-I../../3rd/lua/src -I../../3rd/mysql-connector-c64-mac/include
-LIB_DIRS=-L../../lib/ 
+LIB_DIRS=-L../../lib -L../../3rd/mysql-connector-c64-mac/lib
 CFLAGS=-fPIC -shared -O2 -Wall 
 SO=mysql.so
 endif

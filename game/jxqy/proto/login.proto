@@ -11,6 +11,12 @@ message LOGIN {
     optional string str = 5[default = ''];
 }
 
+//进入服务器
+message ENTER {
+    optional int32 srvid = 1[default = 0];
+    optional int32 errno = 2[default = 0];
+}
+
 //被服务端主动断开
 //@RECV
 message DISCONNECT{

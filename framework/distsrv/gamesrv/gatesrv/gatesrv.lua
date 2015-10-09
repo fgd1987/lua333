@@ -19,9 +19,10 @@ end
 
 function ev_close(sockfd, reason)
     log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
-    for _, gate in pairs(gate_manager) do
+    for k, gate in pairs(gate_manager) do
         if gate.sockfd == sockfd then
-            gate_manager[sockfd] = nil
+            gate_manager[k] = nil
+            log('gate disconnect srvname(%s)', gate.srvname)
             break
         end
     end
@@ -41,9 +42,9 @@ function ev_accept(sockfd)
 end
 
 function listen()
-    log('listen on host(%s) port(%d)', Config.gatesrv.host, Config.gatesrv.port)
+    log('listen on host(%s) port(%d)', _CONF.host, _CONF.port)
     Port.rename(portfd, "Gatesrv")
-    if not Port.listen(portfd, Config.gatesrv.port) then
+    if not Port.listen(portfd, _CONF.port) then
         error('listen fail')
     end
     Port.on_accept(portfd, 'Gatesrv.ev_accept')
@@ -53,16 +54,17 @@ end
 
 --功能:game_srv上线
 --@srvname 服务名称
-function REGIST(sockfd, srvname)
-    if gate_manager[srvname] ~= nil then
-        logerr('game(%s) is connected yet', srvname)
+function REGIST(sockfd, srvid, srvname)
+    if gate_manager[srvid] ~= nil then
+        logerr('game(%s) is connected yet', srvid)
         return 
     end
     local srv = {
         srvname = srvname,
+        srvid = srvid,
         sockfd = sockfd,
         time = os.time()
     }
-    gate_manager[srvname] = srv 
+    gate_manager[srvid] = srv 
     log('a gate regist srvname(%s)', srvname)
 end

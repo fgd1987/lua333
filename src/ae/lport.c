@@ -338,7 +338,7 @@ static int llisten(lua_State *L)
 }
 
 
-static int lgetpeerhost(lua_State *L)
+static int lgetpeerip(lua_State *L)
 {
     if (lua_isnumber(L, 1))
     {
@@ -703,7 +703,7 @@ static luaL_Reg lua_lib[] =
     {"close", lclose},
     {"shutdown", lshutdown},
     {"getpeerport", lgetpeerport},
-    {"getpeerhost", lgetpeerhost},
+    {"getpeerip", lgetpeerip},
     {"setuid", lsetuid},
     {"remove_write_event", lremove_write_event},
     {"add_write_event", ladd_write_event},

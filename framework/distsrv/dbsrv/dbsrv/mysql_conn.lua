@@ -6,7 +6,7 @@ mysql_table = mysql_table or {}
 function check_mysql_connections()
     --关闭
     for index, info in pairs(mysql_table) do
-        local conf = Config.dbsrv.mysqls_conf[index]
+        local conf = _CONF.mysqls_conf[index]
         if not conf or conf.host ~= info.host or conf.dbname ~= info.dbname or conf.user ~= info.user then
             Log.log(TAG, 'close mysql connection index(%d) host(%s) dbname(%s)', index, conf.host, conf.dbname)
             Mysql.close(info.conn)
@@ -14,7 +14,7 @@ function check_mysql_connections()
         end
     end
     --连接
-    for index, conf in pairs(Config.dbsrv.mysql_conf) do
+    for index, conf in pairs(_CONF.mysql_conf) do
         local conn = Mysql.connect(conf.host, conf.dbname, conf.user, conf.password)
         if conn then
             log('success connect mysql index(%d) host(%s) dbname(%s) user(%s)', index, conf.host, conf.dbname, conf.user)

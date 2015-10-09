@@ -1,18 +1,21 @@
 module('Login', package.seeall)
 
 --临时
-temp_player_table = temp_player_table or {}
+tmp_player_manager = tmp_player_manager or {}
 player_manager = player_manager or {}
+onlinenum = onlinenum or 0
 
 function main()
+    Pbc.import_dir(_CONF.dbproto_dir)
 --    Evdisp.add_timer(global_timer, Config.game_srv.save_interval * 1000, "Login.timer_check")
 end
 
 --功能:进入服务器
 function PLAYER_ENTER(sockfd, uid)
-    Runtime.tmp_player_manager[uid] = sockfd
+    tmp_player_manager[uid] = sockfd
     log('player enter uid(%d)', uid)
-    POST(CenterSrvSockfd, 'Login.PLAYER_ENTER', uid)
+    log(CentersrvSockfd)
+    POST(CentersrvSockfd, 'Login.PLAYER_ENTER', uid)
 end
 
 --功能:退出服务器
@@ -42,9 +45,9 @@ end
 function PLAYER_INSTEAD(sockfd, uid)
     log('player exit uid(%d)', uid)
     --解锁
-    local tmp_player = temp_player_table[uid]
-    if temp_player_table then
-        temp_player_table[uid] = nil
+    local tmp_player = tmp_player_manager[uid]
+    if tmp_player_manager then
+        tmp_player_manager[uid] = nil
     end
     
     local player = player_manager[uid]
@@ -107,7 +110,7 @@ function player_login(player)
     end
     --]]
     local ip_addr = Port.getpeerip(sockfd)
-    logger:db(10001, player.uid, user.is_vip, Config.srv_id, ip_addr, user.regist_time, Runtime.onlinenum, ip_addr)
+    logger:db(10001, player.uid, user.is_vip, Config.srv_id, ip_addr, user.regist_time, onlinenum, ip_addr)
     player:post_msg(msg)
 end
 
@@ -144,7 +147,7 @@ end
 --@msg db_srv.SET_REPLY
 function msg_db_srv_set_playerdata(msg)
     local uid = msg.uid
-    local player = Runtime.player_manager[uid]
+    local player = player_manager[uid]
     if not player then
         logger:error(uid, 'player offline yet')
         return 
@@ -174,8 +177,8 @@ function msg_db_srv_set_playerdata(msg)
         end
         player.playerdata = nil
         --释放数据
-        Runtime.player_manager[uid] = nil
-        Runtime.onlinenum = Runtime.onlinenum - 1
+        player_manager[uid] = nil
+        onlinenum = onlinenum - 1
         --通知gateway_srv下线
         POST(CenterSrv.sockfd, uid, 'login.PLAYER_EXIT', uid)
     end
@@ -188,13 +191,13 @@ end
 --@argback string
 function msg_db_srv_get_playerdata(uid, user_tables, argback)
     --如果没有锁住
-    local sockfd = Runtime.tmp_player_manager[uid]
+    local sockfd = tmp_player_manager[uid]
     if not sockfd then
         POST(CenterSrv.sockfd, uid, 'login.PLAYER_EXIT', uid)
         logger:error(uid, 'player is disconnect')
         return
     end
-    local player = Runtime.player_manager[uid]
+    local player = player_manager[uid]
     if player then
         player.sockfd = sockfd
         logger:error(uid, 'player is online yet')
@@ -213,9 +216,9 @@ function msg_db_srv_get_playerdata(uid, user_tables, argback)
     logger:log(uid, '加载数据成功')
     --建立session
     local player = Player.PlayerClass:new(sockfd, uid)
-    Runtime.player_manager[uid] = player
-    Runtime.tmp_player_manager[uid] = nil
-    Runtime.onlinenum = Runtime.onlinenum + 1
+    player_manager[uid] = player
+    tmp_player_manager[uid] = nil
+    onlinenum = onlinenum + 1
     player.playerdata = playerdata
 
     local rt, err = pcall(player_login, player)
@@ -229,7 +232,7 @@ end
 --功能:定时保存玩家数据
 --[[
 function timer_check()
-    local player_manager = Runtime.player_manager
+    local player_manager = .player_manager
     local timenow = os.time()
     for uid, player in pairs(player_manager) do
         local playerdata = player.playerdata

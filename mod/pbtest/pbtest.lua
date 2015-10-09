@@ -25,7 +25,7 @@ function send(player, msgname, params)
     local sockfd = player.sockfd
     if not sockfd then
         sockfd = Socket.socket(Socket.AF_INET, Socket.SOCK_STREAM, 0)
-        local conf = Config.clientsrv
+        local conf = Config.pbtest
         Socket.connect(sockfd, conf.host, conf.port)
         if sockfd < 0 then
             print('connect fail')
@@ -51,6 +51,7 @@ function recv(player, msgname)
         if  msg then
             print(string.format('recv msg name(%s)', pbc.msgname(msg))) 
             if pbc.msgname(msg) == msgname then
+                print(pbc.debug_string(msg))
                 return msg
             end
         end

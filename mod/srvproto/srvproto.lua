@@ -67,12 +67,13 @@ function dispatch(sockfd)
                 local msg = pbc.msgnew(msgname)
                 local buflen = Ar.readint16(arfd)
                 local buf = Ar.getptr(arfd)
+                log(msgname, msg, buflen, buf)
                 pbc.parse_from_buf(msg, buf, buflen)
                 table.insert(args, msg)
             end
         --    log('tag(%d)', tag)
         end
-        print(Json.encode(args))
+        log(Json.encode(args))
         --print(sockfd, plen)
         --分发到不同的协议层
         local proto = args[1]
@@ -114,6 +115,7 @@ function send(sockfd, ...)
     Ar.writeint32(arfd, plen)
     Ar.writeint16(arfd, #args)
     for _, v in pairs(args) do
+        log('write type(%s)', type(v))
         if type(v) == 'nil' then
             Ar.writeint8(arfd, NIL_TYPE)
         elseif type(v) == 'number' then

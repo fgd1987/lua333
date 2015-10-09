@@ -1,8 +1,12 @@
 module('Gamesrv', package.seeall)
 portfd = nil
 
-game_manager = game_manager or {}
-game_session = game_session or {}
+game_manager = game_manager or {
+    --[srvid] = {}
+}
+game_session = game_session or {
+    --[sockfd] = {srvname = '', sockfd = 0, time = 0}
+}
 
 function main()
     portfd = Port.create(Framesrv.loop)
@@ -19,15 +23,22 @@ end
 
 function ev_close(sockfd, reason)
     log('ev_close sockfd is %d', sockfd)
+    for k, game in pairs(game_manager) do
+        if game.sockfd == sockfd then
+            game_manager[k] = nil
+            log('game disconnect srvname(%s)', game.srvname)
+            break
+        end
+    end
 end
 
-function select(srvname)
-    local gamesrv = game_manager[srvname]
-    if not gamesrv then
-        logerr('srvname(%s) not found', srvname)
+function select(srvid)
+    local game = game_manager[srvnid]
+    if not game then
+        logerr('srvid(%s) not found', srvid)
         return
     end
-    return gamesrv.sockfd
+    return game.sockfd
 end
 
 function ev_accept(sockfd)
@@ -35,9 +46,9 @@ function ev_accept(sockfd)
 end
 
 function listen()
-    log('listen on host(%s) port(%d)', Config.gamesrv.host, Config.gamesrv.port)
+    log('listen on host(%s) port(%d)', _CONF.host, _CONF.port)
     Port.rename(portfd, "GameSrv")
-    if not Port.listen(portfd, Config.gamesrv.port) then
+    if not Port.listen(portfd, _CONF.port) then
         error('listen fail')
     end
     Port.on_accept(portfd, 'Gamesrv.ev_accept')
@@ -48,17 +59,18 @@ end
 
 --功能:game_srv上线
 --@srvname 服务名称
-function REGIST(sockfd, srvname)
-    if game_manager[srvname] ~= nil then
+function REGIST(sockfd, srvid, srvname)
+    if game_manager[srvid] ~= nil then
         logerr('%s is connected yet', srvname)
         return 
     end
     local srv = {
+        srvid = srvid,
         srvname = srvname,
         sockfd = sockfd,
         time = os.time()
     }
-    game_manager[srvname] = srv 
+    game_manager[srvid] = srv 
     game_session[sockfd] = srv 
     log('a game regist srvname(%s)', srvname)
 end

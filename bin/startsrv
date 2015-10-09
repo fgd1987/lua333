@@ -41,11 +41,13 @@ Config.srvconf = srvconf
 print('----------加载模块----------')
 print(Json.encode(srvconf.mod))
 table.insert(Mod.search_path, Config.engine_path)
-for _, mod_path in pairs(srvconf.mod) do
+for _, mod_conf in pairs(srvconf.mod) do
+    local mod_path = mod_conf[1]
     print(string.format('load mod(%s)', mod_path))
-    Mod.load(mod_path)
+    local mod = Mod.load(mod_path)
     print(string.format('finish load mod(%s)', mod_path))
     print('')
+    mod._CONF = mod_conf
 end
 Mod.call('test')
 Mod.call('main')

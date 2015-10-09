@@ -8,39 +8,39 @@ end
 
 --功能：进入游戏服
 function MSG_ENTER(player, msg)
-    local srv_name = msg.srv_name
-    if not srv_name or srv_name == '' then
-        srv_name = Gameclient.randselect() 
+    local srvid = msg.srvid
+    local sockfd;
+    if srvid == 0 then
+        srvid, sockfd = Gameclient.randselect() 
     end
-    local sockfd = Gameclient.select(srv_name)
     if not sockfd then
-        logerr('game_srv(%s) not found')
+        logerr('game_srv not found')
         msg.errno = 11
-        Gameclient.reply(player.sockfd, msg)
+        Clientsrv.reply(player.sockfd, msg)
         return
     end
-    player.srv_name = srv_name
+    player.srvid = srvid
     POST(sockfd, 'Login.PLAYER_ENTER', player.uid)
 end
 
 --功能：进入游戏服,切换服务器
-function PLAYER_ENTER(sockfd, uid, srv_name)
+function PLAYER_ENTER(sockfd, uid, srvname)
     local player = player_manager[uid]
     if not player then
         logerr('player is offline uid(%d)', uid)
         return
     end
-    local sockfd = Gameclient.select(srv_name)
+    local sockfd = Gameclient.select(srvname)
     if not sockfd then
         loggerr('game_srv(%s) not found')
         return
     end
-    player.srv_name = srv_name
+    player.srvname = srvname
     POST(sockfd, 'Login.PLAYER_ENTER', player.uid)
 end
 
 --功能:登陆
-function player_connected(sockfd, msg)
+function MSG_LOGIN(sockfd, msg)
     local uid = msg.uid
     if uid == nil or uid <= 0 then
         msg.errno = 8
@@ -56,7 +56,12 @@ function player_connected(sockfd, msg)
         return
     end
     --加锁
-    local player = {sockfd = sockfd, uid = uid}
+    local player = {
+        sockfd = sockfd, 
+        uid = uid,
+        packet_counter = 0,
+        last_check_packet_time = 0,
+    }
     player_manager[uid] = player
     Clientsrv.socket_manager[sockfd] = player
     Clientsrv.tmp_socket_manager[sockfd] = nil
@@ -77,7 +82,7 @@ end
 
 
 function check_login_token(uid, params)
-    if not Config.auth then
+    if not _CONF.auth then
         return true
     end
     local kv = {}
@@ -87,7 +92,7 @@ function check_login_token(uid, params)
         kv[pats[1]] = os.urldecode(pats[2])
     end
     local time = tonumber(kv.time)
-    if Config.sign_expire_sec ~= 0 and os.time() - time / 1000 >= Config.sign_expire_sec then
+    if _CONF.sign_expire_sec ~= 0 and os.time() - time / 1000 >= _CONF.sign_expire_sec then
         logger:error(string.format('user(%d) sign time expire, recv(%d) now(%d)', uid, time, os.time()))
         return false
     end
@@ -102,7 +107,7 @@ function check_login_token(uid, params)
             str = str..k..'='..kv[k]
         end
     end
-    str = str..Config.srv_secret
+    str = str.._CONF.srv_secret
     local token = os.md5(str)
     if token ~= kv.sig or uid ~= tonumber(kv.uid) then
         logger:error(string.format('user(%d) auth fail sign(%s) time(%s) uid(%d) token(%s)', uid, kv.sig, kv.time, kv.uid, token))
