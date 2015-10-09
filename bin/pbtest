@@ -1,5 +1,5 @@
-#!/Users/lujingwei/lua333/bin/luajit
-dofile('/Volumes/NO NAME/lua333//bin/lua333')
+#!/usr/local/bin/luajit
+dofile('/usr/local/bin/luaenv')
 --[[
 pbtest login
 pbtest login.login
@@ -26,6 +26,7 @@ function main(dir)
             run_mod(dir, mod_name, func_name)
         end
     end
+    os.exit(0)
 end
 
 function run_func(mod_name, func_name, func)
@@ -52,5 +53,4 @@ function run_mod(dir, mod_name, func_name)
         end
     end
 end
-
 main('pbtest')

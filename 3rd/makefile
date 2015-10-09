@@ -10,4 +10,13 @@ install:
 	cp luajit/src/libluajit.so ../lib/liblua.so
 	cp luajit/src/luajit ../bin/lua
 
+download:
+
+
+clean:
+	cd hiredis;make clean
+	cd protobuf;make clean
+	cd redis;make clean
+	cd lua;make clean
+	cd luajit;make clean
 

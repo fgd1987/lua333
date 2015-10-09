@@ -3,13 +3,15 @@ module('Dbsrv', package.seeall)
 descriptors = {}
 
 function main()
-    Pbc.import_dir(Config.dbsrv.dbprotodir)
+    Pbc.import_dir(Config.dbsrv.dbproto_dir)
     --构建descriptor
     for table_name, table_conf in pairs(Config.dbsrv.table_conf) do
-        if table_conf.binary == false then
+        if not table_conf.binary then
             Dbsrv.descriptors[table_name] = pbc.get_descriptor(table_conf.file)
         end
     end
+    check_redis_connections()
+    check_mysql_connections()
 end
 
 function update()
@@ -32,145 +34,151 @@ local function select_from_mysql(uid, table_name)
     end
     local result = cursor[1] and cursor[1] or nil
     if not cursor then
-        Log.error(TAG, 'select %d.%s fail', uid, table_name)
+        logerr('select %d.%s fail', uid, table_name)
         return false
-    elseif not result then
-        return nil
-    else
-        local descriptor = Dbsrv.descriptors[table_name]
-        if descriptor then
-            local pb_file = Config.dbsrv.table_conf[table_name].file
-            local msg = pbc.msgnew(pb_file)
-            for field_name, field in pairs(descriptor) do
-                if field.type == 'message' then
-                    local filed_msg = msg[field_name]
-                    if not pbc.parse_from_string(filed_msg, result[field_name]) then
-                        logerr('%d.%s.%s parse fail', uid, table_name, field_name)
-                        return false
-                    end
-                else
-                    msg[field_name] = result[field_name]
+    end
+    local pb_file = Config.dbsrv.table_conf[table_name].file
+    local msg = pbc.msgnew(pb_file)
+    if not result then
+        return msg, ''
+    end
+    local descriptor = Dbsrv.descriptors[table_name]
+    if descriptor then
+        for field_name, field in pairs(descriptor) do
+            if field.type == 'message' then
+                local filed_msg = msg[field_name]
+                if not pbc.parse_from_string(filed_msg, result[field_name]) then
+                    logerr('%d.%s.%s parse fail', uid, table_name, field_name)
+                    return false
                 end
+            else
+                msg[field_name] = result[field_name]
             end
-            local table_bin = pbc.tostring(msg)
-            if not table_bin then
-                Log.error(TAG, 'load from mysql %d.%s tostring fail', uid, table_name)
-                return false
-            end
-            log('load from mysql %d.%s(%d)', uid, table_name, string.len(table_bin))
-            return table_bin
-        else
-            local table_bin = result.table_bin
-            log('load from mysql %d.%s(%d)', uid, table_name, string.len(table_bin))
-            return table_bin
         end
+        local table_bin = pbc.tostring(msg)
+        if not table_bin then
+            logerr('load from mysql %d.%s tostring fail', uid, table_name)
+            return false
+        end
+        log('load from mysql %d.%s(%d)', uid, table_name, string.len(table_bin))
+        return msg, table_bin
+    else
+        local table_bin = result.table_bin
+        pbc.parse_from_string(msg, table_bin)
+        log('load from mysql %d.%s(%d)', uid, table_name, string.len(table_bin))
+        return msg, table_bin
     end
 end
 
-function reply(sockfd, msg)
-
+function get_from_redis(sockfd, uid, callback, ...)
+    local table_array = {...}
+    local msg_array = {}
+    local hmget_str = string.format('HMGET %d ', uid)
+    for _, table_name in pairs(table_array) do
+        hmget_str = hmget_str..' '..table_name..' '
+    end
+    --从redis拉数据
+    local conn = select_redis_connection(uid)
+    if not conn then
+        return
+    end
+    local redis_reply = Redis.command(conn, hmget_str)
+    if not redis_reply then
+        logerr('HMGET fail command(%s)', hmget_str, reply_reply.value)
+        return
+    end
+    if redis_reply.type ~= 'array' then
+        logerr('HMGET fail command(%s) error(%s)', hmget_str, redis_reply.value)
+        return
+    end
+    local total_size = 0
+    if redis_reply and redis_reply.type == 'array' then
+        for idx, v in pairs(redis_reply.value) do
+            local table_name = table_array[idx]
+            if v.type == 'string' then
+                local msg = pbc.msgnew(Config.dbsrv.table_conf[table_name].file)
+                pbc.parse_from_string(msg, v.value)
+                table.insert(msg_array, msg)
+                log('load from redis %d.%s(%d)', uid, table_name, string.len(v.value))
+                total_size = total_size + string.len(v.value)
+            else
+                return
+            end
+        end
+    end
+    Redis.command(conn, string.format('EXPIRE %d %d', uid, Config.dbsrv.expire_sec))
+    POST(sockfd, callback, uid, 0, unpack(msg_array))
+    return true
 end
 
 --功能:取玩家表
 --@sockfd
 function GET(sockfd, uid, callback, ...)
-    local table_array = {...}
-    local msg_array = {}
-    local hmget_str = string.format('HMGET %d ', uid)
-    for _, table_name in pbpairs(tables) do
-        hmget_str = hmget_str..' '..table_name..' '
-    end
-    --从redis拉数据
-    local redis = select_redis_connection(uid)
-    local redis_reply = Redis.command(redis, hmget_str)
-    if not redis_reply then
-        Log.error(TAG, 'HMGET fail command(%s)', hmget_str, reply_reply.value)
-        POST(sockfd, callback, uid, 1)
-        return
-    end
-    if redis_reply.type ~= 'array' then
-        Log.errors(TAG, 'HMGET fail command(%s) error(%s)', hmget_str, redis_reply.value)
-        POST(sockfd, callback, uid, 1)
-        return
-    end
-    local total_size = 0
-    local mysql_tables = {}
-    local load_from_mysql = false
-    for idx, v in pairs(redis_reply.value) do
-        local table_name = table_array[idx]
-        if v.type == 'string' then
-            table.insert(msg_array, v.value)
-            Log.log(TAG, 'load from redis %d.%s(%d)', uid, user_table.table_name, string.len(v.value))
-            total_size = total_size + string.len(v.value)
-        else
-            load_from_mysql = true
-            table.insert(mysql_tables, table_name)
+    if Config.dbsrv.redis_conf then
+        if get_from_redis(sockfd, uid, callback, ...) then
+            return
         end
     end
-
-    if not load_from_mysql then
-        --logger:db(140001, uid, 0, msg.table_name:count(), total_size, 0, 0, 0)
-        --EXPIRE
-        redis:command(string.format('EXPIRE %d %d', uid, Config.db_srv.expire_sec))
-        POST(sockfd, callback, uid, 0, unpack(msg_array))
-        return
-    end
-    --从mysql拉数据
+    local total_size = 0
+    local table_array = {...}
+    local msg_array = {}
     local mset_args = {}
-    for _, table_name in pairs(mysql_tables) do
-        local table_name = user_table.table_name
-        local table_bin = select_from_mysql(uid, table_name)
-        if table_bin == false then
-            POST(sockfd, callback, uid, 0))
+    for _, table_name in pairs(table_array) do
+        local msg, table_bin = select_from_mysql(uid, table_name)
+        if not msg then
+            POST(sockfd, callback, uid, 0)
             return
-        elseif table_bin == nil then
-            user_table.table_status = 1
-            user_table.table_bin = ''
         else
+            table.insert(msg_array, msg)
             table.insert(mset_args, table_name)
             table.insert(mset_args, table_bin)
             total_size = total_size + string.len(table_bin)
         end
     end
-    --logger:db(140001, uid, 0, msg.table_name:count(), total_size, 0, 0, 0)
+    log('total_size(%d)', total_size)
     --存到redis
-    Redis.hmset(redis, uid, unpack(mset_args))
-    Redis.command(redis, string.format('EXPIRE %d %d', uid, Config.dbsrv.expire_sec))
-    POST(sockfd, callback, uid, 0, unpack(msg_array))
+    if Config.dbsrv.redis_conf then
+        local conn = select_redis_connection(uid)
+        if conn then
+            Redis.hmset(conn, uid, unpack(mset_args))
+            Redis.command(conn, string.format('EXPIRE %d %d', uid, Config.dbsrv.expire_sec))
+        end
+    end
+    POST(sockfd, callback, uid, 1, unpack(msg_array))
 end
 
 --保存到redis
-function save_to_redis(sockfd, msg)
-    local uid = msg.uid
+function save_to_redis(sockfd, uid, callback, ...)
+    local args = {...}
     local mset_args = {}
     local save_list = ''..uid
     local table_statuses = msg.table_statuses
-    for _, user_table in pbpairs(msg.tables) do
-        local table_name = user_table.table_name
-        local table_bin = user_table.table_bin
+    for i = 1, #args, 2 do
+        local table_name = args[i]
+        local msg = args[i + 1]
+        local table_bin = pbc.tostring(msg)
         table.insert(mset_args, table_name)
         table.insert(mset_args, table_bin)
         save_list = save_list..' '..table_name
     end
-    --logger:db(140002, uid, 0, msg.tables:count(), total_size, 0, 0, 0)
     local redis = select_redis_connection(uid)
     --存redis
     local redis_reply = Redis.hmset(redis, uid, unpack(mset_args))
     if not redis_reply or (redis_reply.type == 'status' and redis_reply.value ~= 'OK') then
-        Log.error(TAG, 'cache %d fail', uid)
+        logerr('cache %d fail', uid)
         return
     end
     --EXPIRE
     local redis_reply = Redis.command(redis, string.format('EXPIRE %d %d', uid, Config.dbsrv.expire_sec))
     if not redis_reply or redis_reply.value ~= 1 then
-        Log.error(TAG, string.format('expire %d fail', uid))
+        logerr('expire %d fail', uid)
         return
     end
     --存SAVE LIST
     if savelist ~= '' then
         local redis_reply = Redis.lpush(redis, 'savelist', savelist)
         if not redis_reply or redis_reply.type ~= 'integer' then
-            Log.error(TAG, 'queue %d FAIL', uid)
+            logerr('queue %d FAIL', uid)
             return
         end
     end
@@ -234,37 +242,18 @@ end
 --功能:存玩家表
 --@sockfd
 --@msg db_srv.SET
-function MSG_SET(sockfd, msg)
-    local uid = msg.uid
-    local total_size = 0
-    local table_statuses = msg.table_statuses
-    for _, user_table in pbpairs(msg.tables) do
-        local table_name = user_table.table_name
-        local table_bin = user_table.table_bin
-        local table_status = table_statuses:add()
-        table_status.table_name = table_name
-        table_status.status = ''
-        total_size = total_size + string.len(table_bin)
+function SET(sockfd, uid, callback, ...)
+    local must_save_to_mysql = false
+    if Config.dbsrv.redis_conf then
+        if not save_to_redis(sockfd, uid, callback, ...) then
+            must_save_to_mysql = true
+        end
     end
-    Log:log(TAG, 'set table_count(%d) total_size(%d)', msg.tables:count(), total_size)
-    if msg.tables:count() <= 0 then
-        reply(sockfd, msg)
-        return
-    end
-    if not save_to_redis(sockfd, msg) then
-        reply(sockfd, msg)
-        return
-    end
-    if not Config.dbsrv.delay_write then
-        if not save_to_mysql(sockfd, msg) then
-            reply(sockfd, msg)
+    if must_save_to_mysql or not Config.dbsrv.delay_write then
+        if not save_to_mysql(sockfd, uid, callback, ...) then
             return
         end
     end
-    for _, table_status in pbpairs(msg.table_statuses) do
-        table_status.status = 'OK'
-    end
-    reply(sockfd, msg)
 end
 
 

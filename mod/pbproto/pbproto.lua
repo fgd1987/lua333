@@ -78,11 +78,11 @@ function flush(sockfd)
         return 0
     end
     local sent = Socket.send(sockfd, rptr, datalen)
-    log('sockfd(%d) datalen(%d) sent(%d) error(%s)', sockfd, datalen, sent, Sys.strerror())
+    log('sockfd(%d) datalen(%d) sent(%d)', sockfd, datalen, sent)
     if sent < 0 then
         return 0
     end
-    Sendbuf.rskip(sockfd, sent)
+    Sendbuf.skip_read_ptr(sockfd, sent)
     return sent
 end
 

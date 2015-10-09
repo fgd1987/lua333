@@ -97,6 +97,7 @@ static cJSON* json_encode_tree(lua_State *L){
 }
 
 static void json_decode_tree(lua_State* L, cJSON* json){
+    int i;
     if(json == NULL){
         lua_pushnil(L);
     }
@@ -117,7 +118,7 @@ static void json_decode_tree(lua_State* L, cJSON* json){
     }else if(json->type == cJSON_Array){//cJSON_Array
         lua_newtable(L);
         int size = cJSON_GetArraySize(json);
-        for(int i = 0; i < size; i++){
+        for(i = 0; i < size; i++){
             lua_pushnumber(L, i + 1);
             cJSON *cjson = cJSON_GetArrayItem(json, i);
             json_decode_tree(L, cjson);
@@ -126,7 +127,7 @@ static void json_decode_tree(lua_State* L, cJSON* json){
     }else if(json->type == cJSON_Object){//cJSON_Object
         lua_newtable(L);
         int size = cJSON_GetArraySize(json);
-        for(int i = 0; i < size; i++){
+        for(i = 0; i < size; i++){
             cJSON *cjson = cJSON_GetArrayItem(json, i);
             if(is_digit(cjson->string[0])){
                 int intval = atoi(cjson->string);

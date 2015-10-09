@@ -3,9 +3,14 @@
 local gatesrv_mod = {
     'mod/strproto',
     'mod/pbproto',
+    'mod/srvproto',
+    'mod/callproto',
+    'mod/postproto',
     'mod/framesrv',
     'framework/distsrv/gatesrv/clientsrv',
+    'framework/distsrv/gatesrv/login',
     'framework/distsrv/gatesrv/gameclient',
+    'framework/distsrv/gamesrv/gatesrv',
 }
 
 local gamesrv_mod = {
@@ -16,14 +21,12 @@ local gamesrv_mod = {
     'mod/pbproto',
     'mod/framesrv',
     --'framework/distsrv/gatesrv/clientsrv',
-    'framework/distsrv/gatesrv/gameclient',
-
-    'framework/distsrv/gamesrv/gatesrv',
-    --'framework/distsrv/gamesrv/globalclient',
-
+--    'framework/distsrv/gatesrv/gameclient',
+--    'framework/distsrv/gamesrv/gatesrv',
+    'framework/distsrv/gamesrv/globalclient',
+    'framework/distsrv/globalsrv/gamesrv',
+    'framework/distsrv/dbsrv/dbsrv',
     --'framework/distsrv/globalsrv/globalsrv',
-    --'framework/distsrv/globalsrv/gamesrv',
-
 --    'framework/distsrv/globalsrv/globalclient',
 --    'framework/distsrv/gamesrv/dbclient',
 --    'framework/distsrv/gamesrv/gatesrv',
@@ -45,7 +48,8 @@ Config = {
             },
         },
     },
-    engine_path = '/Volumes/NO NAME/lua333',
+    engine_path = '/root/lua333',
+    --engine_path = '/Volumes/NO NAME/lua333',
     --模块搜索路径
     mod_path = {},
     --lua文件搜索路径
@@ -53,11 +57,11 @@ Config = {
 
     --服务器列表
     srvlist = {
-        {srvid = 1001, srvname = 'gatesrv1', mod = gatesrv_mod},
-        {srvid = 2001, srvname = 'globalsrv1', mod = globalsrv_mod},
-        {srvid = 1,    srvname = 'gamesrv1', mod = gamesrv_mod},
-        {srvid = 2,    srvname = 'gamesrv1', mod = gamesrv_mod},
-        {srvid = 3,    srvname = 'gamesrv1', mod = gamesrv_mod},
+        {srvid = 1001, srvname = 'gatesrv1',    mod = gatesrv_mod},
+        {srvid = 2001, srvname = 'globalsrv1',  mod = globalsrv_mod},
+        {srvid = 1,    srvname = 'gamesrv1',    mod = gamesrv_mod},
+        {srvid = 2,    srvname = 'gamesrv1',    mod = gamesrv_mod},
+        {srvid = 3,    srvname = 'gamesrv1',    mod = gamesrv_mod},
     },
 
     --各个模块的配置
@@ -66,6 +70,7 @@ Config = {
         check_interval = 120,
         protodir = 'proto',
         maxsock = 65536,
+        route = {},
     },
 
     globalsrv = {
@@ -83,31 +88,33 @@ Config = {
     initdb = {
         mysql_conf = {
             actordb = {
-                host = '127.0.0.1', user = 'root', password = '333',
+                dbproto_dir = 'dbproto',
+                host = '127.0.0.1', user = 'root', password = '',
                 tables = {
-                    user = {binary = true, file = 'db.user'}
+                    user = {file = 'db.user.User'}
                 },
             },
         },
     },
 
     dbsrv = {
+        expire_sec = 100,
         delay_write = false,
-        dbprotodir = 'dbproto',
+        dbproto_dir = 'dbproto',
         redis_conf = {
-            {dbname = 'xxx', host = '127.0.0.1', port = 333, password = '333'},
+            {dbname = '1', host = '127.0.0.1', port = 6379, password = ''},
         },
         mysql_conf = {
-            {dbname = 'xxx', host = '127.0.0.1', port = 333, password = '333'},
+            {dbname = 'actordb', host = '127.0.0.1', user = 'root', port = 3306, password = ''},
         },
         table_conf = {
-            user = {binary = true, file = 'db.user'},
+            user = {file = 'db.user.User'},
         },
     },
 
     globalclient = {
         globalsrv_list = {
-            {alias = 'CentersrvSock', srvid = 1, host = '127.0.0.1', port = 3333},
+            {alias = 'CentersrvSock', srvid = 1, host = '127.0.0.1', port = 3334},
         },
     },
 

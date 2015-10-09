@@ -14,22 +14,22 @@ function check_redis_connections()
     end
     --连接
     for index, conf in pairs(Config.dbsrv.redis_conf) do
-        if not redis_connections[index] then
-            local conn = Redis.connect(conf.host, conf.port, conf.password, conf.dbname)
+        if not redis_table[index] then
+            local conn = Redis.connect(conf.host, conf.port)
             if not conn then
-                Log.log(TAG, 'fail connect redis index(%d) host(%s) port(%d) dbname(%s)', index, conf.host, conf.port, conf.dbname)
-                redis_connections[index] = nil
+                log('fail connect redis index(%d) host(%s) port(%d) dbname(%s)', index, conf.host, conf.port, conf.dbname)
+                redis_table[index] = nil
             else
-                Log.log(TAG, 'success connect redis index(%d) host(%s) port(%d) dbname(%s)', index, conf.host, conf.port, conf.dbname)
-                redis_connections[index] = {conn = conn, host = conf.host, port = conf.port, dbname = conf.dbname}
+                log('success connect redis index(%d) host(%s) port(%d) dbname(%s)', index, conf.host, conf.port, conf.dbname)
+                redis_table[index] = {conn = conn, host = conf.host, port = conf.port, dbname = conf.dbname}
             end
         end
     end
 end
 
 function select_redis_connection(uid)
-    local index = math.fmod(uid, #redis_connections) 
-    local info = redis_connections[index + 1]
+    local index = math.fmod(uid, #redis_table) 
+    local info = redis_table[index + 1]
     return info and info.conn or nil
 end
 

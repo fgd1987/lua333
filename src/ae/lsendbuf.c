@@ -292,7 +292,7 @@ static luaL_Reg lua_lib[] ={
     {"flush", lflush},
     {"get_read_ptr", lget_read_ptr},
     {"datalen", ldatalen},
-    {"rskip_read_ptr", lskip_read_ptr},
+    {"skip_read_ptr", lskip_read_ptr},
     {NULL, NULL}
 };
 

@@ -11,6 +11,5 @@ gatesrv:
 test:
 	../../bin/pbtest login.login
 
-
 initdb:
 	../../bin/initdb

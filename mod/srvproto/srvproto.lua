@@ -31,46 +31,57 @@ function dispatch(sockfd)
         return
     end
     Recvbuf.wskip(sockfd, recv)
-    --读buf
-    local datalen = Recvbuf.datalen(sockfd)
-    if datalen <= 4 then
-        return
-    end
-    local plen = Recvbuf.getint32(sockfd)
-    log('plen(%d) datalen(%d)', plen, datalen)
-    if datalen < plen then
-        return
-    end
-    local arfd = Ar.create(Recvbuf.getrptr(sockfd), datalen)
-    local plen = Ar.readint32(arfd)
-    local argcount = Ar.readint16(arfd)
-    local args = {}
-    log('argcount(%d)', argcount)
-    for i = 1, argcount do
-        local tag = Ar.readint8(arfd)
-        if tag == INT_TYPE then
-            local val = Ar.readint32(arfd)
-            table.insert(args, val)
-        elseif tag == NIL_TYPE then
-            table.insert(args, nil)
-        elseif tag == STR_TYPE then
-            local val = Ar.readlstr(arfd)
-            table.insert(args, val)
-        elseif tag == JSON_TYPE then
-            local val = Ar.readlstr(arfd)
-            local json = Json.decode(val)
-            table.insert(args, val)
+    --拆包
+    while true do
+        --读buf
+        local datalen = Recvbuf.datalen(sockfd)
+        if datalen <= 4 then
+            return
         end
-    --    log('tag(%d)', tag)
+        local plen = Recvbuf.getint32(sockfd)
+        log('plen(%d) datalen(%d)', plen, datalen)
+        if datalen < plen then
+            return
+        end
+        local arfd = Ar.create(Recvbuf.getrptr(sockfd), datalen)
+        local plen = Ar.readint32(arfd)
+        local argcount = Ar.readint16(arfd)
+        local args = {}
+        log('argcount(%d)', argcount)
+        for i = 1, argcount do
+            local tag = Ar.readint8(arfd)
+            if tag == INT_TYPE then
+                local val = Ar.readint32(arfd)
+                table.insert(args, val)
+            elseif tag == NIL_TYPE then
+                table.insert(args, nil)
+            elseif tag == STR_TYPE then
+                local val = Ar.readlstr(arfd)
+                table.insert(args, val)
+            elseif tag == JSON_TYPE then
+                local val = Ar.readlstr(arfd)
+                local json = Json.decode(val)
+                table.insert(args, val)
+            elseif tag == PROTOBUF_TYPE then
+                local msgname = Ar.readlstr(arfd)
+                local msg = pbc.msgnew(msgname)
+                local buflen = Ar.readint16(arfd)
+                local buf = Ar.getptr(arfd)
+                pbc.parse_from_buf(msg, buf, buflen)
+                table.insert(args, msg)
+            end
+        --    log('tag(%d)', tag)
+        end
+        print(Json.encode(args))
+        --print(sockfd, plen)
+        --分发到不同的协议层
+        local proto = args[1]
+        if proto == POST_PROTO then
+            Postproto.dispatch(sockfd, unpack(args))
+        end
+        Recvbuf.rskip(sockfd, plen)
     end
-    print(Json.encode(args))
-    Recvbuf.rskip(sockfd, plen)
     Recvbuf.buf2line(sockfd)
-    --分发到不同的协议层
-    local proto = args[1]
-    if proto == POST_PROTO then
-        Postproto.dispatch(sockfd, unpack(args))
-    end
 end
 
 local function calc_len(args)
@@ -85,6 +96,10 @@ local function calc_len(args)
         elseif type(v) == 'table' then
             local str = Json.encode(v)
             len = len + 1 + 2 + string.len(str)
+        elseif type(v) == 'userdata' then
+            local msgname = pbc.msgname(v)
+            len = len + 1 + 2 + string.len(msgname)
+            len = len + 2 + pbc.bytesize(v)
         end
     end
     return len
@@ -93,7 +108,7 @@ end
 function send(sockfd, ...)
     local args = {...}
     local plen = 4 + calc_len(args)
-    log('plen(%d)', plen)
+    log('send plen(%d) args(%d)', plen, #args)
     local buf = Sendbuf.alloc(sockfd, plen)
     local arfd = Ar.create(buf, plen)
     Ar.writeint32(arfd, plen)
@@ -111,6 +126,13 @@ function send(sockfd, ...)
             local str = Json.encode(v)
             Ar.writeint8(arfd, JSON_TYPE)
             Ar.writelstr(arfd, str)
+        elseif type(v) == 'userdata' then
+            --protobuf
+            Ar.writeint8(arfd, PROTOBUF_TYPE)
+            Ar.writelstr(arfd, pbc.msgname(v))
+            Ar.writelstr(arfd, pbc.tostring(v))
+            --print(pbc.msgname(v))
+            --print(pbc.tostring(v))
         end
     end
     Sendbuf.flush(sockfd, buf, plen)

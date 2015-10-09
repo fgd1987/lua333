@@ -107,10 +107,15 @@ static int real_close(int sockfd, const char *reason){
     lua_State *L = port->L;
     if(port->lua_on_close[0] != 0)
     {
+	    struct sockaddr_in addr;	
+	    socklen_t addrlen = sizeof(addr);	
+        getpeername(sockfd, (struct sockaddr *)&addr, &addrlen);
         lua_pushluafunction(L, port->lua_on_close);
         lua_pushnumber(L, sockfd);
+        lua_pushstring(L, inet_ntoa(addr.sin_addr));
+        lua_pushnumber(L, ntohs(addr.sin_port));
         lua_pushstring(L, reason);
-        if (lua_pcall(L, 2, 0, 0) != 0)
+        if (lua_pcall(L, 4, 0, 0) != 0)
         {
             LOG_ERROR("error running function %s: %s\n", port->lua_on_close, lua_tostring(L, -1));
         }
@@ -213,9 +218,13 @@ static void port_on_accept(struct aeEventLoop *eventLoop, int listenfd, void *ar
     setnonblock(sockfd);
     aeCreateFileEvent(port->loop, sockfd, AE_READABLE, port_on_read, NULL);
     aeCreateFileEvent(port->loop, sockfd, AE_WRITABLE, port_on_write, NULL);
+
+    getpeername(sockfd, (struct sockaddr *)&addr, &addrlen);
     lua_pushluafunction(L, port->lua_on_accept);
     lua_pushnumber(L, sockfd);
-    if (lua_pcall(L, 1, 0, 0) != 0)
+    lua_pushstring(L, inet_ntoa(addr.sin_addr));
+    lua_pushnumber(L, ntohs(addr.sin_port));
+    if (lua_pcall(L, 3, 0, 0) != 0)
     {
         LOG_ERROR("error running function %s: %s\n", port->lua_on_accept, lua_tostring(L, -1));
     }

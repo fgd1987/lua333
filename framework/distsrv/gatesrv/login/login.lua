@@ -49,7 +49,7 @@ function player_connected(sockfd, msg)
         return
     end
     --验证
-    if not check_auth(uid, msg.params) then
+    if not check_login_token(uid, msg.params) then
         msg.errno = 10
         Clientsrv.reply(sockfd, msg)
         Clientsrv.close(sockfd, 'auth fail')
@@ -69,7 +69,7 @@ end
 function player_disconnect(player)
     local sockfd = _G[player.sockname]
     if not sockfd then
-        logerr('user offline yet uid(%d)', player.uid)
+        logerr('user is not in gamesrv uid(%d)', player.uid)
         return
     end
     POST(sockfd, 'login.PLAYER_EXIT', player.uid)

@@ -103,6 +103,7 @@ static int lfind(lua_State *L) {
     size_t str_len;
     char *str;
     int startpos;
+    int i;
     sockfd = (int)lua_tointeger(L, 1);
     str = (char *)lua_tolstring(L, 2, &str_len);
     if (lua_isnumber(L, 3)) {
@@ -115,7 +116,7 @@ static int lfind(lua_State *L) {
         return 0;
     }
     //printf("i(%d) wptr(%d)\n", self->rptr + startpos, self->wptr);
-    for (int i = self->rptr + startpos; i < self->wptr; i++) {
+    for (i = self->rptr + startpos; i < self->wptr; i++) {
         if (!strncmp(self->buf + i, str, str_len)) {
             lua_pushinteger(L, i - self->rptr);
             return 1;
