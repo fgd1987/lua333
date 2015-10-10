@@ -35,7 +35,8 @@ if not srvconf then
     return
 end
 print(string.format('start %s', srvconf.srvname))
-Config.srvconf = srvconf
+Config.srvid = srvconf.srvid
+Config.srvname = srvconf.srvname
 
 --加载模块
 print('----------加载模块----------')

@@ -6,37 +6,41 @@ function main()
 
 end
 
+function REPLY(srvid, uid, msg)
+    local player = player_manager[uid]
+    if not player then
+        print(uid)
+        logerr('player not found uid(%d)', uid)
+        return
+    end
+    Clientsrv.reply(player.sockfd, msg)
+end
+
 --功能：进入游戏服
 function MSG_ENTER(player, msg)
     local srvid = msg.srvid
-    local sockfd;
     if srvid == 0 then
-        srvid, sockfd = Gameclient.randselect() 
+        srvid = Gameclient.randselect() 
     end
-    if not sockfd then
+    if not srvid then
         logerr('game_srv not found')
         msg.errno = 11
         Clientsrv.reply(player.sockfd, msg)
         return
     end
     player.srvid = srvid
-    POST(sockfd, 'Login.PLAYER_ENTER', player.uid)
+    POST(srvid, 'Login.PLAYER_ENTER', player.uid)
 end
 
 --功能：进入游戏服,切换服务器
-function PLAYER_ENTER(sockfd, uid, srvname)
+function PLAYER_ENTER(srvid, uid, srvid)
     local player = player_manager[uid]
     if not player then
         logerr('player is offline uid(%d)', uid)
         return
     end
-    local sockfd = Gameclient.select(srvname)
-    if not sockfd then
-        loggerr('game_srv(%s) not found')
-        return
-    end
-    player.srvname = srvname
-    POST(sockfd, 'Login.PLAYER_ENTER', player.uid)
+    player.srvid = srvid
+    POST(srvid, 'Login.PLAYER_ENTER', player.uid)
 end
 
 --功能:登陆
@@ -72,12 +76,12 @@ end
 
 --功能：下线
 function player_disconnect(player)
-    local sockfd = _G[player.sockname]
-    if not sockfd then
+    local srvid = player.srvid
+    if not srvid then
         logerr('user is not in gamesrv uid(%d)', player.uid)
         return
     end
-    POST(sockfd, 'login.PLAYER_EXIT', player.uid)
+    POST(srvid, 'Login.PLAYER_EXIT', player.uid)
 end
 
 

@@ -28,31 +28,40 @@ end
 
 function ev_connect_suc(sockfd, host, port)
     log('ev_connect_suc sockfd(%d)', sockfd)
+    local srvid = nil
     local globalsrv_list = _CONF.globalsrv_list
     for index, conf in pairs(globalsrv_list) do
         if conf.host == host and port == conf.port then
-            _G[conf.alias] = sockfd  
-            log('alias sockfd(%d) to alias(%s)', sockfd, conf.alias)
+            srvid = conf.srvid
             break
         end
     end
-    POST(sockfd, 'Gamesrv.REGIST', Config.srvconf.srvid, Config.srvconf.srvname)
-    --POST(sockfd, 'Gamesrv.REGIST', Config.srvconf.srvname)
-    POST(sockfd, 'Dbsrv.GET', 333, 'Globalclient.test_db_get', 'user')
+    --别名
+    for sockname, _srvid in pairs(_CONF.namesrv) do
+        if _srvid == srvid then
+            _G[sockname] = srvid  
+            log('alias srvid(%d) to sockname(%s)', srvid, sockname)
+        end
+    end
+    Postproto.regist(srvid, sockfd)
+    POST(srvid, 'Gamesrv.REGIST', Config.srvname)
+    --POST(srvid, 'Gamesrv.REGIST', Config.srvconf.srvname)
+    --POST(srvid, 'Dbsrv.GET', 333, 'Globalclient.test_db_get', 'user')
 end
 
-function test_db_set(sockfd, uid, result)
+function test_db_set(srvid, uid, result)
     log('test_db_set result(%d)', result)
 end
 
-function test_db_get(sockfd, uid, result, msg)
+function test_db_get(srvid, uid, result, msg)
     --log(msg)
     log(uid, result)
     log(pbc.debug_string(msg))
-    POST(sockfd, 'Dbsrv.SET', 333, 'Globalclient.test_db_set', 'user', msg) 
+    POST(srvid, 'Dbsrv.SET', 333, 'Globalclient.test_db_set', 'user', msg) 
 end
 
-function ev_close(sockfd, reason)
+function ev_close(sockfd, host, port, reason)
+    Postproto.unregist(sockfd)
     log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
     local globalsrv_list = _CONF.globalsrv_list
     for index, conf in pairs(globalsrv_list) do
@@ -79,7 +88,7 @@ function check_connections()
         end
         if not find then
             log('config changed!!')
-            Port.close(socket_table[index].sockfd, 'config changed')
+            Port.close(portfd, socket_table[index].sockfd, 'config changed')
         end
     end
     for index, conf in pairs(globalsrv_list) do

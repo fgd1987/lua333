@@ -3,6 +3,8 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <string.h>
 #include "lsendbuf.h"
 #include "lrecvbuf.h"
 
@@ -15,6 +17,14 @@ Sock s_socks[MAX_SOCK];
 
 #define LOG_ERROR printf
 #define LOG_LOG printf
+
+static void lua_printstack(lua_State *L) {
+    lua_getglobal(L, "debug");  
+    lua_getfield(L, -1, "traceback");  
+    lua_pcall(L, 0, 1, 0);   
+    const char* sz = lua_tostring(L, -1);  
+    printf("%s\n", sz);
+}
 
 //login.hello_world
 //hello_world
@@ -118,6 +128,7 @@ static int real_close(int sockfd, const char *reason){
         if (lua_pcall(L, 4, 0, 0) != 0)
         {
             LOG_ERROR("error running function %s: %s\n", port->lua_on_close, lua_tostring(L, -1));
+            lua_printstack(L);
         }
         lua_pop(L, lua_gettop(L));
     }
@@ -143,6 +154,7 @@ static void port_on_read(struct aeEventLoop *eventLoop, int sockfd, void *args, 
         if (lua_pcall(L, 1, 0, 0) != 0)
         {
             LOG_ERROR("error running function %s: %s\n", port->lua_on_read, lua_tostring(L, -1));
+            lua_printstack(L);
         }
         lua_pop(L, lua_gettop(L));
     }
@@ -227,6 +239,7 @@ static void port_on_accept(struct aeEventLoop *eventLoop, int listenfd, void *ar
     if (lua_pcall(L, 3, 0, 0) != 0)
     {
         LOG_ERROR("error running function %s: %s\n", port->lua_on_accept, lua_tostring(L, -1));
+        lua_printstack(L);
     }
     lua_pop(L, lua_gettop(L));
 }
@@ -253,6 +266,7 @@ static void port_on_connect_suc(struct aeEventLoop *eventLoop, int sockfd, void 
         if (lua_pcall(L, 3, 0, 0) != 0)
         {
             LOG_ERROR("error running function %s: %s\n", port->lua_on_connect_suc, lua_tostring(L, -1));
+            lua_printstack(L);
         }
         lua_pop(L, lua_gettop(L));
     }
@@ -276,6 +290,7 @@ static void port_on_connect_err(struct aeEventLoop *eventLoop, int sockfd, void 
         if (lua_pcall(L, 3, 0, 0) != 0)
         {
             LOG_ERROR("error running function %s: %s\n", port->lua_on_connect_err, lua_tostring(L, -1));
+            lua_printstack(L);
         }
         lua_pop(L, lua_gettop(L));
     }
@@ -600,7 +615,13 @@ static int lclose(lua_State *L){
             LOG_ERROR("diff port %d\n", sockfd);
             return 0;
         }
-        real_close(sockfd, "");
+        char *reason;
+        if(lua_isstring(L, 3)) {
+            reason = (char *)lua_tostring(L, 3);
+        } else {
+            reason = strerror(errno);
+        }
+        real_close(sockfd, reason);
         lua_pushboolean(L, 1);
         return 1;
     }

@@ -33,15 +33,22 @@ local gamesrv_mod = {
     {'mod/framesrv'},
     {'framework/distsrv/gamesrv/gatesrv',
         host = '0.0.0.0', port = 3332,
+        protodir = 'proto',
     },
     {'framework/distsrv/gamesrv/globalclient',
         globalsrv_list = {
-            {alias = 'CentersrvSockfd', srvid = 1, host = '127.0.0.1', port = 3334},
+            {srvid = 2001, host = '127.0.0.1', port = 3334},
+        },
+        namesrv = {
+            CentersrvSockfd = 2001,
+            DbsrvSockfd = 2001,
         },
     },
     {'framework/distsrv/gamesrv/login',
         dbproto_dir = 'dbproto',
+        playerdata = {'user'},
     },
+    {'framework/distsrv/gamesrv/player'},
 }
 
 local globalsrv_mod = {
@@ -50,7 +57,7 @@ local globalsrv_mod = {
     {'mod/postproto'},
     {'mod/callproto'},
     {'mod/framesrv'},
-    {'framework/distsrv/dbsrv/dbsrv',
+    {'framework/distsrv/globalsrv/dbsrv/dbsrv',
         expire_sec = 100,
         delay_write = false,
         dbproto_dir = 'dbproto',
@@ -70,13 +77,13 @@ local globalsrv_mod = {
     {'framework/distsrv/globalsrv/globalsrv',
         host = '0.0.0.0', port = 3333,
     },
-    {'framework/distsrv/centersrv/login'},
+    {'framework/distsrv/globalsrv/centersrv/login'},
 }
 
 Config = {
-    --engine_path = '/root/lua333',
+    engine_path = '/root/lua333',
     --engine_path = '/Volumes/NO NAME/lua333',
-    engine_path = '/Users/lujingwei/Documents/360pan/Project/lua333',
+    --engine_path = '/Users/lujingwei/Documents/360pan/Project/lua333',
     --模块搜索路径
     mod_path = {},
     --lua文件搜索路径

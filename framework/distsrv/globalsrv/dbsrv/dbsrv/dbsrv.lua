@@ -70,7 +70,7 @@ local function select_from_mysql(uid, table_name)
     end
 end
 
-function get_from_redis(sockfd, uid, callback, ...)
+function get_from_redis(srvid, uid, callback, ...)
     local table_array = {...}
     local msg_array = {}
     local hmget_str = string.format('HMGET %d ', uid)
@@ -107,15 +107,15 @@ function get_from_redis(sockfd, uid, callback, ...)
         end
     end
     Redis.command(conn, string.format('EXPIRE %d %d', uid, _CONF.expire_sec))
-    POST(sockfd, callback, uid, 0, unpack(msg_array))
+    POST(srvid, callback, uid, 1, unpack(msg_array))
     return true
 end
 
 --功能:取玩家表
---@sockfd
-function GET(sockfd, uid, callback, ...)
+--@srvid
+function GET(srvid, uid, callback, ...)
     if _CONF.redis_conf then
-        if get_from_redis(sockfd, uid, callback, ...) then
+        if get_from_redis(srvid, uid, callback, ...) then
             return
         end
     end
@@ -126,7 +126,7 @@ function GET(sockfd, uid, callback, ...)
     for _, table_name in pairs(table_array) do
         local msg, table_bin = select_from_mysql(uid, table_name)
         if not msg then
-            POST(sockfd, callback, uid, 0)
+            POST(srvid, callback, uid, 0)
             return
         else
             table.insert(msg_array, msg)
@@ -144,11 +144,11 @@ function GET(sockfd, uid, callback, ...)
             Redis.command(conn, string.format('EXPIRE %d %d', uid, _CONF.expire_sec))
         end
     end
-    POST(sockfd, callback, uid, 1, unpack(msg_array))
+    POST(srvid, callback, uid, 1, unpack(msg_array))
 end
 
 --保存到redis
-function save_to_redis(sockfd, uid, callback, ...)
+function save_to_redis(srvid, uid, callback, ...)
     local args = {...}
     local mset_args = {}
     local savelist = ''..uid
@@ -184,7 +184,7 @@ function save_to_redis(sockfd, uid, callback, ...)
     return true
 end
 
-function save_to_mysql(sockfd, uid, callback, ...)
+function save_to_mysql(srvid, uid, callback, ...)
     local total_size = 0
     local args = {...}
     local conn = select_mysql_connection(uid)
@@ -238,27 +238,27 @@ function save_to_mysql(sockfd, uid, callback, ...)
 end
 
 --功能:存玩家表
---@sockfd
+--@srvid
 --@msg db_srv.SET
-function SET(sockfd, uid, callback, ...)
-    if not save_to_redis(sockfd, uid, callback, ...) then
+function SET(srvid, uid, callback, ...)
+    if not save_to_redis(srvid, uid, callback, ...) then
         --写缓存失败，马上写数据库
-        if not save_to_mysql(sockfd, uid, callback, ...) then
-            POST(sockfd, callback, uid, 0)
+        if not save_to_mysql(srvid, uid, callback, ...) then
+            POST(srvid, callback, uid, 0)
         end
     end
     if not _CONF.delay_write then
-        if not save_to_mysql(sockfd, uid, callback, ...) then
-            POST(sockfd, callback, uid, 0)
+        if not save_to_mysql(srvid, uid, callback, ...) then
+            POST(srvid, callback, uid, 0)
             return
         end
     end
-    POST(sockfd, callback, uid, 1)
+    POST(srvid, callback, uid, 1)
 end
 
 
 --功能:取玩家表
-function MSG_MGET(sockfd, msg)
+function MSG_MGET(srvid, msg)
     local uid = msg.uid
     local table_name = msg.table_name
     local tables = msg.tables
@@ -288,11 +288,11 @@ function MSG_MGET(sockfd, msg)
             user_table.table_bin = ''
         end
     end
-    reply(sockfd, msg)
+    reply(srvid, msg)
 end
 
 --功能:修改K,V属性(只能修改展开的表)
-function MSG_KVSET(sockfd, msg)
+function MSG_KVSET(srvid, msg)
     local uid = msg.uid
     local mysql = select_mysql_connection(uid)
     if not mysql then
@@ -311,5 +311,5 @@ function MSG_KVSET(sockfd, msg)
     if not Mysql.command(mysql, sql) then
         logerr('kvset fail %s', sql)
     end
-    reply(sockfd, msg)
+    reply(srvid, msg)
 end

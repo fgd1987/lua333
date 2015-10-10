@@ -12,7 +12,7 @@ destory
 --]]
 
 --每秒多少帧
-FRAME_PER_SEC = 10
+FRAME_PER_SEC = 100
 --每帧多少毫秒
 MSEC_PER_FRAME = math.floor(1000/FRAME_PER_SEC)
 --固定帧(单位：毫秒）

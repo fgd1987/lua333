@@ -106,7 +106,7 @@ function listen()
 end
 
 function update()
-    timer_check()
+    --timer_check()
 end
 
 --功能:定时检测链接上来后, 没有发消息登陆的socket
@@ -122,6 +122,7 @@ function timer_check()
     end
     return 1
 end
+
 
 function reply(sockfd, msg)
     Pbproto.send(sockfd, msg)

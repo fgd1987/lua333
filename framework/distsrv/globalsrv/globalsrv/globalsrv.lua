@@ -10,6 +10,7 @@ function main()
 end
 
 function ev_close(sockfd, reason)
+    Postproto.unregist(sockfd)
     log('ev_close sockfd(%d)', sockfd)
 end
 
@@ -38,15 +39,16 @@ end
 
 --功能:globalsrv上线
 --@srv_name 服务名称
-function SRV_ONLINE(sockfd, srv_name)
-    if global_manager[srv_name] ~= nil then
-        logerr('%s is connected yet', srv_name)
+function SRV_ONLINE(sockfd, srvid, srvname)
+    if global_manager[srvid] ~= nil then
+        logerr('%s is connected yet', srvname)
         return 
     end
     local srv = {
-        srv_name = srv_name,
+        srvid = srvid,
+        srvname = srvname,
         sockfd = sockfd,
         time = os.time()
     }
-    global_manager[srv_name] = srv 
+    global_manager[srvid] = srv 
 end

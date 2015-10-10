@@ -21,13 +21,14 @@ function dispatch(sockfd)
     --填充recvbuf
     local buf = Recvbuf.getwptr(sockfd)
     local bufremain = Recvbuf.bufremain(sockfd)
-    log('bufremain(%d)', bufremain)
+--    log('bufremain(%d)', bufremain)
     local recv = Socket.recv(sockfd, buf, bufremain)
     log('recv(%d)', recv)
-    if recv == 0 then
+    if recv == 0 or (recv == -1 and Sys.errno() == Socket.EAGAIN) then
+        log('errno(%d) Sys.EAGIN(%d)', Sys.errno(), Socket.EAGAIN)
         return ERR
     end
-    if recv == -1 then
+    if recv <= 0 then
         return
     end
     Recvbuf.wskip(sockfd, recv)
@@ -39,7 +40,7 @@ function dispatch(sockfd)
             return
         end
         local plen = Recvbuf.getint32(sockfd)
-        log('plen(%d) datalen(%d)', plen, datalen)
+        --log('plen(%d) datalen(%d)', plen, datalen)
         if datalen < plen then
             return
         end
@@ -47,7 +48,7 @@ function dispatch(sockfd)
         local plen = Ar.readint32(arfd)
         local argcount = Ar.readint16(arfd)
         local args = {}
-        log('argcount(%d)', argcount)
+        --log('argcount(%d)', argcount)
         for i = 1, argcount do
             local tag = Ar.readint8(arfd)
             if tag == INT_TYPE then
@@ -67,13 +68,13 @@ function dispatch(sockfd)
                 local msg = pbc.msgnew(msgname)
                 local buflen = Ar.readint16(arfd)
                 local buf = Ar.getptr(arfd)
-                log(msgname, msg, buflen, buf)
+                log(msgname)
                 pbc.parse_from_buf(msg, buf, buflen)
                 table.insert(args, msg)
             end
         --    log('tag(%d)', tag)
         end
-        log(Json.encode(args))
+        --log(Json.encode(args))
         --print(sockfd, plen)
         --分发到不同的协议层
         local proto = args[1]
@@ -109,13 +110,13 @@ end
 function send(sockfd, ...)
     local args = {...}
     local plen = 4 + calc_len(args)
-    log('send plen(%d) args(%d)', plen, #args)
+    log('[SEND] plen(%d) argcount(%d)', plen, #args)
     local buf = Sendbuf.alloc(sockfd, plen)
     local arfd = Ar.create(buf, plen)
     Ar.writeint32(arfd, plen)
     Ar.writeint16(arfd, #args)
     for _, v in pairs(args) do
-        log('write type(%s)', type(v))
+        --log('write type(%s)', type(v))
         if type(v) == 'nil' then
             Ar.writeint8(arfd, NIL_TYPE)
         elseif type(v) == 'number' then
@@ -133,6 +134,7 @@ function send(sockfd, ...)
             Ar.writeint8(arfd, PROTOBUF_TYPE)
             Ar.writelstr(arfd, pbc.msgname(v))
             Ar.writelstr(arfd, pbc.tostring(v))
+            log(pbc.msgname(v))
             --print(pbc.msgname(v))
             --print(pbc.tostring(v))
         end

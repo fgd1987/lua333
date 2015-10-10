@@ -5,6 +5,7 @@ portfd = port or nil
 gate_manager = {}
 
 function main()
+    Pbc.import_dir(_CONF.protodir)
     portfd = Port.create(Framesrv.loop)
     listen()
 end
@@ -17,8 +18,13 @@ function ev_read(sockfd)
     end
 end
 
+function reply(sockfd, uid, msg)
+    POST(sockfd, 'Login.REPLY', uid, msg)
+end
+
 function ev_close(sockfd, reason)
     log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
+    Postproto.unregist(sockfd)
     for k, gate in pairs(gate_manager) do
         if gate.sockfd == sockfd then
             gate_manager[k] = nil
@@ -26,15 +32,6 @@ function ev_close(sockfd, reason)
             break
         end
     end
-end
-
-function select(srv_name)
-    local gate = gate_manager[srv_name]
-    if not gate then
-        logerr('srv_name(%s) not found', srv_name)
-        return
-    end
-    return gate.sockfd
 end
 
 function ev_accept(sockfd)
@@ -54,7 +51,7 @@ end
 
 --功能:game_srv上线
 --@srvname 服务名称
-function REGIST(sockfd, srvid, srvname)
+function REGIST(srvid, srvname)
     if gate_manager[srvid] ~= nil then
         logerr('game(%s) is connected yet', srvid)
         return 
@@ -62,7 +59,7 @@ function REGIST(sockfd, srvid, srvname)
     local srv = {
         srvname = srvname,
         srvid = srvid,
-        sockfd = sockfd,
+        sockfd = Postproto.srvid2sockfd[srvid],
         time = os.time()
     }
     gate_manager[srvid] = srv 

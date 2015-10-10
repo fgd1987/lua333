@@ -1,4 +1,3 @@
-
 all:
 
 install:
@@ -19,4 +18,3 @@ clean:
 	cd redis;make clean
 	cd lua;make clean
 	cd luajit;make clean
-

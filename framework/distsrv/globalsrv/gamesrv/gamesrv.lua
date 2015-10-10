@@ -1,11 +1,9 @@
 module('Gamesrv', package.seeall)
+
 portfd = nil
 
 game_manager = game_manager or {
     --[srvid] = {}
-}
-game_session = game_session or {
-    --[sockfd] = {srvname = '', sockfd = 0, time = 0}
 }
 
 function main()
@@ -21,24 +19,16 @@ function ev_read(sockfd, reason)
     end
 end
 
-function ev_close(sockfd, reason)
-    log('ev_close sockfd is %d', sockfd)
-    for k, game in pairs(game_manager) do
+function ev_close(sockfd, host, port, reason)
+    log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
+    Postproto.unregist(sockfd)
+    for srvid, game in pairs(game_manager) do
         if game.sockfd == sockfd then
-            game_manager[k] = nil
+            game_manager[srvid] = nil
             log('game disconnect srvname(%s)', game.srvname)
             break
         end
     end
-end
-
-function select(srvid)
-    local game = game_manager[srvnid]
-    if not game then
-        logerr('srvid(%s) not found', srvid)
-        return
-    end
-    return game.sockfd
 end
 
 function ev_accept(sockfd)
@@ -56,10 +46,9 @@ function listen()
     Port.on_read(portfd, 'Gamesrv.ev_read')
 end
 
-
 --功能:game_srv上线
 --@srvname 服务名称
-function REGIST(sockfd, srvid, srvname)
+function REGIST(srvid, srvname)
     if game_manager[srvid] ~= nil then
         logerr('%s is connected yet', srvname)
         return 
@@ -67,10 +56,9 @@ function REGIST(sockfd, srvid, srvname)
     local srv = {
         srvid = srvid,
         srvname = srvname,
-        sockfd = sockfd,
+        sockfd = Postproto.srvid2sockfd[srvid],
         time = os.time()
     }
     game_manager[srvid] = srv 
-    game_session[sockfd] = srv 
     log('a game regist srvname(%s)', srvname)
 end

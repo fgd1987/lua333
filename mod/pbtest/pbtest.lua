@@ -5,17 +5,29 @@ module('Pbtest', package.seeall)
     pbtest game/jxqy/pbtest/login/login uid
 --]]
 
-function run()
+local portfd = nil
+local loop = nil
 
+function connect(player)
+    if not loop then
+        loop = Ae.create(10240)
+    end
+    if not portfd then
+        portfd = Port.create(loop)
+        Port.rename(portfd, 'pbtest')
+        Port.on_close(portfd, 'Pbtest.ev_close')
+        Port.on_read(portfd, 'Pbtest.ev_read')
+    end
 end
 
-function run_mod()
-
+function ev_read(sockfd, reason)
+    log('ev_read')
 end
 
-function run_func()
-
+function ev_close(sockfd, host, port, reason)
+    log('ev_close')
 end
+
 
 function send(player, msgname, params)
     local msg = pbc.msgnew(msgname)
@@ -24,34 +36,27 @@ function send(player, msgname, params)
     end
     local sockfd = player.sockfd
     if not sockfd then
-        sockfd = Socket.socket(Socket.AF_INET, Socket.SOCK_STREAM, 0)
         local conf = Config.pbtest
-        Socket.connect(sockfd, conf.host, conf.port)
+        sockfd = Port.syncconnect(portfd, conf.host, conf.port)
         if sockfd < 0 then
-            print('connect fail')
+            log('connect fail')
             os.exit(1)
         end
         player.sockfd = sockfd
-        Sendbuf.create(sockfd)
-        Recvbuf.create(sockfd, 10240)
     end
-    local sent = Pbproto.send(sockfd, msg)
-    Log.log(TAG, 'sockfd(%d) sent(%d)', sockfd, sent)
-    while sent > 0 do
-        Sys.sleepmsec(1)
-        sent = sent - Pbproto.flush(sockfd)
-    end
-    Log.log(TAG, 'send msg(%s) success', pbc.msgname(msg))
+    Pbproto.send(sockfd, msg)
+    log('send msg(%s) success', pbc.msgname(msg))
 end
 
 --接收消息
 function recv(player, msgname)
     while true do
+        Ae.run_once(loop)
         local _, msgname, msg = Pbproto.decode(player.sockfd)
         if  msg then
-            print(string.format('recv msg name(%s)', pbc.msgname(msg))) 
+            log(string.format('recv msg name(%s)', pbc.msgname(msg))) 
             if pbc.msgname(msg) == msgname then
-                print(pbc.debug_string(msg))
+                log(pbc.debug_string(msg))
                 return msg
             end
         end

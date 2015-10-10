@@ -1,7 +1,7 @@
 module('Log', package.seeall)
 
 function log(tag, format, ...)
-    print(string.format('[LOG][%12s]'..format, tag, ...))
+    print(string.format('[%d.%d][LOG][%12s]'..format, os.time(), Date.msectime(), tag, ...))
 end
 
 function error(tag, format, ...)
