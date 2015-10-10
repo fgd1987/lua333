@@ -9,4 +9,8 @@ function login(player)
 
     Pbtest.send(player, 'login.ENTER', {})
     local reply = Pbtest.recv(player, 'login.ENTER')
+
+
+    --Pbtest.send(player, 'login.ENTER', {})
+    --local reply = Pbtest.recv(player, 'login.ENTER')
 end

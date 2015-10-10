@@ -174,6 +174,7 @@ static void port_on_write(struct aeEventLoop *eventLoop, int sockfd, void *args,
         } else if (datalen > 0) 
         {
             int ir = send(sockfd, rptr, datalen, 0);
+            LOG_LOG("real_send(%d)\n", ir);
             if (ir > 0) 
             {
                 sendbuf_skip_read_ptr(sockfd, ir);

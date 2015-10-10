@@ -31,7 +31,7 @@ function ev_read(sockfd, reason)
                 logwarn('packet hack')
                 local msg = pbc.msgname('login.DISCONNECT')
                 msg.errno = 14
-                Pbproto.send(player.sockfd,  msg)
+                reply(player.sockfd,  msg)
                 disconnect(player.sockfd, 'packet hack')
                 return
             end

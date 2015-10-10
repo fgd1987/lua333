@@ -21,7 +21,7 @@ function dispatch(sockfd)
     --填充recvbuf
     local buf = Recvbuf.getwptr(sockfd)
     local bufremain = Recvbuf.bufremain(sockfd)
---    log('bufremain(%d)', bufremain)
+    log('bufremain(%d)', bufremain)
     local recv = Socket.recv(sockfd, buf, bufremain)
     log('recv(%d)', recv)
     if recv == 0 or (recv == -1 and Sys.errno() == Socket.EAGAIN) then
@@ -37,18 +37,18 @@ function dispatch(sockfd)
         --读buf
         local datalen = Recvbuf.datalen(sockfd)
         if datalen <= 4 then
-            return
+            break
         end
         local plen = Recvbuf.getint32(sockfd)
-        --log('plen(%d) datalen(%d)', plen, datalen)
+        log('plen(%d) datalen(%d)', plen, datalen)
         if datalen < plen then
-            return
+            break
         end
         local arfd = Ar.create(Recvbuf.getrptr(sockfd), datalen)
         local plen = Ar.readint32(arfd)
         local argcount = Ar.readint16(arfd)
         local args = {}
-        --log('argcount(%d)', argcount)
+        log('argcount(%d) plen(%d)', argcount, plen)
         for i = 1, argcount do
             local tag = Ar.readint8(arfd)
             if tag == INT_TYPE then
@@ -75,12 +75,13 @@ function dispatch(sockfd)
         --    log('tag(%d)', tag)
         end
         --log(Json.encode(args))
-        --print(sockfd, plen)
         --分发到不同的协议层
         local proto = args[1]
         if proto == POST_PROTO then
             Postproto.dispatch(sockfd, unpack(args))
         end
+        log('rskip(%d)', plen)
+        Ar.free(arfd)
         Recvbuf.rskip(sockfd, plen)
     end
     Recvbuf.buf2line(sockfd)
@@ -110,7 +111,7 @@ end
 function send(sockfd, ...)
     local args = {...}
     local plen = 4 + calc_len(args)
-    log('[SEND] plen(%d) argcount(%d)', plen, #args)
+    log('[SEND] plen(%d) argcount(%d) sockfd(%d)', plen, #args, sockfd)
     local buf = Sendbuf.alloc(sockfd, plen)
     local arfd = Ar.create(buf, plen)
     Ar.writeint32(arfd, plen)
@@ -143,3 +144,4 @@ function send(sockfd, ...)
     Ar.free(arfd)
     Port.add_write_event(sockfd)
 end
+

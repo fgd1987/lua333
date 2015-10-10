@@ -41,7 +41,7 @@ function decodebuf(sockfd)
         return
     end
     Recvbuf.wskip(sockfd, real_recv)
-    --log('real_recv(%d) bufremain(%d)', real_recv, bufremain)
+    log('real_recv(%d) bufremain(%d)', real_recv, bufremain)
     local datalen = Recvbuf.datalen(sockfd) 
     if datalen < 2 then
         --log('header not enough(%d)', datalen)
@@ -62,6 +62,7 @@ function decodebuf(sockfd)
     --log('plen(%d) seq(%d) msgname(%s) msglen(%d)', plen, seq, msgname, msglen)
     Ar.free(arfd)
     Recvbuf.rskip(sockfd, plen)
+    Recvbuf.buf2line(sockfd)
     return nil, msgbuf, msglen, msgname
 end
 
