@@ -4,14 +4,21 @@ portfd = nil
 
 global_manager = {}
 
-function main()
-    portfd = Port.create(Framesrv.loop)
+function _init()
+    portfd = Port.create(Ae.main_loop())
     listen()
 end
 
-function ev_close(sockfd, reason)
-    Postproto.unregist(sockfd)
-    log('ev_close sockfd(%d)', sockfd)
+function ev_close(sockfd, host, port, reason)
+    log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
+    local srvid = Postproto.unregist(sockfd)
+    for srvid, global in pairs(global_manager) do
+        if global.srvid == srvid then
+            global_manager[srvid] = nil
+            log('global disconnect srvname(%s)', global.srvname)
+            break
+        end
+    end
 end
 
 function ev_read(sockfd)
@@ -39,7 +46,7 @@ end
 
 --功能:globalsrv上线
 --@srv_name 服务名称
-function SRV_ONLINE(sockfd, srvid, srvname)
+function REGIST(srvid, srvname)
     if global_manager[srvid] ~= nil then
         logerr('%s is connected yet', srvname)
         return 
@@ -47,8 +54,8 @@ function SRV_ONLINE(sockfd, srvid, srvname)
     local srv = {
         srvid = srvid,
         srvname = srvname,
-        sockfd = sockfd,
         time = os.time()
     }
     global_manager[srvid] = srv 
+    log('a global regist srvname(%s)', srvname)
 end

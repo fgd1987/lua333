@@ -7,6 +7,7 @@
 #include "lport.h"
 #include "lsendbuf.h"
 #include "lrecvbuf.h"
+#include "ltimer.h"
 #include "ae.h"
 
 /*
@@ -19,6 +20,8 @@
 #define LOG_ERROR printf
 
 #define MAX_FILE_DATA 10240
+
+static aeEventLoop *main_loop;
 
 typedef struct FileData {
     lua_State *L;
@@ -107,10 +110,13 @@ static int time_proc(struct aeEventLoop *eventLoop, long long id, void *clientDa
     lua_State *L = timedata->L;
     lua_pushluafunction(L, timedata->time_proc);
     lua_pushnumber(L, id);
-    if (lua_pcall(L, 1, 0, 0) != 0){
+    if (lua_pcall(L, 1, 1, 0) != 0){
         LOG_ERROR("error running function %s: %s", timedata->time_proc, lua_tostring(L, -1));
-     }
-    return AE_NOMORE;
+        lua_pop(L, lua_gettop(L));
+        return AE_NOMORE;
+    }
+    int ir = (int)lua_tointeger(L, -1);
+    return ir;
 }
 
 static void finalizer_proc(struct aeEventLoop *eventLoop, void *clientData) {
@@ -302,6 +308,10 @@ static int lcreate_file_event(lua_State *L) {
     return 1;
 }
 
+static int lmain_loop(lua_State *L) {
+    lua_pushlightuserdata(L, main_loop);
+    return 1;
+}
 /*
  * 
  * @arg1 max sock size
@@ -311,6 +321,9 @@ static int lcreate(lua_State *L) {
     int setsize;
     setsize = (int)lua_tointeger(L, 1);
     aeEventLoop *event_loop = aeCreateEventLoop(setsize);
+    if (main_loop == NULL) {
+        main_loop = event_loop;
+    }
     lua_pushlightuserdata(L, event_loop);
     return 1;
 }
@@ -351,6 +364,7 @@ static luaL_Reg lua_lib[] ={
     {"delete_time_event", ldelete_time_event},
     {"create", lcreate},
     {"free", lfree},
+    {"main_loop", lmain_loop},
     {NULL, NULL}
 };
 
@@ -358,6 +372,8 @@ int luaopen_ae(lua_State *L){
     luaopen_port(L);
     luaopen_sendbuf(L);
     luaopen_recvbuf(L);
+    luaopen_timer(L);
+
 	luaL_register(L, "Ae", lua_lib);
 
     lua_pushstring(L, "NONE");

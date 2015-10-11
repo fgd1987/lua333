@@ -3,45 +3,36 @@ module('Pbproto', package.seeall)
 --[[
 2byte(packet len) + 2byte(seq) + 2byte(msgname len) + xbyte(msgname) + xbyte(msgbody)
 --]]
+
 --拆包
-function dispatch(sockfd)
-    local msgname, msg = decode(sockfd)
-    if not msg then
-        Recvbuf.buf2line(sockfd)
-        return
+function dispatch(sockfd, callback)
+    while true do
+        local err, msgbuf, msglen, msgname = _decodebuf(sockfd)
+        if err then
+            return err
+        end
+        if not msgbuf then
+            break
+        end
+        callback(sockfd, msgbuf, msglen, msgname)
     end
-    --log('%s %s', msgname, pbc.debug_string(msg))
-    local pats = string.split(msgname, '.')
-    local modname = pats[1]
-    local funcname = pats[2]
-    local mod = _G[string.cap(modname)]
-    if not mod then
-        logerr('mod(%s) not found', modname)
-        return
-    end
-    local func = mod['MSG_'..funcname]
-    if not func then
-        logerr('func(%s) not found', funcname)
-        return
-    end
-    func()
+    Recvbuf.buf2line(sockfd)
 end
 
 --@return error, msgbuf, msglen, msgname
-function decodebuf(sockfd)
+function _decodebuf(sockfd)
     local buf = Recvbuf.getrptr(sockfd)
     local bufremain = Recvbuf.bufremain(sockfd)
-    local real_recv = Socket.recv(sockfd, buf, bufremain)
+    local real_recv, err = Port.recv(sockfd, buf, bufremain)
     --log('real_recv(%d)', real_recv)
-    if real_recv == 0 or (real_recv == -1 and Sys.errno() == Socket.EAGAIN) then
-     --   log('errno(%d) Sys.EAGIN(%d)', Sys.errno(), Socket.EAGAIN)
-        return true -- return error
+    if real_recv == -1 then
+        return err
     end
-    if real_recv <= 0 then
+    if real_recv == 0 then
         return
     end
     Recvbuf.wskip(sockfd, real_recv)
-    log('real_recv(%d) bufremain(%d)', real_recv, bufremain)
+    --log('real_recv(%d) bufremain(%d)', real_recv, bufremain)
     local datalen = Recvbuf.datalen(sockfd) 
     if datalen < 2 then
         --log('header not enough(%d)', datalen)
@@ -62,36 +53,23 @@ function decodebuf(sockfd)
     --log('plen(%d) seq(%d) msgname(%s) msglen(%d)', plen, seq, msgname, msglen)
     Ar.free(arfd)
     Recvbuf.rskip(sockfd, plen)
-    Recvbuf.buf2line(sockfd)
     return nil, msgbuf, msglen, msgname
 end
 
 function decode(sockfd)
-    local error, msgbuf, msglen, msgname = decodebuf(sockfd)
-    if error then
-        return error
+    local err, msgbuf, msglen, msgname = _decodebuf(sockfd)
+    if err then
+        return err
     end
+    if not msgbuf then
+        return
+    end
+    --print(err, msgbuf, msglen, msgname)
     local msg = pbc.msgnew(msgname)
     pbc.parse_from_buf(msg, msgbuf, msglen)
     log('[PB][RECV] msgname(%s)', msgname)
     return nil, msgname, msg
 end
-
-function flush(sockfd)
-    local rptr = Sendbuf.get_read_ptr(sockfd)
-    local datalen = Sendbuf.datalen(sockfd)
-    if datalen < 0 then
-        return 0
-    end
-    local sent = Socket.send(sockfd, rptr, datalen)
-    --log('sockfd(%d) datalen(%d) sent(%d)', sockfd, datalen, sent)
-    if sent < 0 then
-        return 0
-    end
-    Sendbuf.skip_read_ptr(sockfd, sent)
-    return sent
-end
-
 
 function send(sockfd, msg)
     local seq = 0

@@ -5,19 +5,24 @@ portfd = nil
 socket_manager = socket_manager or {}
 tmp_socket_manager = tmp_socket_manager or {}
 
-function main()
-    portfd = Port.create(Framesrv.loop)
+function _init()
+    portfd = Port.create(Ae.main_loop())
     Pbc.import_dir(_CONF.protodir)
     listen()
 end
 
-function ev_read(sockfd, reason)
+function ev_read(sockfd)
     log('ev_read sockfd(%d)', sockfd)
-    local err, msgname, msg = Pbproto.decode(sockfd)
+    local err = Pbproto.dispatch(sockfd, dispatch)
     if err then
         Port.close(portfd, sockfd)
-        return
     end
+end
+
+function dispatch(sockfd, msgbuf, msglen, msgname)
+    log('dispatch msgname(%s)', msgname)
+    local msg = pbc.msgnew(msgname)
+    pbc.parse_from_buf(msg, msgbuf, msglen)
     local pats = string.split(msgname, '.')
     local mod_name = pats[1]
     local func_name = pats[2]
@@ -51,7 +56,7 @@ function ev_read(sockfd, reason)
     local route = _CONF.route[mod_name]
     route = route or _CONF.route[msgname]
     --2.分发消息到gamesrv
-    if player and player.srvname and not route then
+    if player and player.srvid and not route then
         Gameclient.forward(player.srvname, player.uid, msg)
         return
     end
@@ -62,9 +67,8 @@ function ev_read(sockfd, reason)
             logerr('not auth')
             return
         end
-        local sockfd = _G[route.target]
         local uid = player and player.uid or 0
-        POST(sockfd, 'Gatesrv.FORWARD', uid, msg)
+        POST(route.srvid, 'Gatesrv.FORWARD', uid, msg)
         return
     end
 end
@@ -122,7 +126,6 @@ function timer_check()
     end
     return 1
 end
-
 
 function reply(sockfd, msg)
     Pbproto.send(sockfd, msg)

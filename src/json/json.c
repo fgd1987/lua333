@@ -92,7 +92,7 @@ static cJSON* json_encode_tree(lua_State *L){
         }
         return json;
     }
-    LOG_ERROR("unspport type");
+    LOG_ERROR("unspport type\n");
     return NULL;
 }
 

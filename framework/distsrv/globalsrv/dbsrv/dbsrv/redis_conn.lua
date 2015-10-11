@@ -7,7 +7,7 @@ function check_redis_connections()
     for index, info in pairs(redis_table) do
         local conf = _CONF.redis_conf[index]
         if not conf or conf.host ~= info.host or conf.port ~= info.port or conf.dbname ~= info.dbname then
-            Log.log(TAG, 'close redis connection index(%d) host(%s) port(%d) dbname(%s)', index, conf.host, conf.port, conf.dbname)
+            log('close redis connection index(%d) host(%s) port(%d) dbname(%s)', index, conf.host, conf.port, conf.dbname)
             Redis.close(info.redis)
             redis_table[index] = nil
         end
@@ -40,7 +40,7 @@ function ping_redis(conn)
             if info.conn == conn then
                 Redis.close(info.conn)
                 redis_table[index] = nil
-                Log.log(TAG, 'ping fail, close redis connection index(%d) host(%s) port(%d) dbname(%s)', index, conf.host, conf.port, conf.dbname)
+                log('ping fail, close redis connection index(%d) host(%s) port(%d) dbname(%s)', index, conf.host, conf.port, conf.dbname)
                 break
             end
         end

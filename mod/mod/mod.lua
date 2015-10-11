@@ -18,14 +18,14 @@ function load(mod_path)
     local real_path = mod_path
     for _, root_path in pairs(search_path) do
         real_path = string.format('%s/%s', root_path, mod_path)
-        if Sys.exists(real_path) then
+        if File.exists(real_path) then
             break
         end
     end
     local pats = string.split(mod_path, '/')
     local mod_name = pats[#pats]
     print(string.format('mod_path(%s) mod_name(%s)', mod_path, mod_name))
-    local files = Sys.listdir(real_path)
+    local files = File.listdir(real_path)
     for _, file in pairs(files) do
         if file.type == 'file' then
             local file_path = string.format('%s/%s', mod_path, file.name)
@@ -45,8 +45,10 @@ function load(mod_path)
         os.exit(1)
     end
     mod_table[#mod_table + 1] = mod
-    mod.log = function(...) Log.log(mod_name, ...) end
-    mod.logerr = function(...) Log.error(mod_name, ...) end
+    mod.log = function(...) Log.log_(mod_name, ...) end
+    mod.logerr = function(...) Log.error_(mod_name, ...) end
+    mod.logmsg = function(...) Log.msg_(mod_name, ...) end
+    mod.logwarn = function(...) Log.warn_(mod_name, ...) end
     return mod
 end
 

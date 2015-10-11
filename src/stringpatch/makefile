@@ -4,8 +4,8 @@ LIB_DIRS=-L../../lib/
 CFLAGS=-fPIC -shared -O2 -Wall 
 SO=stringpatch.so
 
-${SO}:lstringpatch.c
-	gcc -o ${SO} ${CFLAGS} lstringpatch.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua
+${SO}:lstringpatch.c md5.c
+	gcc -o ${SO} ${CFLAGS} md5.c lstringpatch.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua
 
 clean:
 	rm -rf ${SO}

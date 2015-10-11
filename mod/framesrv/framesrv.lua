@@ -1,5 +1,5 @@
 module('Framesrv', package.seeall)
-
+--帧服务器
 --[[
 
 update
@@ -24,7 +24,7 @@ msectime = 0
 
 loop = loop or nil
 
-function main()
+function _init()
     loop = Ae.create(10240)
 end
 
@@ -33,6 +33,11 @@ function stop()
     running = false
 end
 
+function main()
+    Ae.main(loop)
+end
+
+--[[
 function mainloop()
     --记录误差
     local diff = 0
@@ -77,3 +82,4 @@ function mainloop()
         end
     end
 end
+--]]

@@ -2,14 +2,12 @@ module('Login', package.seeall)
 
 player_manager = player_manager or {}
 
-function main()
-
+function _init()
 end
 
 function REPLY(srvid, uid, msg)
     local player = player_manager[uid]
     if not player then
-        print(uid)
         logerr('player not found uid(%d)', uid)
         return
     end
@@ -118,4 +116,9 @@ function check_login_token(uid, params)
         return false
     end
     return true
+end
+
+function MSG_PING(player, msg)
+    log('hello')
+    Clientsrv.reply(player.sockfd, msg)
 end

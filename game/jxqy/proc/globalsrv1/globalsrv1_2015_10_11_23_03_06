@@ -1,0 +1,29 @@
+[2015-10-11 23:00:48.832218][LOG][    asyncsrv]running pid(7996)
+[2015-10-11 23:00:50.108885][LOG]lsrvmain.c:33
+[2015-10-11 23:00:50.108929][LOG]sig_int
+[2015-10-11 23:00:50.108983][LOG][    asyncsrv]atint
+[2015-10-11 23:00:50.109020][LOG][    asyncsrv]game over!
+[2015-10-11 23:00:50.109300][LOG]lsrvmain.c:22
+[2015-10-11 23:00:50.109328][LOG]_atexit
+[2015-10-11 23:00:50.109354][LOG][    asyncsrv]atexit
+[2015-10-11 23:00:50.109665][LOG][    asyncsrv]exit pid(7996)
+[2015-10-11 23:01:06.003422][LOG][    asyncsrv]running pid(8004)
+[2015-10-11 23:01:06.403513][LOG]lsrvmain.c:33
+[2015-10-11 23:01:06.403550][LOG]sig_int
+[2015-10-11 23:01:06.403601][LOG][    asyncsrv]atint
+[2015-10-11 23:01:06.403626][LOG][    asyncsrv]game over!
+[2015-10-11 23:01:06.403777][LOG]lsrvmain.c:22
+[2015-10-11 23:01:06.403787][LOG]_atexit
+[2015-10-11 23:01:06.403797][LOG][    asyncsrv]atexit
+[2015-10-11 23:01:06.404006][LOG][    asyncsrv]exit pid(8004)
+[2015-10-11 23:03:06.514523][LOG][    asyncsrv]hell
+[2015-10-11 23:03:06.514562][LOG][    asyncsrv]hell
+[2015-10-11 23:03:06.514575][LOG][    asyncsrv]hell
+[2015-10-11 23:03:06.514585][LOG][    asyncsrv]hell
+[2015-10-11 23:03:06.514597][LOG][    asyncsrv]hell
+[2015-10-11 23:03:06.514608][LOG][    asyncsrv]hell
+[2015-10-11 23:03:06.514619][LOG][    asyncsrv]hell
+[2015-10-11 23:03:06.514628][LOG][    asyncsrv]hell
+[2015-10-11 23:03:06.514653][LOG][    asyncsrv]hell
+[2015-10-11 23:03:06.514683][LOG][    asyncsrv]hell
+[2015-10-11 23:03:06.514693][LOG][    asyncsrv]hell

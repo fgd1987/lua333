@@ -50,8 +50,7 @@ for _, mod_conf in pairs(srvconf.mod) do
     print('')
     mod._CONF = mod_conf
 end
-Mod.call('test')
+
+Mod.call('_init')
 Mod.call('main')
-
-Framesrv.mainloop()
-
+--Asyncsrv.mainloop()

@@ -16,7 +16,31 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#ifndef __APPLE__ 
+#include <openssl/md5.h>
+#else
+#include "md5.h"
+#endif
 
+static int lmd5(lua_State *L){
+    if(lua_gettop(L) == 1 && lua_isstring(L, 1)){
+        size_t str_len;
+        const unsigned char* str = (const unsigned char*)lua_tolstring(L, 1, &str_len);
+        unsigned char md[16];
+        char tmp[3]={'\0'},buf[33]={'\0'};
+        MD5(str, str_len, md);
+        for(int i = 0; i < 16; i++){
+            sprintf(tmp,"%2.2x",md[i]);
+            strcat(buf,tmp);
+        }
+        lua_pushstring(L, buf);
+
+        return 1;
+    }else{
+        lua_pushstring(L, "");
+        return 1;
+    }
+}
 
 static int lcap(lua_State *L){
     if (lua_isstring(L, 1)) {
@@ -67,6 +91,7 @@ static int lsplit(lua_State *L){
 static luaL_Reg lua_lib[] ={
     {"split", lsplit},
     {"cap", lcap},
+    {"md5", lmd5},
     {NULL, NULL}
 };
 
