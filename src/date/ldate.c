@@ -51,7 +51,79 @@ static int lstrftime(lua_State *L){
     return 0;
 }
 
+static int lissameday(lua_State *L){
+	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
+		time_t t1 = (time_t)lua_tonumber(L, 1);
+		time_t t2 = time(NULL);
+        struct tm tm1;
+        localtime_r(&t1, &tm1);
+        struct tm tm2;
+        localtime_r(&t2, &tm2);
+        if(tm1.tm_year == tm2.tm_year &&
+           tm1.tm_mon == tm2.tm_mon && 
+           tm1.tm_mday == tm2.tm_mday){
+            lua_pushboolean(L, 1);
+            return 1;
+        }
+        lua_pushboolean(L, 0);
+        return 1;
+	}
+    return 0;
+}
+
+static int lissamemonth(lua_State *L){
+	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
+		time_t t1 = (time_t)lua_tonumber(L, 1);
+		time_t t2 = time(NULL);
+        struct tm tm1;
+        localtime_r(&t1, &tm1);
+        struct tm tm2;
+        localtime_r(&t2, &tm2);
+        if(tm1.tm_year == tm2.tm_year &&
+           tm1.tm_mon == tm2.tm_mon){
+            lua_pushboolean(L, 1);
+            return 1;
+        }
+        lua_pushboolean(L, 0);
+        return 1;
+	}
+    return 0;
+}
+
+static int lissameweek(lua_State *L){
+	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
+		time_t t1 = (time_t)lua_tonumber(L, 1);
+		time_t t2 = time(NULL);
+        struct tm tm1;
+        localtime_r(&t1, &tm1);
+        struct tm tm2;
+        localtime_r(&t2, &tm2);
+        if(tm1.tm_year != tm2.tm_year){
+            lua_pushboolean(L, 0);
+            return 1;
+        }
+        if(tm1.tm_yday == tm2.tm_yday){
+            lua_pushboolean(L, 1);
+            return 1;
+        }
+        if(tm1.tm_yday > tm2.tm_yday && tm1.tm_yday - tm2.tm_yday <= tm1.tm_wday){
+            lua_pushboolean(L, 1);
+            return 1;
+        }
+        if(tm1.tm_yday < tm2.tm_yday && tm2.tm_yday - tm1.tm_yday <= 6 - tm1.tm_wday){
+            lua_pushboolean(L, 1);
+            return 1;
+        }
+        lua_pushboolean(L, 0);
+        return 1;
+	}
+    return 0;
+}
+
 static luaL_Reg lua_lib[] ={
+    {"issameweek", lissameweek},
+    {"issamemonth", lissamemonth},
+    {"issameday", lissameday},
     {"gettimeofday", lgettimeofday},
     {"time", ltime},
     {"msectime", lmsectime},

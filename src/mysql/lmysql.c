@@ -1,6 +1,5 @@
 #include "lmysql.h"
 
-#define LOG_ERROR printf
 
 static int lconnect(lua_State *L){
     if(lua_gettop(L) == 4 && lua_isstring(L, 1) && lua_isstring(L, 2) && lua_isstring(L, 3) && lua_isstring(L, 4)){

@@ -12,7 +12,7 @@ global:
 	../../bin/startsrv globalsrv1
 
 test:
-	../../bin/pbtest login.login
+	../../bin/pbtest login.ping
 
-initdb:
-	../../bin/initdb
+dbinit:
+	../../bin/dbinit

@@ -5,8 +5,8 @@ socket_table = socket_table or {
     --[sockfd] = {srvid = 0, srvname =''. host = '', port = 33}
 }
 
-function main()
-    portfd = Port.create(Framesrv.loop)
+function _init()
+    portfd = Port.create(Ae.main_loop())
     Port.rename(portfd, 'Gameclient')
     Port.on_close(portfd, 'Gameclient.ev_close')
     Port.on_connect_err(portfd, 'Gameclient.ev_connect_err')
@@ -50,10 +50,7 @@ end
 function ev_close(sockfd, host, port, reason)
     log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
     Postproto.unregist(sockfd)
-    local game = socket_table[sockfd]
-    if game then
-        socket_table[sockfd] = nil
-    end
+    socket_table[sockfd] = nil
     check_connections ();
 end
 
@@ -70,7 +67,7 @@ function check_connections()
         end
         if not find then
             log('config changed!!')
-            Socket.close(socket_table[index].sockfd, 'config changed')
+            Socket.close(sockfd, 'config changed')
         end
     end
     for index, conf in pairs(gamesrv_list) do

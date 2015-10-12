@@ -2,11 +2,13 @@ module('Gatesrv', package.seeall)
 
 portfd = port or nil
 
-gate_manager = {}
+gate_manager = gate_manager or {
+    --[srvid] = {srvid = srvid, srvname = srvname}
+}
 
-function main()
+function _init()
     Pbc.import_dir(_CONF.protodir)
-    portfd = Port.create(Framesrv.loop)
+    portfd = Port.create(Ae.main_loop())
     listen()
 end
 
@@ -24,10 +26,10 @@ end
 
 function ev_close(sockfd, reason)
     log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
-    Postproto.unregist(sockfd)
-    for k, gate in pairs(gate_manager) do
-        if gate.sockfd == sockfd then
-            gate_manager[k] = nil
+    local srvid = Postproto.unregist(sockfd)
+    for _srvid, gate in pairs(gate_manager) do
+        if _srvid == srvid then
+            gate_manager[srvid] = nil
             log('gate disconnect srvname(%s)', gate.srvname)
             break
         end
@@ -59,7 +61,6 @@ function REGIST(srvid, srvname)
     local srv = {
         srvname = srvname,
         srvid = srvid,
-        sockfd = Postproto.srvid2sockfd[srvid],
         time = os.time()
     }
     gate_manager[srvid] = srv 

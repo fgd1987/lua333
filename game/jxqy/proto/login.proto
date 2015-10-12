@@ -25,3 +25,7 @@ message DISCONNECT{
     optional int32 remain_time = 4[default = 0];
 }
 
+//心跳包
+message PING {
+    optional int32 st = 1[default = 0];
+}

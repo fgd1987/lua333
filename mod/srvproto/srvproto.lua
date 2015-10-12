@@ -3,8 +3,6 @@ module('Srvproto', package.seeall)
 先在LUA实现吧，性能不好就换成C
 --]]
 
-ERR = 1
-
 NIL_TYPE = 1
 INT_TYPE = 2
 STR_TYPE = 3
@@ -22,13 +20,12 @@ function dispatch(sockfd)
     local buf = Recvbuf.getwptr(sockfd)
     local bufremain = Recvbuf.bufremain(sockfd)
     log('bufremain(%d)', bufremain)
-    local recv = Socket.recv(sockfd, buf, bufremain)
+    local recv, err = Port.recv(sockfd, buf, bufremain)
     log('recv(%d)', recv)
-    if recv == 0 or (recv == -1 and Sys.errno() == Socket.EAGAIN) then
-        log('errno(%d) Sys.EAGIN(%d)', Sys.errno(), Socket.EAGAIN)
-        return ERR
+    if recv == -1 then
+        return err
     end
-    if recv <= 0 then
+    if recv == 0 then
         return
     end
     Recvbuf.wskip(sockfd, recv)

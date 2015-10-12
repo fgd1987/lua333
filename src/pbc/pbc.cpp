@@ -1,10 +1,6 @@
 #include "pbc.h"
 #include <iostream>
 
-#define LOG_LOG printf
-#define LOG_ERROR printf
-#define LOG_STAT printf
-
 class MyMultiFileErrorCollector : public google::protobuf::compiler::MultiFileErrorCollector{
         virtual void AddError(
                 const std::string & filename,
@@ -599,8 +595,13 @@ static int lmsg_get(lua_State* L){
     }
     const google::protobuf::FieldDescriptor *field = descriptor->FindFieldByName(field_name);
     if(field == NULL){
-        LOG_ERROR("unknow field %s", field_name);
-        return 0;
+        if(strcmp(field_name, "tostring") == 0){
+            lua_pushcfunction(L, lmsg_tostring);
+            return 1;
+        } else {
+            LOG_ERROR("unknow field %s", field_name);
+            return 0;
+        }
     }
     if(field->is_repeated()){
         RepeatedField *repeated_field = (RepeatedField *)lua_newuserdata(L, sizeof(RepeatedField));

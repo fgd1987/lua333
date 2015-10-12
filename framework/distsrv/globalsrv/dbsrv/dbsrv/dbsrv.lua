@@ -2,7 +2,7 @@ module('Dbsrv', package.seeall)
 
 descriptors = {}
 
-function main()
+function _init()
     Pbc.import_dir(_CONF.dbproto_dir)
     --构建descriptor
     for table_name, table_conf in pairs(_CONF.table_conf) do

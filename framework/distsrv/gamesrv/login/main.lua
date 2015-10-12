@@ -5,7 +5,7 @@ tmp_player_manager = tmp_player_manager or {}
 player_manager = player_manager or {}
 onlinenum = onlinenum or 0
 
-function main()
+function _init()
     Pbc.import_dir(_CONF.dbproto_dir)
 --    Evdisp.add_timer(global_timer, Config.game_srv.save_interval * 1000, "Login.timer_check")
 end
@@ -14,7 +14,6 @@ end
 function PLAYER_ENTER(srvid, uid)
     tmp_player_manager[uid] = srvid
     log('player enter uid(%d)', uid)
-    log(CentersrvSockfd)
     POST(CentersrvSockfd, 'Login.PLAYER_ENTER', uid)
 end
 
@@ -38,18 +37,14 @@ function PLAYER_PASS(srvid, uid)
         return
     end
     --开始加载数据
-    --POST(DbsrvSockfd, 'Dbsrv.GET', uid, unpack(Config.gamesrv.login.users_tables))
-    POST(DbsrvSockfd, 'Dbsrv.GET', uid, 'Login.msg_db_srv_get_playerdata', 'user')
+    POST(DbsrvSockfd, 'Dbsrv.GET', uid, 'Login.msg_db_srv_get_playerdata', unpack(_CONF.playerdata))
 end
 
 --功能:被顶号
 function PLAYER_INSTEAD(srvid, uid)
     log('player exit uid(%d)', uid)
     --解锁
-    local tmp_player = tmp_player_manager[uid]
-    if tmp_player_manager then
-        tmp_player_manager[uid] = nil
-    end
+    tmp_player_manager[uid] = nil
     local player = player_manager[uid]
     if not player then
         logerr('player out found uid(%d)', uid)
@@ -135,7 +130,7 @@ end
 --@uid 
 --@user_tables {table_name = msg}
 --@argback string
-function msg_db_srv_get_playerdata(srvid, uid, result, ...) 
+function msg_db_srv_get_playerdata(_, uid, result, ...) 
     --如果没有锁住
     local srvid = tmp_player_manager[uid]
     if not srvid then
@@ -165,6 +160,7 @@ function msg_db_srv_get_playerdata(srvid, uid, result, ...)
         srvid = srvid, 
         uid = uid,
         playerdata = playerdata,
+        last_save_time = os.time(),
     }
     player_manager[uid] = player
     tmp_player_manager[uid] = nil
@@ -178,33 +174,23 @@ end
 
 
 --功能:定时保存玩家数据
---[[
 function timer_check()
-    local player_manager = .player_manager
     local timenow = os.time()
     for uid, player in pairs(player_manager) do
         local playerdata = player.playerdata
-        if timenow - player.last_save_time > Config.game_srv.save_interval then
-            local table_names = {}
-            local tables = {}
+        if timenow - player.last_save_time > _CONF.save_interval then
+            local args = {}
             for table_name, msg in pairs(playerdata) do
-                if msg:is_dirty() then
-                    tables[table_name] = msg
-                    msg:set_dirty(0)
+                if pbc.isdirty(msg) then
+                    log('uid(%d).%s is dirty', uid, table_name)
+                    table.insert(args, table_name)
+                    table.insert(args, msg)
                 else
-                    logger:log(uid, string.format('table_name(%s) is clean'))
+                    log('uid(%d).%s is clean', table_name)
                 end
             end
-            --保存失败
-            if not DbSrv.set(uid, 'Login.msg_db_srv_set_playerdata', tables) then
-                for _, table_name in pairs(table_names) do
-                    playerdata[table_name]:set_dirty(1)
-                end
-            else
-                player.last_save_time = timenow
-            end
+            POST(DbsrvSockfd, 'Dbsrv.SET', uid, 'Login.msg_db_srv_set_playerdata', unpack(args)) 
+            player.last_save_time = timenow
         end
     end
-    return Config.game_srv.save_interval * 1000
 end
---]]

@@ -3,8 +3,8 @@ module('Globalclient', package.seeall)
 portfd = nil
 socket_table = socket_table or {}
 
-function main()
-    portfd = Port.create(Framesrv.loop)
+function _init()
+    portfd = Port.create(Ae.main_loop())
     Port.rename(portfd, "Globalclient")
     Port.on_close(portfd, 'Globalclient.ev_close')
     Port.on_connect_err(portfd, 'Globalclient.ev_connect_err')
@@ -61,13 +61,12 @@ function test_db_get(srvid, uid, result, msg)
 end
 
 function ev_close(sockfd, host, port, reason)
-    Postproto.unregist(sockfd)
+    local srvid = Postproto.unregist(sockfd)
     log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
-    local globalsrv_list = _CONF.globalsrv_list
-    for index, conf in pairs(globalsrv_list) do
-        if conf.host == host and port == conf.port then
-            _G[conf.alias] = nil
-            log('del sockfd(%d) to alias(%s)', sockfd, conf.alias)
+    for sockname, _srvid in pairs(_CONF.namesrv) do
+        if _srvid == srvid then
+            _G[sockname] = nil
+            log('del srvid(%d) to alias(%s)', srvid, sockname)
             break
         end
     end
@@ -88,7 +87,7 @@ function check_connections()
         end
         if not find then
             log('config changed!!')
-            Port.close(portfd, socket_table[index].sockfd, 'config changed')
+            Port.close(portfd, sockfd, 'config changed')
         end
     end
     for index, conf in pairs(globalsrv_list) do

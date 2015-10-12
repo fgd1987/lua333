@@ -2,13 +2,12 @@ module('Dbsrv', package.seeall)
 
 mysql_table = mysql_table or {}
 
-
 function check_mysql_connections()
     --关闭
     for index, info in pairs(mysql_table) do
         local conf = _CONF.mysqls_conf[index]
         if not conf or conf.host ~= info.host or conf.dbname ~= info.dbname or conf.user ~= info.user then
-            Log.log(TAG, 'close mysql connection index(%d) host(%s) dbname(%s)', index, conf.host, conf.dbname)
+            log('close mysql connection index(%d) host(%s) dbname(%s)', index, conf.host, conf.dbname)
             Mysql.close(info.conn)
             mysql_table[index] = nil
         end
@@ -39,7 +38,7 @@ function ping_mysql(conn)
             if info.conn == conn then
                 Mysql.close(info.conn)
                 msyql_table[index] = nil
-                Log.log(TAG, 'ping fail, close mysql connection index(%d) host(%s) dbname(%s)', index, conf.host, conf.dbname)
+                log('ping fail, close mysql connection index(%d) host(%s) dbname(%s)', index, conf.host, conf.dbname)
                 break
             end
         end

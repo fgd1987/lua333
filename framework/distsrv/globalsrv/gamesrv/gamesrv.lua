@@ -6,9 +6,17 @@ game_manager = game_manager or {
     --[srvid] = {}
 }
 
-function main()
-    portfd = Port.create(Framesrv.loop)
+function hello(timerid)
+    log('hello')
+    log(timerid)
+    return 1
+end
+
+function _init()
+    portfd = Port.create(Ae.main_loop())
     listen()
+    --local timerid = Timer.addtimer(Ae.main_loop(), 1000, 'Gamesrv.hello')
+    --print(timerid)
 end
 
 function ev_read(sockfd, reason)
@@ -21,9 +29,9 @@ end
 
 function ev_close(sockfd, host, port, reason)
     log('ev_close sockfd(%d) reason(%s)', sockfd, reason)
-    Postproto.unregist(sockfd)
+    local srvid = Postproto.unregist(sockfd)
     for srvid, game in pairs(game_manager) do
-        if game.sockfd == sockfd then
+        if game.srvid == srvid then
             game_manager[srvid] = nil
             log('game disconnect srvname(%s)', game.srvname)
             break
@@ -56,7 +64,6 @@ function REGIST(srvid, srvname)
     local srv = {
         srvid = srvid,
         srvname = srvname,
-        sockfd = Postproto.srvid2sockfd[srvid],
         time = os.time()
     }
     game_manager[srvid] = srv 

@@ -1,5 +1,0 @@
-
-
-require('recvbuf')
-RecvBuf.test()
-

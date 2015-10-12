@@ -7,6 +7,7 @@
 #include <string.h>
 #include "lsendbuf.h"
 #include "lrecvbuf.h"
+#include "log.h"
 
 #define MAX_SOCK 10240
 Sock s_socks[MAX_SOCK];
@@ -15,8 +16,8 @@ Sock s_socks[MAX_SOCK];
 #define ERR 1
 #define OK 0
 
-#define LOG_ERROR printf
-#define LOG_LOG printf
+//#define LOG_ERROR printf
+//#define LOG_LOG printf
 
 static void lua_printstack(lua_State *L) {
     lua_getglobal(L, "debug");  
@@ -709,6 +710,48 @@ int ladd_write_event(lua_State *L){
     return 1;
 }
 
+static int lsend(lua_State *L){
+    int error;
+    int sockfd;
+    char *buf;
+    size_t len;
+    sockfd = (int)lua_tointeger(L, 1);
+    buf = (char *)lua_touserdata(L, 2);
+    len = (int)lua_tointeger(L, 3);
+    error = send(sockfd, buf, len, 0);
+    lua_pushinteger(L, error);
+    return 1;
+}
+
+//特殊处理一下这个recv的返回值，跟系统调用不同
+static int lrecv(lua_State *L){
+    int result;
+    int sockfd;
+    char *buf;
+    int buflen;
+    sockfd = (int)lua_tointeger(L, 1);
+    buf = (char *)lua_touserdata(L, 2);
+    buflen = (int)lua_tointeger(L, 3);
+    result = recv(sockfd, buf, buflen, 0);
+    if (result == 0) {
+        lua_pushinteger(L, -1);
+        lua_pushstring(L, strerror(errno));
+        return 2;
+    }
+    if (result == -1 && errno == EAGAIN) {
+        lua_pushinteger(L, 0);
+        return 1;
+    }
+    if (result == -1) {
+        lua_pushinteger(L, -1);
+        lua_pushstring(L, strerror(errno));
+        return 2;
+    }
+    lua_pushinteger(L, result);
+    return 1;
+}
+
+
 static luaL_Reg lua_lib[] = 
 {
     {"create", lcreate},
@@ -729,6 +772,8 @@ static luaL_Reg lua_lib[] =
     {"setuid", lsetuid},
     {"remove_write_event", lremove_write_event},
     {"add_write_event", ladd_write_event},
+    {"recv", lrecv},
+    {"send", lsend},
     {NULL, NULL},
 };
 

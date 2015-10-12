@@ -65,4 +65,5 @@ function unregist(sockfd)
     if srvid then
         srvid2sockfd[srvid] = nil
     end
+    return srvid
 end
