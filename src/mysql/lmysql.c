@@ -195,7 +195,9 @@ static luaL_Reg lua_lib[] = {
     {NULL, NULL}
 };
 
+extern "C"{ 
 int luaopen_mysql(lua_State *L){
 	luaL_register(L, "Mysql", (luaL_Reg*)lua_lib);
     return 1;
+}
 }

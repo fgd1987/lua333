@@ -1,7 +1,9 @@
 #include "log.h"
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+}
 
 static int lopenlevel(lua_State *L){
 	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
@@ -104,6 +106,7 @@ static luaL_Reg lua_lib[] ={
     {NULL, NULL}
 };
 
+extern "C" {
 int luaopen_log(lua_State *L){
 	luaL_register(L, "Log", (luaL_Reg*)lua_lib);
     lua_pushstring(L, "LOG");
@@ -125,4 +128,5 @@ int luaopen_log(lua_State *L){
     lua_pushinteger(L, STAT);
     lua_settable(L, -3);
     return 1;
+}
 }

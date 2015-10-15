@@ -7,9 +7,11 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <ifaddrs.h>
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+}
 
 static int lbitand(lua_State *L){
     int n1 = (int)lua_tointeger(L, 1);
@@ -40,8 +42,9 @@ static luaL_Reg lua_lib[] ={
     {NULL, NULL}
 };
 
+extern "C" {
 int luaopen_bitpatch(lua_State *L){
 	luaL_register(L, "bit", lua_lib);
 	return 1;
 }
-
+}

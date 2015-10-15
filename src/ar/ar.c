@@ -63,7 +63,7 @@ static int lgetptr(lua_State *L){
     return 1;
 }
 
-static int ar_write(int fd, void *vbuf, int buf_len){
+static int ar_write(int fd, void *vbuf, size_t buf_len){
     ar_t *self = fd2ar(fd);
     if (self->buf_len - self->rptr < buf_len) {
         return 0;
@@ -188,7 +188,7 @@ static int lwriteint64(lua_State *L){
 	}
     return 0;
 }
-static int ar_read(int fd, void *vbuf, int buf_len){
+static int ar_read(int fd, void *vbuf, size_t buf_len){
     ar_t *self = fd2ar(fd);
     if (self->buf_len - self->rptr < buf_len) {
         return 0;
@@ -202,7 +202,7 @@ static int ar_read(int fd, void *vbuf, int buf_len){
 static int lreadstr(lua_State *L){
     if (lua_gettop(L) == 2 && lua_isnumber(L, 1) && lua_isnumber(L, 2)){
         int fd = (int)lua_tointeger(L, 1);
-        int str_len = (int)lua_tointeger(L, 2);
+        size_t str_len = (size_t)lua_tointeger(L, 2);
         ar_t *self = fd2ar(fd);
         if (self->buf_len - self->rptr < str_len) {
             return 0;
@@ -305,7 +305,9 @@ static luaL_Reg lua_lib[] = {
     {0, 0}
 };
 
+extern "C" {
 int luaopen_ar(lua_State *L){
 	luaL_register(L, "Ar", lua_lib);
     return 1;
+}
 }

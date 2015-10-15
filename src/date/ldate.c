@@ -8,9 +8,11 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <ifaddrs.h>
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+}
 
 static int lmsectime(lua_State *L){
     struct timeval tv; 
@@ -131,8 +133,9 @@ static luaL_Reg lua_lib[] ={
     {NULL, NULL}
 };
 
+extern "C" {
 int luaopen_date(lua_State *L){
 	luaL_register(L, "Date", lua_lib);
 	return 1;
 }
-
+}

@@ -11,14 +11,13 @@
 #include <google/protobuf/compiler/importer.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <iostream>
+#include "log.h"
 
 extern "C"{
-#include "log.h"
 #include <lua.h> 
 #include <lualib.h>
 #include <lauxlib.h>
 }
-
 
 void pbc_stat();
 

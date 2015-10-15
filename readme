@@ -1,9 +1,19 @@
-src         C实现的LUA模块
+
+
+目录结构
+src         C接口+lua接口
 mod         lua模块
-3rd          一些公用的函数库
+3rd          公用的函数库
 framework   游戏架构
 game        具体游戏
 
+
+结构层次
+game(lua so + 逻辑so + 逻辑lua)
+framework  
+lua :) lua模块(srvproto www http)
+c :) c接口+lua接口(net file mysql redis pbc json system date ar)
+c :) common     
 
 
 

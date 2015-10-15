@@ -69,7 +69,7 @@ static int lconnect(lua_State *L){
 
 static int lclose(lua_State *L){
     if (lua_gettop(L) == 1 && lua_isuserdata(L, 1)) {
-        struct redisContext *c = lua_touserdata(L, 1);
+        struct redisContext *c = (struct redisContext *)lua_touserdata(L, 1);
         redisFree(c);
         return 0;
     }
@@ -81,7 +81,7 @@ static int lzrevrank(lua_State *L){
         LOG_ERROR("arg error");
         return 0;
     }
-    struct redisContext *c = lua_touserdata(L, 1);
+    struct redisContext *c = (struct redisContext *)lua_touserdata(L, 1);
     if(c == NULL){
         LOG_ERROR("userdata is null");
         return 0;
@@ -111,7 +111,7 @@ static int lzrem(lua_State *L){
         LOG_ERROR("arg error");
         return 0;
     }
-    struct redisContext *c = lua_touserdata(L, 1);
+    struct redisContext *c = (struct redisContext *)lua_touserdata(L, 1);
     if(c == NULL){
         LOG_ERROR("userdata is null");
         return 0;
@@ -142,7 +142,7 @@ static int lzrank(lua_State *L){
         LOG_ERROR("arg error");
         return 0;
     }
-    struct redisContext *c = lua_touserdata(L, 1);
+    struct redisContext *c = (struct redisContext *)lua_touserdata(L, 1);
     if(c == NULL){
         LOG_ERROR("userdata is null");
         return 0;
@@ -172,7 +172,7 @@ static int lzadd(lua_State *L){
         LOG_ERROR("arg error");
         return 0;
     }
-    struct redisContext *c = lua_touserdata(L, 1);
+    struct redisContext *c = (struct redisContext *)lua_touserdata(L, 1);
     if(c == NULL){
         LOG_ERROR("userdata is null");
         return 0;
@@ -202,7 +202,7 @@ static int lset(lua_State *L){
         LOG_ERROR("arg error");
         return 0;
     }
-    struct redisContext *c = lua_touserdata(L, 1);
+    struct redisContext *c = (struct redisContext *)lua_touserdata(L, 1);
     if(c == NULL){
         LOG_ERROR("userdata is null");
         return 0;
@@ -228,7 +228,7 @@ static int llpush(lua_State *L){
         LOG_ERROR("arg error");
         return 0;
     }
-    struct redisContext *c = lua_touserdata(L, 1);
+    struct redisContext *c = (struct redisContext *)lua_touserdata(L, 1);
     if (c == NULL) {
         LOG_ERROR("userdata is null");
         return 0;
@@ -253,7 +253,7 @@ static int lhset(lua_State *L)
         LOG_ERROR("arg error");
         return 0;
     }
-    struct redisContext *c = lua_touserdata(L, 1);
+    struct redisContext *c = (struct redisContext *)lua_touserdata(L, 1);
     if (c == NULL) {
         LOG_ERROR("userdata is null");
         return 0;
@@ -279,7 +279,7 @@ static char s_mset_cmd[] = "MSET";
 
 static int lmset(lua_State *L){
     int i;
-    struct redisContext *c = lua_touserdata(L, 1);
+    struct redisContext *c = (struct redisContext *)lua_touserdata(L, 1);
     if(c == NULL){
         LOG_ERROR("userdata is null");
         return 0;
@@ -330,7 +330,7 @@ static int lmset(lua_State *L){
 
 static int lhmset(lua_State *L){
     int i;
-    struct redisContext *c = lua_touserdata(L, 1);
+    struct redisContext *c = (struct redisContext *)lua_touserdata(L, 1);
     if(c == NULL){
         LOG_ERROR("userdata is null");
         return 0;
@@ -403,7 +403,7 @@ static int lcommand(lua_State *L) {
         return 0;
     }
     size_t str_len = 0;
-    struct redisContext *c = lua_touserdata(L, 1);
+    struct redisContext *c = (struct redisContext *)lua_touserdata(L, 1);
     const char *command = (const char *)lua_tolstring(L, 2, &str_len);
     if(c == NULL){
         LOG_ERROR("userdata is null");
@@ -436,8 +436,9 @@ static luaL_Reg lua_lib[] = {
     {NULL, NULL}
 };
 
+extern "C" {
 int luaopen_redis(lua_State *L){
 	luaL_register(L, "Redis", (luaL_Reg*)lua_lib);
     return 1;
 }
-
+}

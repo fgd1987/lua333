@@ -1,10 +1,11 @@
 #ifndef _LREDIS_H_
 #define _LREDIS_H_
-
-#include <stdlib.h>
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+}
+#include <stdlib.h>
 #include "hiredis.h"
 #include "async.h"
 #include "adapters/ae.h"

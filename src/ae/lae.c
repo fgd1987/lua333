@@ -1,9 +1,11 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+}
 #include "lport.h"
 #include "lsendbuf.h"
 #include "lrecvbuf.h"
@@ -368,6 +370,7 @@ static luaL_Reg lua_lib[] ={
     {NULL, NULL}
 };
 
+extern "C" {
 int luaopen_ae(lua_State *L){
     luaopen_port(L);
     luaopen_sendbuf(L);
@@ -417,4 +420,4 @@ int luaopen_ae(lua_State *L){
     lua_settable(L, -3);
 	return 1;
 }
-
+}

@@ -14,9 +14,11 @@
 #include <ifaddrs.h>
 #include <errno.h>
 #include <stdlib.h>
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+}
 #include "log.h"
 
 static int lfork(lua_State *L){
@@ -95,7 +97,7 @@ static int lerrno(lua_State *L){
 }
 
 static int ltest(lua_State *L){
-    printf("test\n");
+    LOG_LOG("test");
     lua_newtable(L);
     return 1;
 }
@@ -164,7 +166,9 @@ static luaL_Reg lua_lib[] ={
     {NULL, NULL}
 };
 
+extern "C" {
 int luaopen_system(lua_State *L){
 	luaL_register(L, "System", lua_lib);
 	return 1;
+}
 }

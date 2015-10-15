@@ -6,9 +6,11 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+}
 #include "ae.h"
 
 //一个管理SOCKET的模块， 但解包已经不在C层了，

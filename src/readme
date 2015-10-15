@@ -1,13 +1,12 @@
 底层的一些模块
 
-game
+game (lua so + 逻辑so + 逻辑lua)
 
-framework + logic mod = game     
+framework  
 
-lua :) srvproto www http
+lua :) lua模块 srvproto www http
 
-c :) net file mysql redis pbc json system date ar
+c :) c接口+lua接口 net file mysql redis pbc json system date ar
 
 c :) common     
-
 

@@ -13,28 +13,31 @@
 #include <netinet/in.h>
 #include <ifaddrs.h>
 #include <ctype.h>
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+}
 #ifndef __APPLE__ 
-#include <openssl/md5.h>
+//#include <openssl/md5.h>
+#include "md5.h"
 #else
 #include "md5.h"
 #endif
 
 static int lmd5(lua_State *L){
     if(lua_gettop(L) == 1 && lua_isstring(L, 1)){
+        int i;
         size_t str_len;
         const unsigned char* str = (const unsigned char*)lua_tolstring(L, 1, &str_len);
         unsigned char md[16];
         char tmp[3]={'\0'},buf[33]={'\0'};
         MD5(str, str_len, md);
-        for(int i = 0; i < 16; i++){
+        for(i = 0; i < 16; i++){
             sprintf(tmp,"%2.2x",md[i]);
             strcat(buf,tmp);
         }
         lua_pushstring(L, buf);
-
         return 1;
     }else{
         lua_pushstring(L, "");
@@ -56,7 +59,7 @@ static int lcap(lua_State *L){
 }
 
 static int lsplit(lua_State *L){
-    int i;
+    size_t i;
     if (lua_isstring(L, 1) && lua_isstring(L, 2)) {
         size_t str_len;
         size_t token_len;
@@ -95,7 +98,9 @@ static luaL_Reg lua_lib[] ={
     {NULL, NULL}
 };
 
+extern "C" {
 int luaopen_stringpatch(lua_State *L){
 	luaL_register(L, "string", lua_lib);
 	return 1;
+}
 }

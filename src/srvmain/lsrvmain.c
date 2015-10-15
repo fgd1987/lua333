@@ -11,9 +11,11 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <stdlib.h>
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+}
 #include "log.h"
 
 static lua_State *s_L;
@@ -97,7 +99,9 @@ static luaL_Reg lua_lib[] ={
     {NULL, NULL}
 };
 
+extern "C" {
 int luaopen_srvmain(lua_State *L){
 	luaL_register(L, "Srvmain", lua_lib);
 	return 1;
+}
 }

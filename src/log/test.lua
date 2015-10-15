@@ -1,4 +1,4 @@
 
 require('log')
 
-Log.warning('hello')
+Log.warn('hello')

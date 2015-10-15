@@ -1,0 +1,29 @@
+
+void Hello()
+{
+    Map *map = Map::create();
+}
+
+
+class User {
+public:
+    int uid;
+    String *uname;
+    Array<Task *> task_array;   
+    Hash<Task *> task_list;    
+
+    ~User() {
+        uname->release();
+        task_array->release();
+        task_list->release();
+    }
+};
+
+
+namespace Skill {
+
+void UseSkill(Player *player, int a) {
+    player->release();
+}
+
+};

@@ -1,4 +1,4 @@
-CC=gcc
+CC=g++
 
 ifeq ($(shell getconf LONG_BIT), 64)
 INCLUDE_DIRS=-I../../3rd/lua/src -I/usr/include/mysql -I../../3rd/common
@@ -15,7 +15,7 @@ SO=mysql.so
 endif
 
 ${SO}:lmysql.c
-	gcc -o ${SO} ${CFLAGS} lmysql.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua -lmysqlclient -lcommon
+	g++ -o ${SO} ${CFLAGS} lmysql.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua -lmysqlclient -lcommon
 
 clean:
 	rm -rf ${SO}

@@ -6,7 +6,7 @@ SO=file.so
 
 
 ${SO}:lfile.c
-	gcc -o ${SO} ${CFLAGS} lfile.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua -lcommon
+	g++ -o ${SO} ${CFLAGS} lfile.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua -lcommon
 
 clean:
 	rm -rf ${SO}

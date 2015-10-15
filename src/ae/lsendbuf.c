@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+}
 
 /* 
  * rptr rlen rskip 配合使用，用于写socket
@@ -89,7 +91,7 @@ int lstat(lua_State *L){
     return 0;
 }
 
-int sendbuf_create(sockfd)
+int sendbuf_create(int sockfd)
 {
 	bbufs[sockfd].block_head = NULL;
 	bbufs[sockfd].block_tail = NULL;

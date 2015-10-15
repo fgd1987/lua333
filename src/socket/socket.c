@@ -11,10 +11,11 @@
 #include <string.h>
 #include <strings.h>
 #include <errno.h>
-
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+}
 
 #define LOG_ERROR printf
 
@@ -179,6 +180,8 @@ static luaL_Reg lua_lib[] ={
     {NULL, NULL}
 };
 
+
+extern "C" {
 int luaopen_socket(lua_State *L){
 	luaL_register(L, "Socket", lua_lib);
 
@@ -204,4 +207,4 @@ int luaopen_socket(lua_State *L){
 
 	return 1;
 }
-
+}

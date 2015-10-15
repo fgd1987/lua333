@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
-
+}
 /*
  *  Recvbuf.create(sockfd, size)
  *  Recvbuf.free(sockfd)
@@ -112,7 +113,7 @@ static int lfind(lua_State *L) {
         startpos = 0;
     } 
     RBuf *self = fd2rbuf(sockfd);
-    if (self->rptr + str_len >= self->wptr) {
+    if (self->rptr + (int)str_len >= self->wptr) {
         return 0;
     }
     //printf("i(%d) wptr(%d)\n", self->rptr + startpos, self->wptr);

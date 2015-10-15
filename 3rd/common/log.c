@@ -102,7 +102,7 @@ static int log_vprint(int level, const char *fmt, va_list ap){
     gettimeofday(&t, NULL);
     struct tm *tm = localtime(&t.tv_sec);
     const char *level_msg = s_level_msg[level];
-    printf("[%04d-%02d-%02d %02d:%02d:%02d.%06d][%s]", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, t.tv_usec, level_msg);
+    printf("[%04d-%02d-%02d %02d:%02d:%02d.%06ld][%s]", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, t.tv_usec, level_msg);
     vprintf(fmt, ap);
     printf("\n");
     fflush(stdout);
@@ -118,7 +118,7 @@ int log_print(int level, const char *str, int str_len){
     gettimeofday(&t, NULL);
     struct tm *tm = localtime(&t.tv_sec);
     const char *level_msg = s_level_msg[level];
-    printf("[%04d-%02d-%02d %02d:%02d:%02d.%06d][%s]", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, t.tv_usec, level_msg);
+    printf("[%04d-%02d-%02d %02d:%02d:%02d.%06ld][%s]", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, t.tv_usec, level_msg);
     fwrite(str, 1, str_len, stdout);
     printf("\n");
     fflush(stdout);

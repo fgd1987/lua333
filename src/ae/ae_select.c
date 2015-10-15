@@ -95,5 +95,5 @@ static int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp) {
 }
 
 static char *aeApiName(void) {
-    return "select";
+    return (char *)"select";
 }

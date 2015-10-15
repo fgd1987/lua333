@@ -14,9 +14,11 @@
 #include <netinet/in.h>
 #include <ifaddrs.h>
 #include <errno.h>
+extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+}
 
 static int lgetcwd(lua_State *L){
     char buf[128];
@@ -34,7 +36,7 @@ static int lchdir(lua_State *L){
 }
 
 static int lmkdirs(lua_State *L){
-    int i;
+    size_t i;
 	if (lua_gettop(L) == 1 && lua_isstring(L, 1)){
         size_t dir_len = 0;
 		char *dir = (char *)lua_tolstring(L, 1, &dir_len);
@@ -87,6 +89,21 @@ static int lremove(lua_State *L){
     if(!remove(filepath)) {
         lua_pushboolean(L, 1);
         return 1;
+    }
+    return 0;
+}
+
+static int lbasename(lua_State *L){
+    char *name;
+    size_t str_len = 0;
+    name = (char *)lua_tolstring(L, 1, &str_len);
+    for (size_t i = 0; i < str_len; i++) {
+        if (name[i] == '.') {
+            name[i] = 0;
+            lua_pushstring(L, name);
+            name[i] = '.';
+            return 1;
+        }
     }
     return 0;
 }
@@ -164,10 +181,13 @@ static luaL_Reg lua_lib[] ={
     {"exists", lexists},
     {"remove", lremove},
     {"rename", lrename},
+    {"basename", lbasename},
     {NULL, NULL}
 };
 
+extern "C" {
 int luaopen_file(lua_State *L){
 	luaL_register(L, "File", lua_lib);
 	return 1;
+}
 }

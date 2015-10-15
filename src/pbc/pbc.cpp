@@ -22,9 +22,9 @@ int s_msg_new_times = 0;
 int s_msg_delete_times = 0;
 
 void pbc_stat(){
-    LOG_STAT("pbc msg count:%d", s_msg_count);
-    LOG_STAT("pbc msg new times:%d", s_msg_new_times);
-    LOG_STAT("pbc msg delete times:%d", s_msg_delete_times);
+    LOG_LOG("pbc msg count:%d", s_msg_count);
+    LOG_LOG("pbc msg new times:%d", s_msg_new_times);
+    LOG_LOG("pbc msg delete times:%d", s_msg_delete_times);
 }
 
 google::protobuf::MessageFactory* pbc_factory(){
