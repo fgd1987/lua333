@@ -1,0 +1,73 @@
+#!/usr/local/bin/luajit
+dofile('/usr/local/bin/luaenv')
+
+local mod_name = 'actordb'
+local rootdir = 'actordb'
+local mod = nil
+
+
+function main()
+    local files = File.listdir(mod_name)
+    for _, file in pairs(files) do
+        if string.find(file.name, '.lua$') then
+            require(string.format('%s.%s', rootdir, File.basename(file.name)))
+        end
+    end
+    mod = _G[string.cap(mod_name)]
+    for k, v in pairs(mod) do
+        local index = string.find(k, '_')
+        if index ~= 1 then
+            run_cls(k)
+        end
+    end
+end
+
+function w(file, format, ...)
+    file:write(string.format(format, ...))
+    file:write('\n')
+end
+
+function run_cls(clsname)
+    build_cls_header(clsname)
+end
+
+function build_cls_header(clsname)
+    local descriptor = get_descriptor(clsname)
+
+    local file = io.open(string.format('%s.h', mod_name), 'w+')
+    w(file, '#ifndef _%s_H_', string.upper(mod_name))
+    w(file, '#define _%s_H_', string.upper(mod_name))
+    w(file, '//此文件自动生成，不要手动修改')
+    w(file, '#include "common.h"')
+    w(file, 'clsss %s {', string.cap(clsname))
+    w(file, 'public:')
+    for varname, v in pairs(descriptor) do
+    w(file, '   %s;', v.declaration)
+    end
+    w(file, '};')
+    w(file, '#endif')
+    file:close()
+end
+
+function get_descriptor(clsname)
+    local descriptor = {}
+    local cls = mod[clsname]
+    for k, v in pairs(cls) do
+        for vartype, varname in string.gmatch(v, 'array<(%w+)> ([%w_]+)') do
+            descriptor[varname] = {type = 'array', nest_type = vartype}
+            descriptor[varname].declaration = v
+        end
+        for vartype, varname in string.gmatch(v, 'table<(%w+)> ([%w_]+)') do
+            descriptor[varname] = {type = 'table', nest_type = vartype}
+            descriptor[varname].declaration = v
+        end
+        for vartype, varname in string.gmatch(v, '(%w+)%s+([%w_]+)') do
+            descriptor[varname] = {type = vartype}
+            descriptor[varname].declaration = v
+        end
+    end
+    print(Json.encode(descriptor))
+    return descriptor
+end
+
+main()
