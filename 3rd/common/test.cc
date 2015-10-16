@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include "log.h"
-#include "str.h"
+#include "cstr.h"
 #include "array.h"
+#include "value.h"
 
 int main(int argc, char **argv) {
     printf("hello\n");
-    String *shit = String::create("shit");
-    LOG_LOG("shit");
+    String* shit = new String("shit");
     LOG_LOG(shit->str());
 
     Array *array = Array::create();
@@ -14,5 +14,8 @@ int main(int argc, char **argv) {
     array->add(object);
     object->release();
     array->release();
+
+    Value value;
+    value.object = NULL;
     return 0;
 }

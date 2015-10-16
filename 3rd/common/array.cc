@@ -1,6 +1,6 @@
 
 #include "array.h"
-#include <malloc.h>
+#include <stdlib.h>
 #include "log.h"
 
 #define INIT_COUNT 20
