@@ -16,6 +16,3 @@ test:
 
 dbinit:
 	../../bin/dbinit
-
-clsc:
-	../../bin/clsc
