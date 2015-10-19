@@ -1,4 +1,4 @@
-#!/usr/local/bin/luajit
+#!/usr/local/bin/lua
 dofile('/usr/local/bin/luaenv')
 
 local srvname = arg[1]

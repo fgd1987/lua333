@@ -1,4 +1,4 @@
-#!/usr/local/bin/luajit
+#!/usr/local/bin/lua
 dofile('/usr/local/bin/luaenv')
 --连上管理台，调用函数
 --
