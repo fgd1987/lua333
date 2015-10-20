@@ -16,3 +16,5 @@ install:
 
 test:
 	../../bin/lua test.lua
+
+

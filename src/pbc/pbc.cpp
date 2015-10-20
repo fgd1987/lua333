@@ -92,6 +92,9 @@ static int import_enum(lua_State *L, const google::protobuf::EnumDescriptor* enu
     return 1;    
 }
 
+static int ltest(lua_State* L){
+    return 0;
+}
 /*
  *导入proto文件
  * 
@@ -665,6 +668,7 @@ static int lmsg_get(lua_State* L){
 
 
 static int lmsg_set(lua_State* L){
+    return 0;
     LuaMessage *message_lua = (LuaMessage *)luaL_checkudata(L, 1, "LuaMessage");
     const char *field_name = lua_tostring(L, 2);
     google::protobuf::Message *message = message_lua->message;
@@ -1556,6 +1560,7 @@ static luaL_Reg lua_lib[] =
     {"mergefrom", lmsg_mergefrom},
     {"bytesize", lmsg_bytesize},
     {"serialize", lmsg_serialize},
+    {"test", ltest},
 
     {NULL, NULL}
 };
