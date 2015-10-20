@@ -1,4 +1,8 @@
 all:
+	cd common;make
+	cd lua;make linux
+	cd hiredis;make
+	cd luajit;make
 
 install:
 

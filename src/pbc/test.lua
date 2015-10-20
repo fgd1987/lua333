@@ -11,7 +11,7 @@ print(t.uid)
 print('over')
 print(msg:tostring())
 
-for i = 1, 1000000000 do
+for i = 1, 100000000 do
     t.uid = i
 end
 print(t.uid)

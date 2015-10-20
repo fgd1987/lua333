@@ -82,11 +82,11 @@ local globalsrv_mod = {
 }
 
 Config = {
-    --engine_path = '/root/lua333',
-    --proc_path = '/root/lua333/game/jxqy/proc',
+    engine_path = '/root/lua333',
+    proc_path = '/root/lua333/game/jxqy/proc',
     --engine_path = '/Volumes/NO NAME/lua333',
-    engine_path = '/Users/lujingwei/Documents/360pan/Project/lua333',
-    proc_path = '/Users/lujingwei/Documents/360pan/Project/lua333/game/jxqy/proc',
+    --engine_path = '/Users/lujingwei/Documents/360pan/Project/lua333',
+    --proc_path = '/Users/lujingwei/Documents/360pan/Project/lua333/game/jxqy/proc',
     --模块搜索路径
     mod_path = {},
     --lua文件搜索路径
