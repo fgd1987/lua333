@@ -1,4 +1,4 @@
-#!/usr/local/bin/lua
+#!/usr/local/bin/luaexe
 dofile('/usr/local/bin/luaenv')
 --[[
 pbtest login

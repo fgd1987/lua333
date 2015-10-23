@@ -1,16 +1,15 @@
 all:
 	cd common;make
-	cd lua;make linux
+	cd lua;make macosx
 	cd hiredis;make
-	cd luajit;make
+	cd tolua++;make
 
 install:
 
 download:
 
 clean:
-	cd hiredis;make clean
-	cd protobuf;make clean
-	cd redis;make clean
+	cd common;make clean
 	cd lua;make clean
-	cd luajit;make clean
+	cd hiredis;make clean
+	cd tolua++;make clean

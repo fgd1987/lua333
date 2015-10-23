@@ -1,4 +1,4 @@
-CC=gcc
+CC=g++
 INCLUDE_DIRS=
 LIB_DIRS=
 CFLAGS=-fPIC -shared -O2 -Wall 

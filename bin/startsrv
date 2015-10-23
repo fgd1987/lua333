@@ -1,7 +1,8 @@
-#!/usr/local/bin/lua
+#!/usr/local/bin/luaexe
 dofile('/usr/local/bin/luaenv')
-
+print(arg)
 local srvname = arg[1]
+print('safsadf')
 
 print('=================================')
 print('       lua333 gamesrv            ')
