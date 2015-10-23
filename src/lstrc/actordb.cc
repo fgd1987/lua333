@@ -68,8 +68,8 @@ static int write_string(string& val, char *buf, int len) {
 }
 
 Task::Task(){
-   this->uid = 0;
    this->taskid = 0;
+   this->uid = 0;
 }
 
 Task::~Task(){
@@ -78,11 +78,11 @@ Task::~Task(){
 int Task::packlen(){
    int totallen = 0;
 
-   totallen += len_varint(1);
-   totallen += len_varint(this->uid);
-
    totallen += len_varint(2);
    totallen += len_varint(this->taskid);
+
+   totallen += len_varint(1);
+   totallen += len_varint(this->uid);
    return totallen;
 }
 
@@ -90,20 +90,20 @@ int Task::pack(char *buf, int len){
    int totallen = 0;
    int ir = 0;
 
-   ir = write_varint(1, buf, len);
-   buf += ir;
-   len -= ir;
-   totallen += ir;
-   ir = write_varint(this->uid, buf, len);
-   buf += ir;
-   len -= ir;
-   totallen += ir;
-
    ir = write_varint(2, buf, len);
    buf += ir;
    len -= ir;
    totallen += ir;
    ir = write_varint(this->taskid, buf, len);
+   buf += ir;
+   len -= ir;
+   totallen += ir;
+
+   ir = write_varint(1, buf, len);
+   buf += ir;
+   len -= ir;
+   totallen += ir;
+   ir = write_varint(this->uid, buf, len);
    buf += ir;
    len -= ir;
    totallen += ir;
@@ -137,9 +137,9 @@ int Task::unpack(const char *buf, int buflen){
 }
 
 User::User(){
-   this->uname = "";
    this->uid = 0;
    this->task = new Task();
+   this->uname = "";
 }
 
 User::~User(){
@@ -148,9 +148,6 @@ User::~User(){
 
 int User::packlen(){
    int totallen = 0;
-
-   totallen += len_varint(2);
-   totallen += len_string(this->uname);
 
    totallen += len_varint(3);
    vector<Task*>::iterator it = this->task_array.begin();
@@ -164,21 +161,15 @@ int User::packlen(){
 
    totallen += len_varint(5);
    totallen += this->task->packlen();
+
+   totallen += len_varint(2);
+   totallen += len_string(this->uname);
    return totallen;
 }
 
 int User::pack(char *buf, int len){
    int totallen = 0;
    int ir = 0;
-
-   ir = write_varint(2, buf, len);
-   buf += ir;
-   len -= ir;
-   totallen += ir;
-   ir = write_string(this->uname, buf, len);
-   buf += ir;
-   len -= ir;
-   totallen += ir;
 
    ir = write_varint(3, buf, len);
    buf += ir;
@@ -207,6 +198,15 @@ int User::pack(char *buf, int len){
    len -= ir;
    totallen += ir;
    ir = this->task->pack(buf, len);
+   buf += ir;
+   len -= ir;
+   totallen += ir;
+
+   ir = write_varint(2, buf, len);
+   buf += ir;
+   len -= ir;
+   totallen += ir;
+   ir = write_string(this->uname, buf, len);
    buf += ir;
    len -= ir;
    totallen += ir;
@@ -314,25 +314,6 @@ static int lactordb_task_totable(lua_State* L){
    return 0;
 }
 
-static int lactordb_task_get_uid(lua_State* L){
-   LuaStruct* self = (LuaStruct *)lua_touserdata(L, 1);
-   Task* msg = (Task *)self->msg;
-   lua_pushnumber(L, msg->uid);
-   return 1;
-}
-
-static int lactordb_task_set_uid(lua_State* L){
-   LuaStruct* self = (LuaStruct *)lua_touserdata(L, 1);
-   Task* msg = (Task *)self->msg;
-   long long val = (long long)lua_tonumber(L, 3);
-   msg->uid = (int32)val;
-   return 0;
-}
-
-static int actordb_task_unpack_uid(void* self, const char* buf, int buflen){
-   return 0;
-}
-
 static int lactordb_task_get_taskid(lua_State* L){
    LuaStruct* self = (LuaStruct *)lua_touserdata(L, 1);
    Task* msg = (Task *)self->msg;
@@ -349,6 +330,25 @@ static int lactordb_task_set_taskid(lua_State* L){
 }
 
 static int actordb_task_unpack_taskid(void* self, const char* buf, int buflen){
+   return 0;
+}
+
+static int lactordb_task_get_uid(lua_State* L){
+   LuaStruct* self = (LuaStruct *)lua_touserdata(L, 1);
+   Task* msg = (Task *)self->msg;
+   lua_pushnumber(L, msg->uid);
+   return 1;
+}
+
+static int lactordb_task_set_uid(lua_State* L){
+   LuaStruct* self = (LuaStruct *)lua_touserdata(L, 1);
+   Task* msg = (Task *)self->msg;
+   long long val = (long long)lua_tonumber(L, 3);
+   msg->uid = (int32)val;
+   return 0;
+}
+
+static int actordb_task_unpack_uid(void* self, const char* buf, int buflen){
    return 0;
 }
 
@@ -418,25 +418,6 @@ static int lactordb_user_tostring(lua_State* L){
 }
 
 static int lactordb_user_totable(lua_State* L){
-   return 0;
-}
-
-static int lactordb_user_get_uname(lua_State* L){
-   LuaStruct* self = (LuaStruct *)lua_touserdata(L, 1);
-   User* msg = (User *)self->msg;
-   lua_pushstring(L, msg->uname.c_str());
-   return 1;
-}
-
-static int lactordb_user_set_uname(lua_State* L){
-   LuaStruct* self = (LuaStruct *)lua_touserdata(L, 1);
-   User* msg = (User *)self->msg;
-   const char* val = (const char *)lua_tostring(L, 3);
-   msg->uname = val;
-   return 0;
-}
-
-static int actordb_user_unpack_uname(void *self, const char* buf, int buflen){
    return 0;
 }
 
@@ -527,6 +508,25 @@ static int lactordb_user_get_task(lua_State* L){
 static int actordb_user_unpack_task(void* self, const char* buf, int buflen){
    return 0;
 }
+
+static int lactordb_user_get_uname(lua_State* L){
+   LuaStruct* self = (LuaStruct *)lua_touserdata(L, 1);
+   User* msg = (User *)self->msg;
+   lua_pushstring(L, msg->uname.c_str());
+   return 1;
+}
+
+static int lactordb_user_set_uname(lua_State* L){
+   LuaStruct* self = (LuaStruct *)lua_touserdata(L, 1);
+   User* msg = (User *)self->msg;
+   const char* val = (const char *)lua_tostring(L, 3);
+   msg->uname = val;
+   return 0;
+}
+
+static int actordb_user_unpack_uname(void *self, const char* buf, int buflen){
+   return 0;
+}
 static luaL_Reg lua_lib[] = {
    {"new", lactordb_new},
    {NULL, NULL}
@@ -561,19 +561,16 @@ int luaopen_actordb(lua_State* L) {
    actordb_task_func_get_method["totable"] = lactordb_task_totable;
    actordb_task_func_get_method["tostring"] = lactordb_task_tostring;
    actordb_task_func_get_method["bytesize"] = lactordb_task_bytesize;
-   actordb_task_unpack_method[1] = actordb_task_unpack_uid;
-   actordb_task_get_method["uid"] = lactordb_task_get_uid;
-   actordb_task_set_method["uid"] = lactordb_task_set_uid;
    actordb_task_unpack_method[2] = actordb_task_unpack_taskid;
    actordb_task_get_method["taskid"] = lactordb_task_get_taskid;
    actordb_task_set_method["taskid"] = lactordb_task_set_taskid;
+   actordb_task_unpack_method[1] = actordb_task_unpack_uid;
+   actordb_task_get_method["uid"] = lactordb_task_get_uid;
+   actordb_task_set_method["uid"] = lactordb_task_set_uid;
 
    actordb_user_func_get_method["totable"] = lactordb_user_totable;
    actordb_user_func_get_method["tostring"] = lactordb_user_tostring;
    actordb_user_func_get_method["bytesize"] = lactordb_user_bytesize;
-   actordb_user_unpack_method[2] = actordb_user_unpack_uname;
-   actordb_user_get_method["uname"] = lactordb_user_get_uname;
-   actordb_user_set_method["uname"] = lactordb_user_set_uname;
    actordb_user_unpack_method[3] = actordb_user_unpack_task_array;
    actordb_user_func_get_method["get_task_array"] = lactordb_user_get_task_array;
    actordb_user_func_get_method["add_task_array"] = lactordb_user_add_task_array;
@@ -584,6 +581,9 @@ int luaopen_actordb(lua_State* L) {
    actordb_user_set_method["uid"] = lactordb_user_set_uid;
    actordb_user_unpack_method[5] = actordb_user_unpack_task;
    actordb_user_get_method["task"] = lactordb_user_get_task;
+   actordb_user_unpack_method[2] = actordb_user_unpack_uname;
+   actordb_user_get_method["uname"] = lactordb_user_get_uname;
+   actordb_user_set_method["uname"] = lactordb_user_set_uname;
 
    actordb_new_method["Task"] = lactordb_task_new;
    actordb_new_method["User"] = lactordb_user_new;

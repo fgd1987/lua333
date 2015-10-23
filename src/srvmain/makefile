@@ -1,11 +1,12 @@
 CC=g++
-INCLUDE_DIRS=-I../../3rd/lua/src -I../../3rd/common
-LIB_DIRS=-L../../lib/ -L../../3rd/common
+ENGINE_PATH=../..
+INCLUDE_DIRS=-I${ENGINE_PATH}/3rd/lua/src -I${ENGINE_PATH}/3rd/common
+LIB_DIRS=-L${ENGINE_PATH}/3rd/lua/src/ -L${ENGINE_PATH}/3rd/common
 CFLAGS=-fPIC -shared -O2 -Wall 
 SO=srvmain.so
 
-${SO}:lsrvmain.c
-	g++ -o ${SO} ${CFLAGS} lsrvmain.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua -lcommon
+${SO}:lsrvmain.cc
+	g++ -o ${SO} ${CFLAGS} lsrvmain.cc ${INCLUDE_DIRS} ${LIB_DIRS} -llua -lcommon
 
 clean:
 	rm -rf ${SO}
@@ -15,4 +16,4 @@ install:
 
 
 test:
-	../../bin/lua test.lua
+	../../bin/luaexe test.lua

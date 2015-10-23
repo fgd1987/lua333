@@ -1,0 +1,13 @@
+#!/usr/local/bin/luaexe
+dofile('/usr/local/bin/luaenv')
+--连上管理台，调用函数
+--
+local usage = [[
+usage:
+protoc proto/*.proto -o xx
+]]
+
+local src = arg[4]
+print(src)
+print(usage)
+

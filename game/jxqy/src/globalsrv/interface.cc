@@ -1,6 +1,6 @@
 /*
 ** Lua binding: globalsrv
-** Generated automatically by tolua++-1.0.92 on Sun Oct 18 22:22:18 2015.
+** Generated automatically by tolua++-1.0.92 on Wed Oct 21 08:40:50 2015.
 */
 
 #ifndef __cplusplus
@@ -68,7 +68,7 @@ TOLUA_API int tolua_globalsrv_open (lua_State* tolua_S)
 
 
 #if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM >= 501
-extern "C" {
+extern "C"{
  TOLUA_API int luaopen_globalsrv (lua_State* tolua_S) {
  return tolua_globalsrv_open(tolua_S);
 };

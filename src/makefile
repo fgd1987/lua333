@@ -6,6 +6,7 @@ all:
 	cd file;make
 	cd json;make
 	cd log;make
+	cd luaexe;make
 	cd mysql;make
 	cd pbc;make
 	cd redis;make
@@ -22,6 +23,7 @@ install:
 	cd file;make install
 	cd json;make install
 	cd log;make install
+	cd luaexe;make install
 	cd mysql;make install
 	cd pbc;make install
 	cd redis;make install
@@ -38,6 +40,7 @@ clean:
 	cd file;make clean
 	cd json;make clean
 	cd log;make clean
+	cd luaexe;make clean
 	cd mysql;make clean
 	cd pbc;make clean
 	cd redis;make clean

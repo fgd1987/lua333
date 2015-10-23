@@ -1,12 +1,11 @@
 #ifndef _CJSON_H_
 #define _CJSON_H_
-#include "json.h"
+
 extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
 }
-
 /*
  *
  * 

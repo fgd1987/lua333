@@ -8,7 +8,5 @@ extern "C" {
 #include <stdlib.h>
 #include "hiredis.h"
 #include "async.h"
-#include "adapters/ae.h"
-
 
 #endif

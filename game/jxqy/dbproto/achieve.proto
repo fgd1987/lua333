@@ -1,0 +1,14 @@
+package db;
+
+
+message Achieve {
+    //成就id
+    optional int32 id = 1[default = 0];
+    repeated int32 value = 2;
+}
+
+message AchieveData {
+    optional int32 uid = 1[default = 0];
+    repeated Achieve achieves = 2;
+}
+
