@@ -26,7 +26,7 @@
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 
-namespace db {
+namespace dbproto {
 
 // Internal implementation detail -- do not call these.
 void  protobuf_AddDesc_dbproto_2fachieve_2eproto();
@@ -110,7 +110,7 @@ class Achieve : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
       mutable_value();
 
-  // @@protoc_insertion_point(class_scope:db.Achieve)
+  // @@protoc_insertion_point(class_scope:dbproto.Achieve)
  private:
   inline void set_has_id();
   inline void clear_has_id();
@@ -190,19 +190,19 @@ class AchieveData : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 uid() const;
   inline void set_uid(::google::protobuf::int32 value);
 
-  // repeated .db.Achieve achieves = 2;
+  // repeated .dbproto.Achieve achieves = 2;
   inline int achieves_size() const;
   inline void clear_achieves();
   static const int kAchievesFieldNumber = 2;
-  inline const ::db::Achieve& achieves(int index) const;
-  inline ::db::Achieve* mutable_achieves(int index);
-  inline ::db::Achieve* add_achieves();
-  inline const ::google::protobuf::RepeatedPtrField< ::db::Achieve >&
+  inline const ::dbproto::Achieve& achieves(int index) const;
+  inline ::dbproto::Achieve* mutable_achieves(int index);
+  inline ::dbproto::Achieve* add_achieves();
+  inline const ::google::protobuf::RepeatedPtrField< ::dbproto::Achieve >&
       achieves() const;
-  inline ::google::protobuf::RepeatedPtrField< ::db::Achieve >*
+  inline ::google::protobuf::RepeatedPtrField< ::dbproto::Achieve >*
       mutable_achieves();
 
-  // @@protoc_insertion_point(class_scope:db.AchieveData)
+  // @@protoc_insertion_point(class_scope:dbproto.AchieveData)
  private:
   inline void set_has_uid();
   inline void clear_has_uid();
@@ -211,7 +211,7 @@ class AchieveData : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::RepeatedPtrField< ::db::Achieve > achieves_;
+  ::google::protobuf::RepeatedPtrField< ::dbproto::Achieve > achieves_;
   ::google::protobuf::int32 uid_;
   friend void  protobuf_AddDesc_dbproto_2fachieve_2eproto();
   friend void protobuf_AssignDesc_dbproto_2fachieve_2eproto();
@@ -242,13 +242,13 @@ inline void Achieve::clear_id() {
   clear_has_id();
 }
 inline ::google::protobuf::int32 Achieve::id() const {
-  // @@protoc_insertion_point(field_get:db.Achieve.id)
+  // @@protoc_insertion_point(field_get:dbproto.Achieve.id)
   return id_;
 }
 inline void Achieve::set_id(::google::protobuf::int32 value) {
   set_has_id();
   id_ = value;
-  // @@protoc_insertion_point(field_set:db.Achieve.id)
+  // @@protoc_insertion_point(field_set:dbproto.Achieve.id)
 }
 
 // repeated int32 value = 2;
@@ -259,25 +259,25 @@ inline void Achieve::clear_value() {
   value_.Clear();
 }
 inline ::google::protobuf::int32 Achieve::value(int index) const {
-  // @@protoc_insertion_point(field_get:db.Achieve.value)
+  // @@protoc_insertion_point(field_get:dbproto.Achieve.value)
   return value_.Get(index);
 }
 inline void Achieve::set_value(int index, ::google::protobuf::int32 value) {
   value_.Set(index, value);
-  // @@protoc_insertion_point(field_set:db.Achieve.value)
+  // @@protoc_insertion_point(field_set:dbproto.Achieve.value)
 }
 inline void Achieve::add_value(::google::protobuf::int32 value) {
   value_.Add(value);
-  // @@protoc_insertion_point(field_add:db.Achieve.value)
+  // @@protoc_insertion_point(field_add:dbproto.Achieve.value)
 }
 inline const ::google::protobuf::RepeatedField< ::google::protobuf::int32 >&
 Achieve::value() const {
-  // @@protoc_insertion_point(field_list:db.Achieve.value)
+  // @@protoc_insertion_point(field_list:dbproto.Achieve.value)
   return value_;
 }
 inline ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
 Achieve::mutable_value() {
-  // @@protoc_insertion_point(field_mutable_list:db.Achieve.value)
+  // @@protoc_insertion_point(field_mutable_list:dbproto.Achieve.value)
   return &value_;
 }
 
@@ -300,49 +300,49 @@ inline void AchieveData::clear_uid() {
   clear_has_uid();
 }
 inline ::google::protobuf::int32 AchieveData::uid() const {
-  // @@protoc_insertion_point(field_get:db.AchieveData.uid)
+  // @@protoc_insertion_point(field_get:dbproto.AchieveData.uid)
   return uid_;
 }
 inline void AchieveData::set_uid(::google::protobuf::int32 value) {
   set_has_uid();
   uid_ = value;
-  // @@protoc_insertion_point(field_set:db.AchieveData.uid)
+  // @@protoc_insertion_point(field_set:dbproto.AchieveData.uid)
 }
 
-// repeated .db.Achieve achieves = 2;
+// repeated .dbproto.Achieve achieves = 2;
 inline int AchieveData::achieves_size() const {
   return achieves_.size();
 }
 inline void AchieveData::clear_achieves() {
   achieves_.Clear();
 }
-inline const ::db::Achieve& AchieveData::achieves(int index) const {
-  // @@protoc_insertion_point(field_get:db.AchieveData.achieves)
+inline const ::dbproto::Achieve& AchieveData::achieves(int index) const {
+  // @@protoc_insertion_point(field_get:dbproto.AchieveData.achieves)
   return achieves_.Get(index);
 }
-inline ::db::Achieve* AchieveData::mutable_achieves(int index) {
-  // @@protoc_insertion_point(field_mutable:db.AchieveData.achieves)
+inline ::dbproto::Achieve* AchieveData::mutable_achieves(int index) {
+  // @@protoc_insertion_point(field_mutable:dbproto.AchieveData.achieves)
   return achieves_.Mutable(index);
 }
-inline ::db::Achieve* AchieveData::add_achieves() {
-  // @@protoc_insertion_point(field_add:db.AchieveData.achieves)
+inline ::dbproto::Achieve* AchieveData::add_achieves() {
+  // @@protoc_insertion_point(field_add:dbproto.AchieveData.achieves)
   return achieves_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::db::Achieve >&
+inline const ::google::protobuf::RepeatedPtrField< ::dbproto::Achieve >&
 AchieveData::achieves() const {
-  // @@protoc_insertion_point(field_list:db.AchieveData.achieves)
+  // @@protoc_insertion_point(field_list:dbproto.AchieveData.achieves)
   return achieves_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::db::Achieve >*
+inline ::google::protobuf::RepeatedPtrField< ::dbproto::Achieve >*
 AchieveData::mutable_achieves() {
-  // @@protoc_insertion_point(field_mutable_list:db.AchieveData.achieves)
+  // @@protoc_insertion_point(field_mutable_list:dbproto.AchieveData.achieves)
   return &achieves_;
 }
 
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace db
+}  // namespace dbproto
 
 #ifndef SWIG
 namespace google {

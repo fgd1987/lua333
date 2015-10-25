@@ -16,7 +16,3 @@ test:
 
 dbinit:
 	../../bin/dbinit
-
-db:
-	../../bin/protoc dbproto/* --cpp_out=src
-

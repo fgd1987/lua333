@@ -26,7 +26,7 @@
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 
-namespace db {
+namespace dbproto {
 
 // Internal implementation detail -- do not call these.
 void  protobuf_AddDesc_dbproto_2ftask_2eproto();
@@ -110,7 +110,7 @@ class Task : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
       mutable_value();
 
-  // @@protoc_insertion_point(class_scope:db.Task)
+  // @@protoc_insertion_point(class_scope:dbproto.Task)
  private:
   inline void set_has_id();
   inline void clear_has_id();
@@ -190,19 +190,19 @@ class TaskData : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 uid() const;
   inline void set_uid(::google::protobuf::int32 value);
 
-  // repeated .db.Task tasks = 2;
+  // repeated .dbproto.Task tasks = 2;
   inline int tasks_size() const;
   inline void clear_tasks();
   static const int kTasksFieldNumber = 2;
-  inline const ::db::Task& tasks(int index) const;
-  inline ::db::Task* mutable_tasks(int index);
-  inline ::db::Task* add_tasks();
-  inline const ::google::protobuf::RepeatedPtrField< ::db::Task >&
+  inline const ::dbproto::Task& tasks(int index) const;
+  inline ::dbproto::Task* mutable_tasks(int index);
+  inline ::dbproto::Task* add_tasks();
+  inline const ::google::protobuf::RepeatedPtrField< ::dbproto::Task >&
       tasks() const;
-  inline ::google::protobuf::RepeatedPtrField< ::db::Task >*
+  inline ::google::protobuf::RepeatedPtrField< ::dbproto::Task >*
       mutable_tasks();
 
-  // @@protoc_insertion_point(class_scope:db.TaskData)
+  // @@protoc_insertion_point(class_scope:dbproto.TaskData)
  private:
   inline void set_has_uid();
   inline void clear_has_uid();
@@ -211,7 +211,7 @@ class TaskData : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::RepeatedPtrField< ::db::Task > tasks_;
+  ::google::protobuf::RepeatedPtrField< ::dbproto::Task > tasks_;
   ::google::protobuf::int32 uid_;
   friend void  protobuf_AddDesc_dbproto_2ftask_2eproto();
   friend void protobuf_AssignDesc_dbproto_2ftask_2eproto();
@@ -242,13 +242,13 @@ inline void Task::clear_id() {
   clear_has_id();
 }
 inline ::google::protobuf::int32 Task::id() const {
-  // @@protoc_insertion_point(field_get:db.Task.id)
+  // @@protoc_insertion_point(field_get:dbproto.Task.id)
   return id_;
 }
 inline void Task::set_id(::google::protobuf::int32 value) {
   set_has_id();
   id_ = value;
-  // @@protoc_insertion_point(field_set:db.Task.id)
+  // @@protoc_insertion_point(field_set:dbproto.Task.id)
 }
 
 // repeated int32 value = 2;
@@ -259,25 +259,25 @@ inline void Task::clear_value() {
   value_.Clear();
 }
 inline ::google::protobuf::int32 Task::value(int index) const {
-  // @@protoc_insertion_point(field_get:db.Task.value)
+  // @@protoc_insertion_point(field_get:dbproto.Task.value)
   return value_.Get(index);
 }
 inline void Task::set_value(int index, ::google::protobuf::int32 value) {
   value_.Set(index, value);
-  // @@protoc_insertion_point(field_set:db.Task.value)
+  // @@protoc_insertion_point(field_set:dbproto.Task.value)
 }
 inline void Task::add_value(::google::protobuf::int32 value) {
   value_.Add(value);
-  // @@protoc_insertion_point(field_add:db.Task.value)
+  // @@protoc_insertion_point(field_add:dbproto.Task.value)
 }
 inline const ::google::protobuf::RepeatedField< ::google::protobuf::int32 >&
 Task::value() const {
-  // @@protoc_insertion_point(field_list:db.Task.value)
+  // @@protoc_insertion_point(field_list:dbproto.Task.value)
   return value_;
 }
 inline ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
 Task::mutable_value() {
-  // @@protoc_insertion_point(field_mutable_list:db.Task.value)
+  // @@protoc_insertion_point(field_mutable_list:dbproto.Task.value)
   return &value_;
 }
 
@@ -300,49 +300,49 @@ inline void TaskData::clear_uid() {
   clear_has_uid();
 }
 inline ::google::protobuf::int32 TaskData::uid() const {
-  // @@protoc_insertion_point(field_get:db.TaskData.uid)
+  // @@protoc_insertion_point(field_get:dbproto.TaskData.uid)
   return uid_;
 }
 inline void TaskData::set_uid(::google::protobuf::int32 value) {
   set_has_uid();
   uid_ = value;
-  // @@protoc_insertion_point(field_set:db.TaskData.uid)
+  // @@protoc_insertion_point(field_set:dbproto.TaskData.uid)
 }
 
-// repeated .db.Task tasks = 2;
+// repeated .dbproto.Task tasks = 2;
 inline int TaskData::tasks_size() const {
   return tasks_.size();
 }
 inline void TaskData::clear_tasks() {
   tasks_.Clear();
 }
-inline const ::db::Task& TaskData::tasks(int index) const {
-  // @@protoc_insertion_point(field_get:db.TaskData.tasks)
+inline const ::dbproto::Task& TaskData::tasks(int index) const {
+  // @@protoc_insertion_point(field_get:dbproto.TaskData.tasks)
   return tasks_.Get(index);
 }
-inline ::db::Task* TaskData::mutable_tasks(int index) {
-  // @@protoc_insertion_point(field_mutable:db.TaskData.tasks)
+inline ::dbproto::Task* TaskData::mutable_tasks(int index) {
+  // @@protoc_insertion_point(field_mutable:dbproto.TaskData.tasks)
   return tasks_.Mutable(index);
 }
-inline ::db::Task* TaskData::add_tasks() {
-  // @@protoc_insertion_point(field_add:db.TaskData.tasks)
+inline ::dbproto::Task* TaskData::add_tasks() {
+  // @@protoc_insertion_point(field_add:dbproto.TaskData.tasks)
   return tasks_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::db::Task >&
+inline const ::google::protobuf::RepeatedPtrField< ::dbproto::Task >&
 TaskData::tasks() const {
-  // @@protoc_insertion_point(field_list:db.TaskData.tasks)
+  // @@protoc_insertion_point(field_list:dbproto.TaskData.tasks)
   return tasks_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::db::Task >*
+inline ::google::protobuf::RepeatedPtrField< ::dbproto::Task >*
 TaskData::mutable_tasks() {
-  // @@protoc_insertion_point(field_mutable_list:db.TaskData.tasks)
+  // @@protoc_insertion_point(field_mutable_list:dbproto.TaskData.tasks)
   return &tasks_;
 }
 
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace db
+}  // namespace dbproto
 
 #ifndef SWIG
 namespace google {

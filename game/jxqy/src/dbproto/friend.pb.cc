@@ -16,7 +16,7 @@
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 
-namespace db {
+namespace dbproto {
 
 namespace {
 
@@ -102,10 +102,10 @@ void protobuf_AddDesc_dbproto_2ffriend_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\024dbproto/friend.proto\022\002db\")\n\006Friend\022\016\n\003"
-    "uid\030\001 \001(\005:\0010\022\017\n\005uname\030\002 \001(\t:\000\"9\n\nFriendD"
-    "ata\022\016\n\003uid\030\001 \001(\005:\0010\022\033\n\007friends\030\002 \003(\0132\n.d"
-    "b.Friend", 128);
+    "\n\024dbproto/friend.proto\022\007dbproto\")\n\006Frien"
+    "d\022\016\n\003uid\030\001 \001(\005:\0010\022\017\n\005uname\030\002 \001(\t:\000\">\n\nFr"
+    "iendData\022\016\n\003uid\030\001 \001(\005:\0010\022 \n\007friends\030\002 \003("
+    "\0132\017.dbproto.Friend", 138);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "dbproto/friend.proto", &protobuf_RegisterTypes);
   Friend::default_instance_ = new Friend();
@@ -132,7 +132,7 @@ const int Friend::kUnameFieldNumber;
 Friend::Friend()
   : ::google::protobuf::Message() {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:db.Friend)
+  // @@protoc_insertion_point(constructor:dbproto.Friend)
 }
 
 void Friend::InitAsDefaultInstance() {
@@ -142,7 +142,7 @@ Friend::Friend(const Friend& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:db.Friend)
+  // @@protoc_insertion_point(copy_constructor:dbproto.Friend)
 }
 
 void Friend::SharedCtor() {
@@ -154,7 +154,7 @@ void Friend::SharedCtor() {
 }
 
 Friend::~Friend() {
-  // @@protoc_insertion_point(destructor:db.Friend)
+  // @@protoc_insertion_point(destructor:dbproto.Friend)
   SharedDtor();
 }
 
@@ -204,7 +204,7 @@ bool Friend::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:db.Friend)
+  // @@protoc_insertion_point(parse_start:dbproto.Friend)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
@@ -255,17 +255,17 @@ bool Friend::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:db.Friend)
+  // @@protoc_insertion_point(parse_success:dbproto.Friend)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:db.Friend)
+  // @@protoc_insertion_point(parse_failure:dbproto.Friend)
   return false;
 #undef DO_
 }
 
 void Friend::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:db.Friend)
+  // @@protoc_insertion_point(serialize_start:dbproto.Friend)
   // optional int32 uid = 1 [default = 0];
   if (has_uid()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->uid(), output);
@@ -285,12 +285,12 @@ void Friend::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:db.Friend)
+  // @@protoc_insertion_point(serialize_end:dbproto.Friend)
 }
 
 ::google::protobuf::uint8* Friend::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:db.Friend)
+  // @@protoc_insertion_point(serialize_to_array_start:dbproto.Friend)
   // optional int32 uid = 1 [default = 0];
   if (has_uid()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->uid(), target);
@@ -311,7 +311,7 @@ void Friend::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:db.Friend)
+  // @@protoc_insertion_point(serialize_to_array_end:dbproto.Friend)
   return target;
 }
 
@@ -416,7 +416,7 @@ const int FriendData::kFriendsFieldNumber;
 FriendData::FriendData()
   : ::google::protobuf::Message() {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:db.FriendData)
+  // @@protoc_insertion_point(constructor:dbproto.FriendData)
 }
 
 void FriendData::InitAsDefaultInstance() {
@@ -426,7 +426,7 @@ FriendData::FriendData(const FriendData& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:db.FriendData)
+  // @@protoc_insertion_point(copy_constructor:dbproto.FriendData)
 }
 
 void FriendData::SharedCtor() {
@@ -436,7 +436,7 @@ void FriendData::SharedCtor() {
 }
 
 FriendData::~FriendData() {
-  // @@protoc_insertion_point(destructor:db.FriendData)
+  // @@protoc_insertion_point(destructor:dbproto.FriendData)
   SharedDtor();
 }
 
@@ -477,7 +477,7 @@ bool FriendData::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:db.FriendData)
+  // @@protoc_insertion_point(parse_start:dbproto.FriendData)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
@@ -497,7 +497,7 @@ bool FriendData::MergePartialFromCodedStream(
         break;
       }
 
-      // repeated .db.Friend friends = 2;
+      // repeated .dbproto.Friend friends = 2;
       case 2: {
         if (tag == 18) {
          parse_friends:
@@ -525,23 +525,23 @@ bool FriendData::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:db.FriendData)
+  // @@protoc_insertion_point(parse_success:dbproto.FriendData)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:db.FriendData)
+  // @@protoc_insertion_point(parse_failure:dbproto.FriendData)
   return false;
 #undef DO_
 }
 
 void FriendData::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:db.FriendData)
+  // @@protoc_insertion_point(serialize_start:dbproto.FriendData)
   // optional int32 uid = 1 [default = 0];
   if (has_uid()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->uid(), output);
   }
 
-  // repeated .db.Friend friends = 2;
+  // repeated .dbproto.Friend friends = 2;
   for (int i = 0; i < this->friends_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->friends(i), output);
@@ -551,18 +551,18 @@ void FriendData::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:db.FriendData)
+  // @@protoc_insertion_point(serialize_end:dbproto.FriendData)
 }
 
 ::google::protobuf::uint8* FriendData::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:db.FriendData)
+  // @@protoc_insertion_point(serialize_to_array_start:dbproto.FriendData)
   // optional int32 uid = 1 [default = 0];
   if (has_uid()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->uid(), target);
   }
 
-  // repeated .db.Friend friends = 2;
+  // repeated .dbproto.Friend friends = 2;
   for (int i = 0; i < this->friends_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -573,7 +573,7 @@ void FriendData::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:db.FriendData)
+  // @@protoc_insertion_point(serialize_to_array_end:dbproto.FriendData)
   return target;
 }
 
@@ -589,7 +589,7 @@ int FriendData::ByteSize() const {
     }
 
   }
-  // repeated .db.Friend friends = 2;
+  // repeated .dbproto.Friend friends = 2;
   total_size += 1 * this->friends_size();
   for (int i = 0; i < this->friends_size(); i++) {
     total_size +=
@@ -669,6 +669,6 @@ void FriendData::Swap(FriendData* other) {
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace db
+}  // namespace dbproto
 
 // @@protoc_insertion_point(global_scope)

@@ -1,4 +1,3 @@
-
 //tolua_begin
 #include "stdafx.h"
 namespace Item {

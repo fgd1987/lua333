@@ -26,7 +26,7 @@
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 
-namespace db {
+namespace dbproto {
 
 // Internal implementation detail -- do not call these.
 void  protobuf_AddDesc_dbproto_2ffriend_2eproto();
@@ -110,7 +110,7 @@ class Friend : public ::google::protobuf::Message {
   inline ::std::string* release_uname();
   inline void set_allocated_uname(::std::string* uname);
 
-  // @@protoc_insertion_point(class_scope:db.Friend)
+  // @@protoc_insertion_point(class_scope:dbproto.Friend)
  private:
   inline void set_has_uid();
   inline void clear_has_uid();
@@ -192,19 +192,19 @@ class FriendData : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 uid() const;
   inline void set_uid(::google::protobuf::int32 value);
 
-  // repeated .db.Friend friends = 2;
+  // repeated .dbproto.Friend friends = 2;
   inline int friends_size() const;
   inline void clear_friends();
   static const int kFriendsFieldNumber = 2;
-  inline const ::db::Friend& friends(int index) const;
-  inline ::db::Friend* mutable_friends(int index);
-  inline ::db::Friend* add_friends();
-  inline const ::google::protobuf::RepeatedPtrField< ::db::Friend >&
+  inline const ::dbproto::Friend& friends(int index) const;
+  inline ::dbproto::Friend* mutable_friends(int index);
+  inline ::dbproto::Friend* add_friends();
+  inline const ::google::protobuf::RepeatedPtrField< ::dbproto::Friend >&
       friends() const;
-  inline ::google::protobuf::RepeatedPtrField< ::db::Friend >*
+  inline ::google::protobuf::RepeatedPtrField< ::dbproto::Friend >*
       mutable_friends();
 
-  // @@protoc_insertion_point(class_scope:db.FriendData)
+  // @@protoc_insertion_point(class_scope:dbproto.FriendData)
  private:
   inline void set_has_uid();
   inline void clear_has_uid();
@@ -213,7 +213,7 @@ class FriendData : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::RepeatedPtrField< ::db::Friend > friends_;
+  ::google::protobuf::RepeatedPtrField< ::dbproto::Friend > friends_;
   ::google::protobuf::int32 uid_;
   friend void  protobuf_AddDesc_dbproto_2ffriend_2eproto();
   friend void protobuf_AssignDesc_dbproto_2ffriend_2eproto();
@@ -244,13 +244,13 @@ inline void Friend::clear_uid() {
   clear_has_uid();
 }
 inline ::google::protobuf::int32 Friend::uid() const {
-  // @@protoc_insertion_point(field_get:db.Friend.uid)
+  // @@protoc_insertion_point(field_get:dbproto.Friend.uid)
   return uid_;
 }
 inline void Friend::set_uid(::google::protobuf::int32 value) {
   set_has_uid();
   uid_ = value;
-  // @@protoc_insertion_point(field_set:db.Friend.uid)
+  // @@protoc_insertion_point(field_set:dbproto.Friend.uid)
 }
 
 // optional string uname = 2 [default = ""];
@@ -270,7 +270,7 @@ inline void Friend::clear_uname() {
   clear_has_uname();
 }
 inline const ::std::string& Friend::uname() const {
-  // @@protoc_insertion_point(field_get:db.Friend.uname)
+  // @@protoc_insertion_point(field_get:dbproto.Friend.uname)
   return *uname_;
 }
 inline void Friend::set_uname(const ::std::string& value) {
@@ -279,7 +279,7 @@ inline void Friend::set_uname(const ::std::string& value) {
     uname_ = new ::std::string;
   }
   uname_->assign(value);
-  // @@protoc_insertion_point(field_set:db.Friend.uname)
+  // @@protoc_insertion_point(field_set:dbproto.Friend.uname)
 }
 inline void Friend::set_uname(const char* value) {
   set_has_uname();
@@ -287,7 +287,7 @@ inline void Friend::set_uname(const char* value) {
     uname_ = new ::std::string;
   }
   uname_->assign(value);
-  // @@protoc_insertion_point(field_set_char:db.Friend.uname)
+  // @@protoc_insertion_point(field_set_char:dbproto.Friend.uname)
 }
 inline void Friend::set_uname(const char* value, size_t size) {
   set_has_uname();
@@ -295,14 +295,14 @@ inline void Friend::set_uname(const char* value, size_t size) {
     uname_ = new ::std::string;
   }
   uname_->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:db.Friend.uname)
+  // @@protoc_insertion_point(field_set_pointer:dbproto.Friend.uname)
 }
 inline ::std::string* Friend::mutable_uname() {
   set_has_uname();
   if (uname_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     uname_ = new ::std::string;
   }
-  // @@protoc_insertion_point(field_mutable:db.Friend.uname)
+  // @@protoc_insertion_point(field_mutable:dbproto.Friend.uname)
   return uname_;
 }
 inline ::std::string* Friend::release_uname() {
@@ -326,7 +326,7 @@ inline void Friend::set_allocated_uname(::std::string* uname) {
     clear_has_uname();
     uname_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_set_allocated:db.Friend.uname)
+  // @@protoc_insertion_point(field_set_allocated:dbproto.Friend.uname)
 }
 
 // -------------------------------------------------------------------
@@ -348,49 +348,49 @@ inline void FriendData::clear_uid() {
   clear_has_uid();
 }
 inline ::google::protobuf::int32 FriendData::uid() const {
-  // @@protoc_insertion_point(field_get:db.FriendData.uid)
+  // @@protoc_insertion_point(field_get:dbproto.FriendData.uid)
   return uid_;
 }
 inline void FriendData::set_uid(::google::protobuf::int32 value) {
   set_has_uid();
   uid_ = value;
-  // @@protoc_insertion_point(field_set:db.FriendData.uid)
+  // @@protoc_insertion_point(field_set:dbproto.FriendData.uid)
 }
 
-// repeated .db.Friend friends = 2;
+// repeated .dbproto.Friend friends = 2;
 inline int FriendData::friends_size() const {
   return friends_.size();
 }
 inline void FriendData::clear_friends() {
   friends_.Clear();
 }
-inline const ::db::Friend& FriendData::friends(int index) const {
-  // @@protoc_insertion_point(field_get:db.FriendData.friends)
+inline const ::dbproto::Friend& FriendData::friends(int index) const {
+  // @@protoc_insertion_point(field_get:dbproto.FriendData.friends)
   return friends_.Get(index);
 }
-inline ::db::Friend* FriendData::mutable_friends(int index) {
-  // @@protoc_insertion_point(field_mutable:db.FriendData.friends)
+inline ::dbproto::Friend* FriendData::mutable_friends(int index) {
+  // @@protoc_insertion_point(field_mutable:dbproto.FriendData.friends)
   return friends_.Mutable(index);
 }
-inline ::db::Friend* FriendData::add_friends() {
-  // @@protoc_insertion_point(field_add:db.FriendData.friends)
+inline ::dbproto::Friend* FriendData::add_friends() {
+  // @@protoc_insertion_point(field_add:dbproto.FriendData.friends)
   return friends_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::db::Friend >&
+inline const ::google::protobuf::RepeatedPtrField< ::dbproto::Friend >&
 FriendData::friends() const {
-  // @@protoc_insertion_point(field_list:db.FriendData.friends)
+  // @@protoc_insertion_point(field_list:dbproto.FriendData.friends)
   return friends_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::db::Friend >*
+inline ::google::protobuf::RepeatedPtrField< ::dbproto::Friend >*
 FriendData::mutable_friends() {
-  // @@protoc_insertion_point(field_mutable_list:db.FriendData.friends)
+  // @@protoc_insertion_point(field_mutable_list:dbproto.FriendData.friends)
   return &friends_;
 }
 
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace db
+}  // namespace dbproto
 
 #ifndef SWIG
 namespace google {

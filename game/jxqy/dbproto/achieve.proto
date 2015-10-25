@@ -1,8 +1,7 @@
-package db;
-
+package dbproto;
+//成就系统
 
 message Achieve {
-    //成就id
     optional int32 id = 1[default = 0];
     repeated int32 value = 2;
 }

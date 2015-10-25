@@ -16,7 +16,7 @@
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 
-namespace db {
+namespace dbproto {
 
 namespace {
 
@@ -102,9 +102,10 @@ void protobuf_AddDesc_dbproto_2ftask_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\022dbproto/task.proto\022\002db\"$\n\004Task\022\r\n\002id\030\001"
-    " \001(\005:\0010\022\r\n\005value\030\002 \003(\005\"3\n\010TaskData\022\016\n\003ui"
-    "d\030\001 \001(\005:\0010\022\027\n\005tasks\030\002 \003(\0132\010.db.Task", 115);
+    "\n\022dbproto/task.proto\022\007dbproto\"$\n\004Task\022\r\n"
+    "\002id\030\001 \001(\005:\0010\022\r\n\005value\030\002 \003(\005\"8\n\010TaskData\022"
+    "\016\n\003uid\030\001 \001(\005:\0010\022\034\n\005tasks\030\002 \003(\0132\r.dbproto"
+    ".Task", 125);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "dbproto/task.proto", &protobuf_RegisterTypes);
   Task::default_instance_ = new Task();
@@ -131,7 +132,7 @@ const int Task::kValueFieldNumber;
 Task::Task()
   : ::google::protobuf::Message() {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:db.Task)
+  // @@protoc_insertion_point(constructor:dbproto.Task)
 }
 
 void Task::InitAsDefaultInstance() {
@@ -141,7 +142,7 @@ Task::Task(const Task& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:db.Task)
+  // @@protoc_insertion_point(copy_constructor:dbproto.Task)
 }
 
 void Task::SharedCtor() {
@@ -151,7 +152,7 @@ void Task::SharedCtor() {
 }
 
 Task::~Task() {
-  // @@protoc_insertion_point(destructor:db.Task)
+  // @@protoc_insertion_point(destructor:dbproto.Task)
   SharedDtor();
 }
 
@@ -192,7 +193,7 @@ bool Task::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:db.Task)
+  // @@protoc_insertion_point(parse_start:dbproto.Task)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
@@ -245,17 +246,17 @@ bool Task::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:db.Task)
+  // @@protoc_insertion_point(parse_success:dbproto.Task)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:db.Task)
+  // @@protoc_insertion_point(parse_failure:dbproto.Task)
   return false;
 #undef DO_
 }
 
 void Task::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:db.Task)
+  // @@protoc_insertion_point(serialize_start:dbproto.Task)
   // optional int32 id = 1 [default = 0];
   if (has_id()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->id(), output);
@@ -271,12 +272,12 @@ void Task::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:db.Task)
+  // @@protoc_insertion_point(serialize_end:dbproto.Task)
 }
 
 ::google::protobuf::uint8* Task::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:db.Task)
+  // @@protoc_insertion_point(serialize_to_array_start:dbproto.Task)
   // optional int32 id = 1 [default = 0];
   if (has_id()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->id(), target);
@@ -292,7 +293,7 @@ void Task::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:db.Task)
+  // @@protoc_insertion_point(serialize_to_array_end:dbproto.Task)
   return target;
 }
 
@@ -398,7 +399,7 @@ const int TaskData::kTasksFieldNumber;
 TaskData::TaskData()
   : ::google::protobuf::Message() {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:db.TaskData)
+  // @@protoc_insertion_point(constructor:dbproto.TaskData)
 }
 
 void TaskData::InitAsDefaultInstance() {
@@ -408,7 +409,7 @@ TaskData::TaskData(const TaskData& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:db.TaskData)
+  // @@protoc_insertion_point(copy_constructor:dbproto.TaskData)
 }
 
 void TaskData::SharedCtor() {
@@ -418,7 +419,7 @@ void TaskData::SharedCtor() {
 }
 
 TaskData::~TaskData() {
-  // @@protoc_insertion_point(destructor:db.TaskData)
+  // @@protoc_insertion_point(destructor:dbproto.TaskData)
   SharedDtor();
 }
 
@@ -459,7 +460,7 @@ bool TaskData::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:db.TaskData)
+  // @@protoc_insertion_point(parse_start:dbproto.TaskData)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
@@ -479,7 +480,7 @@ bool TaskData::MergePartialFromCodedStream(
         break;
       }
 
-      // repeated .db.Task tasks = 2;
+      // repeated .dbproto.Task tasks = 2;
       case 2: {
         if (tag == 18) {
          parse_tasks:
@@ -507,23 +508,23 @@ bool TaskData::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:db.TaskData)
+  // @@protoc_insertion_point(parse_success:dbproto.TaskData)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:db.TaskData)
+  // @@protoc_insertion_point(parse_failure:dbproto.TaskData)
   return false;
 #undef DO_
 }
 
 void TaskData::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:db.TaskData)
+  // @@protoc_insertion_point(serialize_start:dbproto.TaskData)
   // optional int32 uid = 1 [default = 0];
   if (has_uid()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->uid(), output);
   }
 
-  // repeated .db.Task tasks = 2;
+  // repeated .dbproto.Task tasks = 2;
   for (int i = 0; i < this->tasks_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->tasks(i), output);
@@ -533,18 +534,18 @@ void TaskData::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:db.TaskData)
+  // @@protoc_insertion_point(serialize_end:dbproto.TaskData)
 }
 
 ::google::protobuf::uint8* TaskData::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:db.TaskData)
+  // @@protoc_insertion_point(serialize_to_array_start:dbproto.TaskData)
   // optional int32 uid = 1 [default = 0];
   if (has_uid()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->uid(), target);
   }
 
-  // repeated .db.Task tasks = 2;
+  // repeated .dbproto.Task tasks = 2;
   for (int i = 0; i < this->tasks_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -555,7 +556,7 @@ void TaskData::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:db.TaskData)
+  // @@protoc_insertion_point(serialize_to_array_end:dbproto.TaskData)
   return target;
 }
 
@@ -571,7 +572,7 @@ int TaskData::ByteSize() const {
     }
 
   }
-  // repeated .db.Task tasks = 2;
+  // repeated .dbproto.Task tasks = 2;
   total_size += 1 * this->tasks_size();
   for (int i = 0; i < this->tasks_size(); i++) {
     total_size +=
@@ -651,6 +652,6 @@ void TaskData::Swap(TaskData* other) {
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace db
+}  // namespace dbproto
 
 // @@protoc_insertion_point(global_scope)

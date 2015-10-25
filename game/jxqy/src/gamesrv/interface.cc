@@ -1,6 +1,6 @@
 /*
-** Lua binding: globalsrv
-** Generated automatically by tolua++-1.0.92 on Sun Oct 25 18:17:27 2015.
+** Lua binding: gamesrv
+** Generated automatically by tolua++-1.0.92 on Sun Oct 25 17:00:02 2015.
 */
 
 #ifndef __cplusplus
@@ -11,7 +11,7 @@
 #include "tolua++.h"
 
 /* Exported function */
-TOLUA_API int  tolua_globalsrv_open (lua_State* tolua_S);
+TOLUA_API int  tolua_gamesrv_open (lua_State* tolua_S);
 
 #include "item/interface.h"
 
@@ -22,8 +22,8 @@ static void tolua_reg_types (lua_State* tolua_S)
 }
 
 /* function: Item::add_item */
-#ifndef TOLUA_DISABLE_tolua_globalsrv_Item_add_item00
-static int tolua_globalsrv_Item_add_item00(lua_State* tolua_S)
+#ifndef TOLUA_DISABLE_tolua_gamesrv_Item_add_item00
+static int tolua_gamesrv_Item_add_item00(lua_State* tolua_S)
 {
 #ifndef TOLUA_RELEASE
  tolua_Error tolua_err;
@@ -55,7 +55,7 @@ static int tolua_globalsrv_Item_add_item00(lua_State* tolua_S)
 #endif //#ifndef TOLUA_DISABLE
 
 /* Open function */
-TOLUA_API int tolua_globalsrv_open (lua_State* tolua_S)
+TOLUA_API int tolua_gamesrv_open (lua_State* tolua_S)
 {
  tolua_open(tolua_S);
  tolua_reg_types(tolua_S);
@@ -63,7 +63,7 @@ TOLUA_API int tolua_globalsrv_open (lua_State* tolua_S)
  tolua_beginmodule(tolua_S,NULL);
   tolua_module(tolua_S,"Item",0);
   tolua_beginmodule(tolua_S,"Item");
-   tolua_function(tolua_S,"add_item",tolua_globalsrv_Item_add_item00);
+   tolua_function(tolua_S,"add_item",tolua_gamesrv_Item_add_item00);
   tolua_endmodule(tolua_S);
  tolua_endmodule(tolua_S);
  return 1;
@@ -72,8 +72,8 @@ TOLUA_API int tolua_globalsrv_open (lua_State* tolua_S)
 
 #if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM >= 501
  extern "C"{
- TOLUA_API int luaopen_globalsrv (lua_State* tolua_S) {
- return tolua_globalsrv_open(tolua_S);
+ TOLUA_API int luaopen_gamesrv (lua_State* tolua_S) {
+ return tolua_gamesrv_open(tolua_S);
 };
 }
 #endif

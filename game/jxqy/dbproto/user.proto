@@ -1,4 +1,9 @@
-package db;
+package dbproto;
+
+enum Hellofff {
+    a = 1;
+    b = 2;
+}
 
 //用户
 message UserData {
@@ -7,6 +12,9 @@ message UserData {
     //用户名
     optional string uname = 2[default = ''];
     optional int32 money = 3[default = 0];
-    optional int32 last_login_time = 4[default = 0];
+    optional int32 last_login_time = 4;
+    message Hello {
+        optional string str = 1;
+    }
 }
 

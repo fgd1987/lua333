@@ -16,7 +16,7 @@
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 
-namespace db {
+namespace dbproto {
 
 namespace {
 
@@ -102,10 +102,10 @@ void protobuf_AddDesc_dbproto_2fachieve_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\025dbproto/achieve.proto\022\002db\"\'\n\007Achieve\022\r"
-    "\n\002id\030\001 \001(\005:\0010\022\r\n\005value\030\002 \003(\005\"<\n\013AchieveD"
-    "ata\022\016\n\003uid\030\001 \001(\005:\0010\022\035\n\010achieves\030\002 \003(\0132\013."
-    "db.Achieve", 130);
+    "\n\025dbproto/achieve.proto\022\007dbproto\"\'\n\007Achi"
+    "eve\022\r\n\002id\030\001 \001(\005:\0010\022\r\n\005value\030\002 \003(\005\"A\n\013Ach"
+    "ieveData\022\016\n\003uid\030\001 \001(\005:\0010\022\"\n\010achieves\030\002 \003"
+    "(\0132\020.dbproto.Achieve", 140);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "dbproto/achieve.proto", &protobuf_RegisterTypes);
   Achieve::default_instance_ = new Achieve();
@@ -132,7 +132,7 @@ const int Achieve::kValueFieldNumber;
 Achieve::Achieve()
   : ::google::protobuf::Message() {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:db.Achieve)
+  // @@protoc_insertion_point(constructor:dbproto.Achieve)
 }
 
 void Achieve::InitAsDefaultInstance() {
@@ -142,7 +142,7 @@ Achieve::Achieve(const Achieve& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:db.Achieve)
+  // @@protoc_insertion_point(copy_constructor:dbproto.Achieve)
 }
 
 void Achieve::SharedCtor() {
@@ -152,7 +152,7 @@ void Achieve::SharedCtor() {
 }
 
 Achieve::~Achieve() {
-  // @@protoc_insertion_point(destructor:db.Achieve)
+  // @@protoc_insertion_point(destructor:dbproto.Achieve)
   SharedDtor();
 }
 
@@ -193,7 +193,7 @@ bool Achieve::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:db.Achieve)
+  // @@protoc_insertion_point(parse_start:dbproto.Achieve)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
@@ -246,17 +246,17 @@ bool Achieve::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:db.Achieve)
+  // @@protoc_insertion_point(parse_success:dbproto.Achieve)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:db.Achieve)
+  // @@protoc_insertion_point(parse_failure:dbproto.Achieve)
   return false;
 #undef DO_
 }
 
 void Achieve::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:db.Achieve)
+  // @@protoc_insertion_point(serialize_start:dbproto.Achieve)
   // optional int32 id = 1 [default = 0];
   if (has_id()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->id(), output);
@@ -272,12 +272,12 @@ void Achieve::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:db.Achieve)
+  // @@protoc_insertion_point(serialize_end:dbproto.Achieve)
 }
 
 ::google::protobuf::uint8* Achieve::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:db.Achieve)
+  // @@protoc_insertion_point(serialize_to_array_start:dbproto.Achieve)
   // optional int32 id = 1 [default = 0];
   if (has_id()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->id(), target);
@@ -293,7 +293,7 @@ void Achieve::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:db.Achieve)
+  // @@protoc_insertion_point(serialize_to_array_end:dbproto.Achieve)
   return target;
 }
 
@@ -399,7 +399,7 @@ const int AchieveData::kAchievesFieldNumber;
 AchieveData::AchieveData()
   : ::google::protobuf::Message() {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:db.AchieveData)
+  // @@protoc_insertion_point(constructor:dbproto.AchieveData)
 }
 
 void AchieveData::InitAsDefaultInstance() {
@@ -409,7 +409,7 @@ AchieveData::AchieveData(const AchieveData& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:db.AchieveData)
+  // @@protoc_insertion_point(copy_constructor:dbproto.AchieveData)
 }
 
 void AchieveData::SharedCtor() {
@@ -419,7 +419,7 @@ void AchieveData::SharedCtor() {
 }
 
 AchieveData::~AchieveData() {
-  // @@protoc_insertion_point(destructor:db.AchieveData)
+  // @@protoc_insertion_point(destructor:dbproto.AchieveData)
   SharedDtor();
 }
 
@@ -460,7 +460,7 @@ bool AchieveData::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:db.AchieveData)
+  // @@protoc_insertion_point(parse_start:dbproto.AchieveData)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
@@ -480,7 +480,7 @@ bool AchieveData::MergePartialFromCodedStream(
         break;
       }
 
-      // repeated .db.Achieve achieves = 2;
+      // repeated .dbproto.Achieve achieves = 2;
       case 2: {
         if (tag == 18) {
          parse_achieves:
@@ -508,23 +508,23 @@ bool AchieveData::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:db.AchieveData)
+  // @@protoc_insertion_point(parse_success:dbproto.AchieveData)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:db.AchieveData)
+  // @@protoc_insertion_point(parse_failure:dbproto.AchieveData)
   return false;
 #undef DO_
 }
 
 void AchieveData::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:db.AchieveData)
+  // @@protoc_insertion_point(serialize_start:dbproto.AchieveData)
   // optional int32 uid = 1 [default = 0];
   if (has_uid()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->uid(), output);
   }
 
-  // repeated .db.Achieve achieves = 2;
+  // repeated .dbproto.Achieve achieves = 2;
   for (int i = 0; i < this->achieves_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->achieves(i), output);
@@ -534,18 +534,18 @@ void AchieveData::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:db.AchieveData)
+  // @@protoc_insertion_point(serialize_end:dbproto.AchieveData)
 }
 
 ::google::protobuf::uint8* AchieveData::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:db.AchieveData)
+  // @@protoc_insertion_point(serialize_to_array_start:dbproto.AchieveData)
   // optional int32 uid = 1 [default = 0];
   if (has_uid()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->uid(), target);
   }
 
-  // repeated .db.Achieve achieves = 2;
+  // repeated .dbproto.Achieve achieves = 2;
   for (int i = 0; i < this->achieves_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -556,7 +556,7 @@ void AchieveData::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:db.AchieveData)
+  // @@protoc_insertion_point(serialize_to_array_end:dbproto.AchieveData)
   return target;
 }
 
@@ -572,7 +572,7 @@ int AchieveData::ByteSize() const {
     }
 
   }
-  // repeated .db.Achieve achieves = 2;
+  // repeated .dbproto.Achieve achieves = 2;
   total_size += 1 * this->achieves_size();
   for (int i = 0; i < this->achieves_size(); i++) {
     total_size +=
@@ -652,6 +652,6 @@ void AchieveData::Swap(AchieveData* other) {
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace db
+}  // namespace dbproto
 
 // @@protoc_insertion_point(global_scope)

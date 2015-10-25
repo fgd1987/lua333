@@ -6,13 +6,13 @@ LIB_DIRS=-L$(ENGINE_PATH)/3rd/lua/src -L$(ENGINE_PATH)3rd/common -L$(ENGINE_PATH
 
 CFLAGS=-fPIC -shared -O2 -Wall 
 
-SO=globalsrv.so
+SO=gamesrv.so
 
-${SO}:interface.cc
+${SO}:interface.cc item/item.cc
 	g++ -o ${SO} ${CFLAGS} item/item.cc interface.cc ${INCLUDE_DIRS} ${LIB_DIRS} -llua -ltolua -lcommon
 
 tolua:
-	$(ENGINE_PATH)/3rd/tolua++/tolua++ -n globalsrv -o interface.cc interface.pkg
+	$(ENGINE_PATH)/3rd/tolua++/tolua++ -n gamesrv -o interface.cc interface.pkg
 
 test:
 	$(ENGINE_PATH)/bin/luaexe test.lua
