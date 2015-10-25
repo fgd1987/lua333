@@ -576,7 +576,6 @@ static int lmsg_tostring(lua_State *L){
     return 1;
 }
 
-
 static int lmsg_get(lua_State* L){
     LuaMessage *message_lua = (LuaMessage *)luaL_checkudata(L, 1, "LuaMessage");
     const char *field_name = lua_tostring(L, 2);

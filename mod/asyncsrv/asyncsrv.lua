@@ -4,7 +4,7 @@ module('Asyncsrv', package.seeall)
 
 loop = loop or nil
 
-function _init()
+function main()
     loop = Ae.create(10240)
 end
 
@@ -40,7 +40,7 @@ function recordpid()
     log('running pid(%d)', pid)
 end
 
-function main()
+function mainloop()
     --初始化环境
     Srvmain.main()
     --切换工作目录

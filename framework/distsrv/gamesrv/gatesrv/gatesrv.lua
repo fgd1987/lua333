@@ -6,7 +6,7 @@ gate_manager = gate_manager or {
     --[srvid] = {srvid = srvid, srvname = srvname}
 }
 
-function _init()
+function main()
     Pbc.import_dir(_CONF.protodir)
     portfd = Port.create(Ae.main_loop())
     listen()

@@ -3,7 +3,7 @@ module('Login', package.seeall)
 player_manager = player_manager or {}
 onlinenum = onlinenum or 0
 
-function _init()
+function main()
 
 end
 

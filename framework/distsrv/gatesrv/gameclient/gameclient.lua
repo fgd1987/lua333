@@ -5,7 +5,7 @@ socket_table = socket_table or {
     --[sockfd] = {srvid = 0, srvname =''. host = '', port = 33}
 }
 
-function _init()
+function main()
     portfd = Port.create(Ae.main_loop())
     Port.rename(portfd, 'Gameclient')
     Port.on_close(portfd, 'Gameclient.ev_close')

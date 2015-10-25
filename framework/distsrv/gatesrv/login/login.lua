@@ -2,7 +2,7 @@ module('Login', package.seeall)
 
 player_manager = player_manager or {}
 
-function _init()
+function main()
 end
 
 function REPLY(srvid, uid, msg)

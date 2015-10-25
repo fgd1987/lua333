@@ -12,7 +12,7 @@ function hello(timerid)
     return 1
 end
 
-function _init()
+function main()
     portfd = Port.create(Ae.main_loop())
     listen()
     --local timerid = Timer.addtimer(Ae.main_loop(), 1000, 'Gamesrv.hello')

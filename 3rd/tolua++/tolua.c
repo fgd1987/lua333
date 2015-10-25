@@ -142,7 +142,7 @@ int main (int argc, char* argv[])
   }
   lua_pop(L,1);
  }
-/* #define TOLUA_SCRIPT_RUN */
+ #define TOLUA_SCRIPT_RUN 
 #ifndef TOLUA_SCRIPT_RUN
  {
   int tolua_tolua_open (lua_State* L);
@@ -156,10 +156,10 @@ int main (int argc, char* argv[])
   p = strrchr(path,'/');
   if (p==NULL) p = strrchr(path,'\\');
   p = (p==NULL) ? path : p+1;
-  sprintf(p,"%s","../src/bin/lua/");
+  sprintf(p,"%s","lua/");
   lua_pushstring(L,path); lua_setglobal(L,"path");
 		strcat(path,"all.lua");
-  lua_dofile(L,path);
+  luaL_dofile(L,path);
  }
 #endif
  return 0;

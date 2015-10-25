@@ -97,9 +97,7 @@ static int lerrno(lua_State *L){
 }
 
 static int ltest(lua_State *L){
-    LOG_LOG("test");
-    lua_newtable(L);
-    return 1;
+    return 0;
 }
 
 static int lclose(lua_State *L){

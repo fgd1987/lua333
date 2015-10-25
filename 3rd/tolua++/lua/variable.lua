@@ -107,7 +107,6 @@ function classVariable:supcode ()
 
 	local prop_get,prop_set
 	if string.find(self.mod, 'tolua_property') then
-
 		_,_,type = string.find(self.mod, "tolua_property__([^%s]*)")
 		type = type or "default"
 		prop_get,prop_set = get_property_methods(type, self.name)

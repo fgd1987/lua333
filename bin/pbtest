@@ -1,5 +1,5 @@
 #!/usr/local/bin/luaexe
-dofile('/usr/local/bin/luaenv')
+dofile(os.getenv('LUA333_PATH')..'/bin/luaenv')
 --[[
 pbtest login
 pbtest login.login

@@ -5,8 +5,8 @@ tmp_player_manager = tmp_player_manager or {}
 player_manager = player_manager or {}
 onlinenum = onlinenum or 0
 
-function _init()
-    Pbc.import_dir(_CONF.dbproto_dir)
+function main()
+    --Pbc.import_dir(_CONF.dbproto_dir)
 --    Evdisp.add_timer(global_timer, Config.game_srv.save_interval * 1000, "Login.timer_check")
 end
 

@@ -2,16 +2,16 @@ module('Dbsrv', package.seeall)
 
 descriptors = {}
 
-function _init()
-    Pbc.import_dir(_CONF.dbproto_dir)
+function main()
+    --Pbc.import_dir(_CONF.dbproto_dir)
     --构建descriptor
-    for table_name, table_conf in pairs(_CONF.table_conf) do
-        if not table_conf.binary then
-            Dbsrv.descriptors[table_name] = pbc.get_descriptor(table_conf.file)
-        end
-    end
-    check_redis_connections()
-    check_mysql_connections()
+    --for table_name, table_conf in pairs(_CONF.table_conf) do
+    --    if not table_conf.binary then
+    --        Dbsrv.descriptors[table_name] = pbc.get_descriptor(table_conf.file)
+    --    end
+    --end
+    --check_redis_connections()
+    --check_mysql_connections()
 end
 
 function update()
@@ -97,7 +97,7 @@ function get_from_redis(srvid, uid, callback, ...)
             local table_name = table_array[idx]
             if v.type == 'string' then
                 local msg = pbc.msgnew(_CONF.table_conf[table_name].file)
-                pbc.parse_from_string(msg, v.value)
+                msg:parse_from_string(v.value)
                 table.insert(msg_array, msg)
                 log('load from redis %d.%s(%d)', uid, table_name, string.len(v.value))
                 total_size = total_size + string.len(v.value)

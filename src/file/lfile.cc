@@ -97,15 +97,27 @@ static int lbasename(lua_State *L){
     char *name;
     size_t str_len = 0;
     name = (char *)lua_tolstring(L, 1, &str_len);
-    for (size_t i = 0; i < str_len; i++) {
-        if (name[i] == '.') {
-            name[i] = 0;
-            lua_pushstring(L, name);
-            name[i] = '.';
-            return 1;
+    int startpos = 0;
+    for (int i = str_len - 1; i >= 0; i--) {
+        if (name[i] == '/') {
+            startpos = i + 1;
+            break;
         }
     }
-    return 0;
+    int endpos = str_len - 1;
+    for (int i = str_len - 1; i >= 0; i--) {
+        if (name[i] == '.') {
+            endpos = i - 1;
+            break;
+        }
+    }
+    if (startpos > endpos) {
+        lua_pushstring(L, "");
+        return 1;
+    } else {
+        lua_pushlstring(L, name + startpos, endpos - startpos + 1);
+        return 1;
+    }
 }
 
 static int lrename(lua_State *L){

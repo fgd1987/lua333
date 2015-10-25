@@ -26,5 +26,9 @@ for i, str in pairs(parts) do
     print(string.format('%d:%s', i, str))
 end
 
-
 print(string.cap('hello'))
+
+print(string.join('.', {'a', 'b', 'c'}))
+print(string.join('.', {'a'}))
+print(string.join('.', {}))
+

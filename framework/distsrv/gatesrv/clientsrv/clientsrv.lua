@@ -5,7 +5,7 @@ portfd = nil
 socket_manager = socket_manager or {}
 tmp_socket_manager = tmp_socket_manager or {}
 
-function _init()
+function main()
     portfd = Port.create(Ae.main_loop())
     Pbc.import_dir(_CONF.protodir)
     listen()

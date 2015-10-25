@@ -6,7 +6,7 @@ module('Adminsrv', package.seeall)
 
 portfd = nil
 
-function _init()
+function main()
     portfd = Port.create(Ae.main_loop())
     listen()
 end

@@ -165,102 +165,115 @@ function classFunction:supcode (local_constructor)
   end
  end
 
- local out = string.find(self.mod, "tolua_outside")
- -- call function
- if class and self.name=='delete' then
-  output('  delete self;')
- elseif class and self.name == 'operator&[]' then
-  if flags['1'] then -- for compatibility with tolua5 ?
-	output('  self->operator[](',self.args[1].name,'-1) = ',self.args[2].name,';')
-  else
-    output('  self->operator[](',self.args[1].name,') = ',self.args[2].name,';')
-  end
- else
-  output('  {')
-  if self.type ~= '' and self.type ~= 'void' then
-   output('  ',self.mod,self.type,self.ptr,'tolua_ret = ')
-   output('(',self.mod,self.type,self.ptr,') ')
-  else
-   output('  ')
-  end
-  if class and self.name=='new' then
-   output('new',self.type,'(')
-  elseif class and static then
-	if out then
-		output(self.name,'(')
-	else
-		output(class..'::'..self.name,'(')
-	end
-  elseif class then
-	if out then
-		output(self.name,'(')
-	else
-	  if self.cast_operator then
-	  	output('static_cast<',self.mod,self.type,self.ptr,'>(*self')
-	  else
-		output('self->'..self.name,'(')
-	  end
-	end
-  else
-   output(self.name,'(')
-  end
-
-  if out and not static then
-  	output('self')
-	if self.args[1] and self.args[1].name ~= '' then
-		output(',')
-	end
-  end
-  -- write parameters
-  local i=1
-  while self.args[i] do
-   self.args[i]:passpar()
-   i = i+1
-   if self.args[i] then
-    output(',')
-   end
-  end
-
-  if class and self.name == 'operator[]' and flags['1'] then
-	output('-1);')
-  else
-	output(');')
-  end
-
-  -- return values
-  if self.type ~= '' and self.type ~= 'void' then
-   nret = nret + 1
-   local t,ct = isbasic(self.type)
-   if t then
-   	if self.cast_operator and _basic_raw_push[t] then
-		output('   ',_basic_raw_push[t],'(tolua_S,(',ct,')tolua_ret);')
-   	else
-	    output('   tolua_push'..t..'(tolua_S,(',ct,')tolua_ret);')
-	end
-   else
-			 t = self.type
-			 new_t = string.gsub(t, "const%s+", "")
-    if self.ptr == '' then
-     output('   {')
-     output('#ifdef __cplusplus\n')
-     output('    void* tolua_obj = new',new_t,'(tolua_ret);')
-     output('    tolua_pushusertype_and_takeownership(tolua_S,tolua_obj,"',t,'");')
-     output('#else\n')
-     output('    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(',t,'));')
-     output('    tolua_pushusertype_and_takeownership(tolua_S,tolua_obj,"',t,'");')
-     output('#endif\n')
-     output('   }')
-    elseif self.ptr == '&' then
-     output('   tolua_pushusertype(tolua_S,(void*)&tolua_ret,"',t,'");')
-    else
-    	if local_constructor then
-	  output('   tolua_pushusertype_and_takeownership(tolua_S,(void *)tolua_ret,"',t,'");')
-    	else
-		     output('   tolua_pushusertype(tolua_S,(void*)tolua_ret,"',t,'");')
-	    end
+    local out = string.find(self.mod, "tolua_outside")
+    local isluafunc = false
+    if #self.args == 1 and self.args[1].type == 'lua_State*' then
+        isluafunc = true
     end
-   end
-  end
+    -- call function
+    if class and self.name=='delete' then
+        output('  delete self;')
+    elseif class and self.name == 'operator&[]' then
+        if flags['1'] then -- for compatibility with tolua5 ?
+	        output('  self->operator[](',self.args[1].name,'-1) = ',self.args[2].name,';')
+        else
+            output('  self->operator[](',self.args[1].name,') = ',self.args[2].name,';')
+        end
+    else
+        output('  {')
+        if out and self.type == 'int' then
+            --TODO
+            output('return')
+        elseif isluafunc then
+            output('return')
+        elseif self.type ~= '' and self.type ~= 'void' then
+            output('  ',self.mod,self.type,self.ptr,'tolua_ret = ')
+            output('(',self.mod,self.type,self.ptr,') ')
+        else
+            output('  ')
+        end
+        if class and self.name=='new' then
+            output('new',self.type,'(')
+        elseif class and static then
+	        if out then
+		        output(self.name,'(')
+	        else
+		        output(class..'::'..self.name,'(')
+	        end
+        elseif class then
+    	    if out then
+		        output(self.name,'(')
+	        else
+	            if self.cast_operator then
+	  	            output('static_cast<',self.mod,self.type,self.ptr,'>(*self')
+	            else
+		            output('self->'..self.name,'(')
+	            end
+	        end
+        else
+            output(self.name,'(')
+        end
+        if out and not static then
+  	        output('self')
+	        if self.args[1] and self.args[1].name ~= '' then
+		        output(',')
+	        end
+        end
+        -- write parameters
+        local i=1
+        while self.args[i] do
+            self.args[i]:passpar()
+            i = i+1
+            if self.args[i] then
+                output(',')
+            end
+        end
+
+        if class and self.name == 'operator[]' and flags['1'] then
+	        output('-1);')
+        else
+	        output(');')
+        end
+
+    -- return values
+        if self.type ~= '' and self.type ~= 'void' then
+            nret = nret + 1
+            local t,ct = isbasic(self.type)
+            if t then
+   	            if self.cast_operator and _basic_raw_push[t] then
+		            output('   ',_basic_raw_push[t],'(tolua_S,(',ct,')tolua_ret);')
+                elseif out and self.type == 'int' then
+                    --TODO
+                    output('')
+                elseif isluafunc then
+                    output('')
+   	            else
+	                output('   tolua_push'..t..'(tolua_S,(',ct,')tolua_ret);')
+	            end
+            else
+			    t = self.type
+			    new_t = string.gsub(t, "const%s+", "")
+                if self.ptr == '' then
+                    output('   {')
+                    output('#ifdef __cplusplus\n')
+                    output('    void* tolua_obj = new',new_t,'(tolua_ret);')
+                    output('    tolua_pushusertype_and_takeownership(tolua_S,tolua_obj,"',t,'");')
+                    output('#else\n')
+                    output('    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(',t,'));')
+                    output('    tolua_pushusertype_and_takeownership(tolua_S,tolua_obj,"',t,'");')
+                    output('#endif\n')
+                    output('   }')
+                elseif self.ptr == '&' then
+                    output('   tolua_pushusertype(tolua_S,(void*)&tolua_ret,"',t,'");')
+                else
+    	            if local_constructor then
+	                    output('   tolua_pushusertype_and_takeownership(tolua_S,(void *)tolua_ret,"',t,'");')
+    	            else
+		                output('   tolua_pushusertype(tolua_S,(void*)tolua_ret,"',t,'");')
+	                end
+                end
+            end
+        end
   local i=1
   while self.args[i] do
    nret = nret + self.args[i]:retvalue()

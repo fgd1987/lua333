@@ -1,7 +1,8 @@
 #!/usr/local/bin/luaexe
-dofile('/usr/local/bin/luaenv')
+dofile(os.getenv('LUA333_PATH')..'/bin/luaenv')
 --建表脚本
 
+require('Config')
 --功能:创建表
 function create_binary_table(conn, dbname, table_name)
     local str = string.format('CREATE TABLE %s(uid INT NOT NULL, table_bin BLOB NOT NULL, update_time INT NOT NULL, PRIMARY KEY(`uid`)) ENGINE = INNODB DEFAULT CHARSET = utf8;', table_name)

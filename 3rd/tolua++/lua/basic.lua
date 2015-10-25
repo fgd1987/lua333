@@ -14,8 +14,11 @@
 -- Basic C types and their corresponding Lua types
 -- All occurrences of "char*" will be replaced by "_cstring",
 -- and all occurrences of "void*" will be replaced by "_userdata"
+-- TODO
 _basic = {
  ['void'] = '',
+ ['int32'] = 'number',
+ ['int64'] = 'number',
  ['char'] = 'number',
  ['int'] = 'number',
  ['short'] = 'number',
@@ -296,6 +299,15 @@ function get_property_methods(ptype, name)
 	if ptype == "default" then -- get_name, set_name
 		return "get_"..name, "set_"..name
 	end
+
+	if ptype == "msg" then -- name, set_name
+        --TODO
+		return "mutable_"..name, 'set_allocated_'..name
+    end
+	if ptype == "pb" then -- name, set_name
+        --TODO
+		return name, "set_"..name
+    end
 
 	if ptype == "qt" then -- name, setName
 		return name, "set"..string.upper(string.sub(name, 1, 1))..string.sub(name, 2, -1)

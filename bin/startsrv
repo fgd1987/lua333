@@ -1,36 +1,30 @@
 #!/usr/local/bin/luaexe
-dofile('/usr/local/bin/luaenv')
-print(arg)
+local engine_path = os.getenv('LUA333_PATH')
+dofile(engine_path..'/bin/luaenv')
+package.cpath = './lib/?.so;'..package.cpath
 local srvname = arg[1]
-print('safsadf')
-
 print('=================================')
 print('       lua333 gamesrv            ')
 print('=================================')
-
 print(string.format('srvname(%s)', srvname))
-
 print('----------引擎信息----------')
-print(string.format('engine_path(%s)', Config.engine_path))
-
+print(string.format('engine_path(%s)', engine_path))
 print('----------初始化环境----------')
 print(string.format('package.path(%s)', package.path))
 print(string.format('package.cpath(%s)', package.cpath))
-
 print('----------导入函数库----------')
---导入必须的c库
---导入必须的lua库
 --print('Config =')
 --print(Json.encode(Config))
+require('Config')
 
+local srvlist = require('etc/srvlist')
 local srvconf = nil
-for _, _srvconf in pairs(Config.srvlist) do
+for _, _srvconf in pairs(srvlist) do
     if _srvconf.srvname == srvname then
         srvconf = _srvconf
         break
     end
 end
-
 if not srvconf then
     print(string.format('srvname(%s) not found', srvname))
     return
@@ -38,12 +32,12 @@ end
 print(string.format('start %s', srvconf.srvname))
 Config.srvid = srvconf.srvid
 Config.srvname = srvconf.srvname
+Config.script_dir = srvconf.script_dir
 
---加载模块
+require(Config.script_dir..'/main')
 print('----------加载模块----------')
-print(Json.encode(srvconf.mod))
-table.insert(Mod.search_path, Config.engine_path)
-for _, mod_conf in pairs(srvconf.mod) do
+table.insert(Mod.search_path, engine_path)
+for _, mod_conf in pairs(Main.config) do
     local mod_path = mod_conf[1]
     print(string.format('load mod(%s)', mod_path))
     local mod = Mod.load(mod_path)
@@ -51,7 +45,5 @@ for _, mod_conf in pairs(srvconf.mod) do
     print('')
     mod._CONF = mod_conf
 end
-
-Mod.call('_init')
 Mod.call('main')
---Asyncsrv.mainloop()
+Main.main()

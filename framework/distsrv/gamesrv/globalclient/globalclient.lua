@@ -3,7 +3,7 @@ module('Globalclient', package.seeall)
 portfd = nil
 socket_table = socket_table or {}
 
-function _init()
+function main()
     portfd = Port.create(Ae.main_loop())
     Port.rename(portfd, "Globalclient")
     Port.on_close(portfd, 'Globalclient.ev_close')

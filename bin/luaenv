@@ -1,6 +1,6 @@
-dofile('config.lua')
-package.path = string.format('%s/?.lua;', Config.engine_path)..package.path
-package.cpath = string.format('%s/lib/?.so;', Config.engine_path)..package.cpath
+local engine_path = os.getenv('LUA333_PATH')
+package.path = (engine_path..'/?.lua;')..package.path
+package.cpath = (engine_path..'/lib/?.so;')..package.cpath
 --导入必须的c库
 require('stringpatch')
 require('bitpatch')
@@ -19,6 +19,6 @@ require('file')
 --导入必须的lua库
 require('mod.mod.mod')
 require('mod.log.log')
-table.insert(Mod.search_path, Config.engine_path)
+table.insert(Mod.search_path, engine_path)
 Mod.load('mod/pbc')
 print('initenv finished')

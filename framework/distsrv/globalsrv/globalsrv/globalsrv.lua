@@ -4,7 +4,7 @@ portfd = nil
 
 global_manager = {}
 
-function _init()
+function main()
     portfd = Port.create(Ae.main_loop())
     listen()
 end

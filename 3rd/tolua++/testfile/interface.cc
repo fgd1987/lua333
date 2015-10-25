@@ -1,6 +1,6 @@
 /*
 ** Lua binding: gamesrv
-** Generated automatically by tolua++-1.0.92 on Wed Oct 21 08:55:50 2015.
+** Generated automatically by tolua++-1.0.92 on Sat Oct 24 23:17:25 2015.
 */
 
 #ifndef __cplusplus
@@ -138,8 +138,10 @@ TOLUA_API int tolua_gamesrv_open (lua_State* tolua_S)
 
 
 #if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM >= 501
+ extern "C"{
  TOLUA_API int luaopen_gamesrv (lua_State* tolua_S) {
  return tolua_gamesrv_open(tolua_S);
 };
+}
 #endif
 

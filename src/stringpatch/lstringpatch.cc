@@ -58,6 +58,53 @@ static int lcap(lua_State *L){
     return 0;
 }
 
+static char *s_join_buf;
+static int s_join_buf_len = 0;
+static int ljoin(lua_State *L){
+    if (lua_isstring(L, 1) && lua_istable(L, 2)) {
+        char *joinstr = (char *)lua_tostring(L, 1);
+        size_t str_len = 1;
+        lua_pushnil(L);
+        int count = 0;
+        while (lua_next(L, 2) != 0) {
+            size_t len;
+            lua_tolstring(L, -1, &len);
+            str_len += (len + 1);
+            lua_pop(L, 1);
+            count = count + 1;
+        }
+        if (s_join_buf_len < str_len) {
+            char *newbuf;
+            if (s_join_buf != NULL) {
+                newbuf = (char *)realloc(s_join_buf, str_len);
+            } else {
+                newbuf = (char *)malloc(str_len);
+            }
+            if (newbuf == NULL) {
+                return 0;
+            }
+            s_join_buf = newbuf;
+            s_join_buf_len = str_len;
+        }
+        s_join_buf[0] = 0;
+        lua_pushnil(L);
+        while (lua_next(L, 2) != 0) {
+            size_t len;
+            char *str = (char *)lua_tolstring(L, -1, &len);
+            str_len += (len + 1);
+            strcat(s_join_buf, str);
+            if (count > 1) {
+                strcat(s_join_buf, joinstr);
+            }
+            lua_pop(L, 1);
+            count = count - 1;
+        }
+        lua_pushstring(L, s_join_buf);
+        return 1;
+    }
+    return 0;
+}
+
 static int lsplit(lua_State *L){
     size_t i;
     if (lua_isstring(L, 1) && lua_isstring(L, 2)) {
@@ -93,6 +140,7 @@ static int lsplit(lua_State *L){
 
 static luaL_Reg lua_lib[] ={
     {"split", lsplit},
+    {"join", ljoin},
     {"cap", lcap},
     {"md5", lmd5},
     {NULL, NULL}
