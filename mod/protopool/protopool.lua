@@ -18,6 +18,10 @@ basetype = {
 
 descriptors = descriptors or {}
 
+function test()
+    log('test')
+end
+
 function import(filepath)
     print('import', filepath)
     local file = io.open(filepath, 'r')
@@ -97,8 +101,6 @@ function import(filepath)
     end
 end
 
-
 function get_descriptor(class_name)
     return descriptors[class_name]
 end
-

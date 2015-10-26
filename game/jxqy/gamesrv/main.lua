@@ -10,6 +10,7 @@ function main()
     Item.add_item(playerdata, 1, 2)
     Item.del_item(playerdata, 1, 2)
     print('playerdata.uid', playerdata.uid)
+    Protopool.test()
     Asyncsrv.mainloop()
 end
 
@@ -20,10 +21,13 @@ config= {
     {'mod/callproto'},
     {'mod/pbproto'},
     {'mod/asyncsrv'},
+    {'mod/protopool'},
+    --[[
     {'framework/distsrv/gamesrv/gatesrv',
         host = '0.0.0.0', port = 3332,
         protodir = 'proto',
     },
+    --]]
     --[[
     {'framework/distsrv/gamesrv/globalclient',
         globalsrv_list = {

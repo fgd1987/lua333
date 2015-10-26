@@ -10,12 +10,12 @@ SOURCE = $(wildcard \
 		 *.cc \
 		 item/*.cc) 
 
-SO=gamesrv.so
+SO=globalsrv.so
 
 ${SO}:$(SOURCE)
 	g++ -o ${SO} ${CFLAGS} $(SOURCE) ${INCLUDE_DIRS} ${LIB_DIRS} -llua -ltolua -lcommon
 tolua:
-	$(ENGINE_PATH)/3rd/tolua++/tolua++ -n gamesrv -o interface.cc interface.pkg
+	$(ENGINE_PATH)/3rd/tolua++/tolua++ -n globalsrv -o interface.cc interface.pkg
 test:
 	$(ENGINE_PATH)/bin/luaexe test.lua
 clean:
