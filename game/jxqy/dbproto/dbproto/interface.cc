@@ -1,6 +1,6 @@
 /*
 ** Lua binding: dbproto
-** Generated automatically by tolua++-1.0.92 on Tue Oct 27 04:40:27 2015.
+** Generated automatically by tolua++-1.0.92 on Mon Oct 26 23:06:24 2015.
 */
 
 #ifndef __cplusplus
@@ -99,33 +99,6 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"dbproto::FriendData");
  tolua_usertype(tolua_S,"dbproto::Task");
 }
-
-/* function: dbproto_msgnew */
-#ifndef TOLUA_DISABLE_tolua_dbproto_dbproto_msgnew00
-static int tolua_dbproto_dbproto_msgnew00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
-     !tolua_isnoobj(tolua_S,1,&tolua_err)
- )
-  goto tolua_lerror;
- else
-#endif
- {
-  lua_State* L =  tolua_S;
-  {
-return dbproto_msgnew(L);
-  }
- }
- return 1;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'msgnew'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
 
 /* method: new of class  dbproto::FriendData */
 #ifndef TOLUA_DISABLE_tolua_dbproto_dbproto_FriendData_new00
@@ -4032,10 +4005,6 @@ TOLUA_API int tolua_dbproto_open (lua_State* tolua_S)
  tolua_reg_types(tolua_S);
  tolua_module(tolua_S,NULL,0);
  tolua_beginmodule(tolua_S,NULL);
-  tolua_module(tolua_S,"dbproto",0);
-  tolua_beginmodule(tolua_S,"dbproto");
-   tolua_function(tolua_S,"msgnew",tolua_dbproto_dbproto_msgnew00);
-  tolua_endmodule(tolua_S);
   tolua_module(tolua_S,"dbproto",0);
   tolua_beginmodule(tolua_S,"dbproto");
    #ifdef __cplusplus

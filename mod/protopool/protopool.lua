@@ -22,6 +22,22 @@ function test()
     log('test')
 end
 
+function msgnew(msgname)
+    local class = string.gettable(msgname)
+    local func = class['new']
+    return func()
+end
+
+function import_dir(dir)
+    local files = File.listdir(dir)
+    for _, file in pairs(files) do
+        if file.type == 'file' and string.find(file.name, '.proto$') then
+            log('load proto(%s)', file.name)
+            import(string.format('%s/%s'), dir, file.name)
+        end
+    end
+end
+
 function import(filepath)
     print('import', filepath)
     local file = io.open(filepath, 'r')
@@ -94,6 +110,7 @@ function import(filepath)
                 local descriptor = descriptors[cur_class_name] 
                 descriptor.field[varname] = {unname = unname, vartype = vartype, varname = varname, tag = tag, default = default}
                 if not basetype[vartype] then
+                    descriptor.field[varname].is_message = true
                     descriptor.field[varname].vartype = string.format('%s.%s', descriptor.package, descriptor.field[varname].vartype)
                 end
             end

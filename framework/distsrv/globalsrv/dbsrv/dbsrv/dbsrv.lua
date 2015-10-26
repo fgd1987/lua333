@@ -10,8 +10,8 @@ function main()
     --        Dbsrv.descriptors[table_name] = pbc.get_descriptor(table_conf.file)
     --    end
     --end
-    --check_redis_connections()
-    --check_mysql_connections()
+    check_redis_connections()
+    check_mysql_connections()
 end
 
 function update()
@@ -37,17 +37,18 @@ local function select_from_mysql(uid, table_name)
         logerr('select %d.%s fail', uid, table_name)
         return false
     end
-    local pb_file = _CONF.table_conf[table_name].file
-    local msg = pbc.msgnew(pb_file)
+    local pb_class = _CONF.table_conf[table_name].class
+    local msg = Protopool.msgnew(pb_class)
     if not result then
         return msg, ''
     end
-    local descriptor = Dbsrv.descriptors[table_name]
+    local descriptor = Protopool.get_descriptor(table_name)
     if descriptor then
-        for field_name, field in pairs(descriptor) do
-            if field.type == 'message' then
-                local filed_msg = msg[field_name]
-                if not pbc.parse_from_string(filed_msg, result[field_name]) then
+        local fields = descriptor.fields
+        for field_name, field in pairs(fields) do
+            if field.is_message then
+                local field_msg = msg[field_name]
+                if not field_msg:parse_from_string(result[field_name]) then
                     logerr('%d.%s.%s parse fail', uid, table_name, field_name)
                     return false
                 end
@@ -55,7 +56,7 @@ local function select_from_mysql(uid, table_name)
                 msg[field_name] = result[field_name]
             end
         end
-        local table_bin = pbc.tostring(msg)
+        local table_bin = msg:tostring()
         if not table_bin then
             logerr('load from mysql %d.%s tostring fail', uid, table_name)
             return false
@@ -64,7 +65,7 @@ local function select_from_mysql(uid, table_name)
         return msg, table_bin
     else
         local table_bin = result.table_bin
-        pbc.parse_from_string(msg, table_bin)
+        msg:parse_from_string(table_bin)
         log('load from mysql %d.%s(%d)', uid, table_name, string.len(table_bin))
         return msg, table_bin
     end
@@ -96,7 +97,7 @@ function get_from_redis(srvid, uid, callback, ...)
         for idx, v in pairs(redis_reply.value) do
             local table_name = table_array[idx]
             if v.type == 'string' then
-                local msg = pbc.msgnew(_CONF.table_conf[table_name].file)
+                local msg = Protopool.msgnew(_CONF.table_conf[table_name].class)
                 msg:parse_from_string(v.value)
                 table.insert(msg_array, msg)
                 log('load from redis %d.%s(%d)', uid, table_name, string.len(v.value))
@@ -111,14 +112,7 @@ function get_from_redis(srvid, uid, callback, ...)
     return true
 end
 
---功能:取玩家表
---@srvid
-function GET(srvid, uid, callback, ...)
-    if _CONF.redis_conf then
-        if get_from_redis(srvid, uid, callback, ...) then
-            return
-        end
-    end
+function get_from_mysql(srvid, uid, callback, ...)
     local total_size = 0
     local table_array = {...}
     local msg_array = {}
@@ -137,25 +131,34 @@ function GET(srvid, uid, callback, ...)
     end
     log('total_size(%d)', total_size)
     --存到redis
-    if _CONF.redis_conf then
-        local conn = select_redis_connection(uid)
-        if conn then
-            Redis.hmset(conn, uid, unpack(mset_args))
-            Redis.command(conn, string.format('EXPIRE %d %d', uid, _CONF.expire_sec))
-        end
+    local conn = select_redis_connection(uid)
+    if conn then
+        Redis.hmset(conn, uid, unpack(mset_args))
+        Redis.command(conn, string.format('EXPIRE %d %d', uid, _CONF.expire_sec))
     end
     POST(srvid, callback, uid, 1, unpack(msg_array))
 end
 
+--功能:取玩家表
+--@srvid
+function GET(srvid, uid, callback, ...)
+    if get_from_redis(srvid, uid, callback, ...) then
+        return
+    end
+    if get_from_mysql(srvid, uid, callback, ...) then
+        return
+    end
+end
+
 --保存到redis
-function save_to_redis(srvid, uid, callback, ...)
+function set_to_redis(srvid, uid, callback, ...)
     local args = {...}
     local mset_args = {}
     local savelist = ''..uid
     for i = 1, #args, 2 do
         local table_name = args[i]
         local msg = args[i + 1]
-        local table_bin = pbc.tostring(msg)
+        local table_bin = msg:tostring()
         table.insert(mset_args, table_name)
         table.insert(mset_args, table_bin)
         savelist = savelist..' '..table_name
@@ -184,7 +187,7 @@ function save_to_redis(srvid, uid, callback, ...)
     return true
 end
 
-function save_to_mysql(srvid, uid, callback, ...)
+function set_to_mysql(srvid, uid, callback, ...)
     local total_size = 0
     local args = {...}
     local conn = select_mysql_connection(uid)
@@ -197,9 +200,9 @@ function save_to_mysql(srvid, uid, callback, ...)
         local table_name = args[i]
         local msg = args[i + 1]
         --是否要展开这个表
-        local descriptor = descriptors[table_name]
+        local descriptor = Protopool.descriptors(table_name)
         if not descriptor then
-            local table_bin = pbc.tostring(msg)
+            local table_bin = msg:tostring()
             local sql_str = string.format("replace into %s (uid, table_bin, update_time) VALUES (%d, '%s', %d)", table_name, uid, Mysql.escape(conn, table_bin), timenow)
             if not Mysql.command(conn, sql_str) then
                 logerr('%s replace fail', table_name)
@@ -207,9 +210,9 @@ function save_to_mysql(srvid, uid, callback, ...)
             end
             log('save %d.%s(%d) success', uid, table_name, string.len(table_bin))
         else
-            local file_path = _CONF.table_conf[table_name].file
+            local pb_class = _CONF.table_conf[table_name].class
             local sql_str = string.format('replace into '..table_name..' (')
-            for field_name, field in pairs(descriptor) do
+            for field_name, field in pairs(descriptor.field) do
                 local value = msg[field_name]
                 sql_str = sql_str..field_name..','
             end
@@ -221,7 +224,7 @@ function save_to_mysql(srvid, uid, callback, ...)
                     sql_str = sql_str..value..','
                 elseif field.type == 'string' then
                     sql_str = sql_str..'\''..Mysql.escape(conn, value)..'\','
-                elseif field.type == 'message' then
+                elseif field.is_message then
                     sql_str = sql_str..'\''..Mysql.escape(conn, value:tostring())..'\','
                 end
             end
@@ -231,7 +234,7 @@ function save_to_mysql(srvid, uid, callback, ...)
                 logerr('%s expand fail', table_name)
                 return
             end
-            log('save %d.%s(%d) success', uid, table_name, pbc.bytesize(msg))
+            log('save %d.%s(%d) success', uid, table_name, msg:bytesize())
         end
     end
     return true
@@ -241,14 +244,14 @@ end
 --@srvid
 --@msg db_srv.SET
 function SET(srvid, uid, callback, ...)
-    if not save_to_redis(srvid, uid, callback, ...) then
+    if not set_to_redis(srvid, uid, callback, ...) then
         --写缓存失败，马上写数据库
-        if not save_to_mysql(srvid, uid, callback, ...) then
+        if not set_to_mysql(srvid, uid, callback, ...) then
             POST(srvid, callback, uid, 0)
         end
     end
     if not _CONF.delay_write then
-        if not save_to_mysql(srvid, uid, callback, ...) then
+        if not set_to_mysql(srvid, uid, callback, ...) then
             POST(srvid, callback, uid, 0)
             return
         end

@@ -11,6 +11,8 @@ function main()
     Item.del_item(playerdata, 1, 2)
     print('playerdata.uid', playerdata.uid)
     Protopool.test()
+    local msg = Protopool.msgnew('dbproto.PlayerData')
+    print(msg:msgname())
     Asyncsrv.mainloop()
 end
 

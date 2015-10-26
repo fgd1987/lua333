@@ -34,7 +34,7 @@ config = {
         },
         --结构表和对象的映射
         table_conf = {
-            user = {file = 'dbproto.UserData'},
+            user = {class = 'dbproto.UserData'},
         },
     },
     {'framework/distsrv/globalsrv/gamesrv',

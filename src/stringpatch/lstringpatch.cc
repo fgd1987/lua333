@@ -105,6 +105,49 @@ static int ljoin(lua_State *L){
     return 0;
 }
 
+static int lgettable(lua_State *L) {
+    char *func = (char *)lua_tostring(L, 1);
+    char *start = (char *)func;
+    char *class_name = start;
+    char *pfunc = start;
+    while(*pfunc != 0){
+        if(*pfunc == '.' && class_name == start){
+            *pfunc = 0;
+            lua_getglobal(L, class_name);
+            *pfunc = '.';
+            if(lua_isnil(L, -1)){
+                return 0;
+            }
+            class_name = pfunc + 1;
+        }else if(*pfunc == '.'){
+            *pfunc = 0;
+            lua_pushstring(L, class_name);
+            lua_gettable(L, -2);
+            *pfunc = '.';
+            if(lua_isnil(L, -1)){
+                return 0;
+            }
+    	    lua_remove(L, -2);//弹出table
+            class_name = pfunc + 1;
+        }
+        pfunc++;
+    }
+    if(class_name == start){
+        lua_getglobal(L, class_name);
+        if(lua_isnil(L, -1)){
+            return 0;
+        }
+    }else{
+        lua_pushstring(L, class_name);
+        lua_gettable(L, -2);
+        if(lua_isnil(L, -1)){
+            return 0;
+        }
+        lua_remove(L, -2);//弹出table
+    }
+    return 1;     
+}
+
 static int lsplit(lua_State *L){
     size_t i;
     if (lua_isstring(L, 1) && lua_isstring(L, 2)) {
@@ -139,6 +182,7 @@ static int lsplit(lua_State *L){
 }
 
 static luaL_Reg lua_lib[] ={
+    {"gettable", lgettable},
     {"split", lsplit},
     {"join", ljoin},
     {"cap", lcap},
