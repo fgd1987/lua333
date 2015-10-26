@@ -1,6 +1,6 @@
 /*
 ** Lua binding: dbproto
-** Generated automatically by tolua++-1.0.92 on Sun Oct 25 21:42:14 2015.
+** Generated automatically by tolua++-1.0.92 on Tue Oct 27 04:40:27 2015.
 */
 
 #ifndef __cplusplus

@@ -2,6 +2,7 @@ module('Main', package.seeall)
 
 function main()
     print('globalsrv main')
+    --[[
     require('globalsrv')
     require('dbproto')
     local playerdata = dbproto.PlayerData:new()
@@ -10,6 +11,7 @@ function main()
     Item.add_item(playerdata, 1, 2)
     Item.del_item(playerdata, 1, 2)
     print('playerdata.uid', playerdata.uid)
+    --]]
     Asyncsrv.mainloop()
 end
 

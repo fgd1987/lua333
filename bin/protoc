@@ -1,5 +1,5 @@
 #!/usr/local/bin/luaexe
-dofile(os.getenv('LUA333_PATH')..'/bin/luaenv')
+dofile(os.getenv('ENGINE_PATH')..'/bin/luaenv')
 --[[
 --1.从proto 通过protoc *.pb.cc *.pb.h
 --2.从proto 生成 *.cc *.h *.pkg makefile

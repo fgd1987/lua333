@@ -1,6 +1,7 @@
 #include "lstrc.h"
 #include "actordb.h"
 #include <stdlib.h>
+#include <string.h>
 extern "C"{
 #include <lua.h>
 #include <lualib.h>

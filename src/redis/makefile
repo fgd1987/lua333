@@ -1,5 +1,4 @@
 CC=g++
-ENGINE_PATH=../..
 INCLUDE_DIRS=-I${ENGINE_PATH}/3rd/lua/src -I${ENGINE_PATH}/3rd/redis/src -I${ENGINE_PATH}/3rd/hiredis
 LIB_DIRS=-L${ENGINE_PATH}/3rd/lua/src/ -L${ENGINE_PATH}/3rd/hiredis
 CFLAGS=-fPIC -shared -O2 -Wall 

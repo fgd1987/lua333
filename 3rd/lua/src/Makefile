@@ -49,7 +49,7 @@ o:	$(ALL_O)
 a:	$(ALL_A)
 
 $(LUA_SO): $(CORE_O) $(LIB_O)
-	$(CC) -o $@ -shared $?
+	$(CC) -o $@ -shared $(LIBS) $?
 
 $(LUA_A): $(CORE_O) $(LIB_O)
 	$(AR) $@ $(CORE_O) $(LIB_O)	# DLL needs all object files

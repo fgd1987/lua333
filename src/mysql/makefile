@@ -1,7 +1,6 @@
 CC=g++
-ENGINE_PATH=../..
 ifeq ($(shell getconf LONG_BIT), 64)
-INCLUDE_DIRS=-I${ENGINE_PATH}/3rd/lua/src -I/usr/include/mysql -I${ENGINE_PATH}./3rd/common
+INCLUDE_DIRS=-I${ENGINE_PATH}/3rd/lua/src -I/usr/include/mysql -I${ENGINE_PATH}/3rd/common
 LIB_DIRS=-L${ENGINE_PATH}3rd/lua/src/ -L/usr/lib64/mysql/ -L${ENGINE_PATH}/3rd/common
 CFLAGS=-fPIC -shared -O2 -Wall 
 SO=mysql.so

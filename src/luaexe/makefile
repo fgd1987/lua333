@@ -1,5 +1,4 @@
 CC=gcc
-ENGINE_PATH=../..
 INCLUDE_DIRS=-I${ENGINE_PATH}/3rd/lua/src
 LIB_DIRS=-L${ENGINE_PATH}/3rd/lua/src
 CFLAGS=-O2 -Wall 

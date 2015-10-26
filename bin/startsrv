@@ -1,6 +1,6 @@
 #!/usr/local/bin/luaexe
-local engine_path = os.getenv('LUA333_PATH')
-dofile(engine_path..'/bin/luaenv')
+dofile(os.getenv('ENGINE_PATH')..'/bin/luaenv')
+local engine_path = os.getenv('ENGINE_PATH')
 package.cpath = './lib/?.so;'..package.cpath
 local srvname = arg[1]
 print('=================================')
@@ -15,7 +15,7 @@ print(string.format('package.cpath(%s)', package.cpath))
 print('----------导入函数库----------')
 --print('Config =')
 --print(Json.encode(Config))
-require('Config')
+require('config')
 
 local srvlist = require('etc/srvlist')
 local srvconf = nil

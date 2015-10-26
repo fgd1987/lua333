@@ -17,6 +17,10 @@ print('achieve_data', achieve_data)
 local achieve = achieve_data:add_achieves()
 print('achieve', achieve)
 achieve.id = 3
+local testtable = {}
+for i = 1, 10000000 do
+    testtable.hello = i
+end
 local achieve1 = achieve_data:get_achieves(0)
 achieve1:add_value(1)
 achieve1:add_value(2)
@@ -36,3 +40,4 @@ print('achieves size', achieve_data:achieves_size())
 achieve_data:del_achieves(0)
 print('achieves size', achieve_data:achieves_size())
 achieve_data:del_achieves(0)
+

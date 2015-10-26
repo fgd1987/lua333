@@ -1,5 +1,5 @@
 #!/usr/local/bin/luaexe
-dofile(os.getenv('LUA333_PATH')..'/bin/luaenv')
+dofile(os.getenv('ENGINE_PATH')..'/bin/luaenv')
 --连上管理台，调用函数
 --
 local usage = [[

@@ -1,5 +1,4 @@
 CC=g++
-ENGINE_PATH=../..
 INCLUDE_DIRS=-I${ENGINE_PATH}/3rd/lua/src -I${ENGINE_PATH}/3rd/common -I${ENGINE_PATH}/3rd/protobuf/src
 LIB_DIRS=-L${ENGINE_PATH}/3rd/lua/src -L${ENGINE_PATH}/3rd/common ${ENGINE_PATH}/lib/libprotobuf.a
 CFLAGS=-fPIC -shared -O2 -Wall 

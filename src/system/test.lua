@@ -11,6 +11,6 @@ for _, file in pairs(files) do
 end
 --]]
 --
-for i = 1, 10000000 do
+for i = 1, 100000000 do
     System.test()
 end
