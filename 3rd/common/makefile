@@ -6,6 +6,8 @@ SO=libcommon.so
 
 ${SO}:log.c cstr.h cstr.cc hash.h hash.cc array.h array.cc object.h object.cc
 	g++ -o ${SO} ${CFLAGS} log.c cstr.cc hash.cc object.cc array.cc ${INCLUDE_DIRS} ${LIB_DIRS} 
+
+test:
 	g++ -o test -fPIC -O2 -Wall test.cc -L. -lcommon 
 
 clean:
