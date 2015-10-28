@@ -31,11 +31,6 @@ function clearpid()
 end
 
 function recordpid()
-    if File.exists('pid') then
-        log('pid file exists')
-        os.exit(1)
-        return
-    end
     local pid = System.getpid()
     local file = io.open('pid', 'w+')
     file:write(pid)
@@ -67,10 +62,15 @@ function mainloop()
     File.mkdirs(running_dir)
     File.chdir(running_dir)
     log('running dir(%s)', File.getcwd())
-    recordpid()
+    if File.exists('pid') then
+        log('pid file exists')
+        os.exit(1)
+        return
+    end
     if Config.daemon then
         Log.logfile(Config.srvname, 10000, running_dir)
         Srvmain.daemon()
+        recordpid()
     end
     initenv()
     Ae.main(loop)
