@@ -23,13 +23,13 @@ function ev_close(sockfd, host, port, reason)
 end
 
 function send(player, msgname, params)
-    local msg = pbc.msgnew(msgname)
+    local msg = Pbc.msgnew(msgname)
     for k, v in pairs(params) do
         msg[k] = v
     end
     local sockfd = player.sockfd
     if not sockfd then
-        local conf = Config.pbtest
+        local conf = PbClientConf
         sockfd = Port.syncconnect(portfd, conf.host, conf.port)
         if not sockfd then
             logerr('connect fail')
@@ -42,7 +42,7 @@ function send(player, msgname, params)
         player.sockfd = sockfd
     end
     Pbproto.send(sockfd, msg)
-    log('send msg(%s) success', pbc.msgname(msg))
+    log('send msg(%s) success', msg:msgname())
 end
 
 --接收消息
@@ -51,9 +51,9 @@ function recv(player, msgname)
         Ae.run_once(loop)
         local _, msgname, msg = Pbproto.decode(player.sockfd)
         if  msg then
-            log(string.format('recv msg name(%s)', pbc.msgname(msg))) 
-            if pbc.msgname(msg) == msgname then
-                log(pbc.debug_string(msg))
+            log(string.format('recv msg name(%s)', msg:msgname())) 
+            if msg:msgname() == msgname then
+                log(msg:debug_string())
                 return msg
             end
         end

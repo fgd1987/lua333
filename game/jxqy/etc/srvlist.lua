@@ -1,6 +1,4 @@
 
-
-
 local config = {
     {srvid = 1001, script_dir = 'gatesrv',      srvname = 'gatesrv1'},
     {srvid = 2001, script_dir = 'globalsrv',    srvname = 'globalsrv1'},

@@ -65,23 +65,23 @@ function decode(sockfd)
         return
     end
     --print(err, msgbuf, msglen, msgname)
-    local msg = pbc.msgnew(msgname)
-    pbc.parse_from_buf(msg, msgbuf, msglen)
+    local msg = Pbc.msgnew(msgname)
+    msg:parse_from_buf(msgbuf, msglen)
     log('[PB][RECV] msgname(%s)', msgname)
     return nil, msgname, msg
 end
 
 function send(sockfd, msg)
     local seq = 0
-    local msgname = pbc.msgname(msg)
-    local msglen = pbc.bytesize(msg)
+    local msgname = msg:msgname()
+    local msglen = msg:bytesize()
     local plen = 2 + 2 + 2 + string.len(msgname) + msglen
     local buf = Sendbuf.alloc(sockfd, plen)
     local arfd = Ar.create(buf, plen)
     Ar.writeint16(arfd, plen)
     Ar.writeint16(arfd, seq)
     Ar.writelstr(arfd, msgname)
-    pbc.serialize(msg, Ar.getptr(arfd))
+    msg:serialize(Ar.getptr(arfd))
     Sendbuf.flush(sockfd, buf, plen)
     Ar.free(arfd)
     Port.add_write_event(sockfd)

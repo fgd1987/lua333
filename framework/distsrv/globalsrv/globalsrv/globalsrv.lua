@@ -2,7 +2,9 @@ module('Globalsrv', package.seeall)
 
 portfd = nil
 
-global_manager = {}
+global_manager = global_manager or {
+    --[srvid] = {srvid, srvname, time}
+}
 
 function main()
     portfd = Port.create(Ae.main_loop())

@@ -1,0 +1,943 @@
+[2015-10-28 18:04:25.897693][LOG]lsrvmain.cc:24
+[2015-10-28 18:04:25.897753][LOG]_atexit
+[2015-10-28 18:04:25.897797][LOG][    asyncsrv]atexit
+[2015-10-28 18:04:25.903165][LOG]lsrvmain.cc:24
+[2015-10-28 18:04:25.903320][LOG]_atexit
+[2015-10-28 18:04:25.903425][LOG][    asyncsrv]atexit
+[2015-10-28 18:04:25.909567][LOG][    asyncsrv]running pid(9845)
+[2015-10-28 18:04:51.264964][LOG][     gamesrv]accept a game sockfd(12)
+[2015-10-28 18:04:51.269533][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:04:51.269601][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:04:51.269618][LOG][    srvproto]recv(65)
+[2015-10-28 18:04:51.269629][LOG][    srvproto]plen(21) datalen(65)
+[2015-10-28 18:04:51.269646][LOG][    srvproto]argcount(3) plen(21)
+[2015-10-28 18:04:51.269695][LOG][   postproto]srvid(1) <=> sockfd(12)
+[2015-10-28 18:04:51.269719][LOG][    srvproto]rskip(21)
+[2015-10-28 18:04:51.269730][LOG][    srvproto]plen(44) datalen(44)
+[2015-10-28 18:04:51.269762][LOG][    srvproto]argcount(4) plen(44)
+[2015-10-28 18:04:51.269788][LOG][   postproto][POST][RECV]srvid(1).Gamesrv.REGIST()
+[2015-10-28 18:04:51.269811][LOG][   postproto]{
+	"1":	"gamesrv1"
+}
+[2015-10-28 18:04:51.269899][LOG][     gamesrv]a game regist srvname(gamesrv1)
+[2015-10-28 18:04:51.269911][LOG][   postproto][POST][RECV]srvid(1).Gamesrv.REGIST() END
+[2015-10-28 18:04:51.269920][LOG][    srvproto]rskip(44)
+[2015-10-28 18:04:58.253616][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:04:58.253677][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:04:58.253706][LOG][    srvproto]recv(42)
+[2015-10-28 18:04:58.253728][LOG][    srvproto]plen(42) datalen(42)
+[2015-10-28 18:04:58.253753][LOG][    srvproto]argcount(4) plen(42)
+[2015-10-28 18:04:58.253793][LOG][   postproto][POST][RECV]srvid(1).Login.PLAYER_ENTER()
+[2015-10-28 18:04:58.253827][LOG][   postproto]{
+	"1":	333
+}
+[2015-10-28 18:04:58.253883][LOG][       login]player online uid(333)
+[2015-10-28 18:04:58.253911][LOG][   postproto][POST][SEND]srvid(1).Login.PLAYER_PASS()
+[2015-10-28 18:04:58.253939][LOG][   postproto]{
+	"1":	333
+}
+[2015-10-28 18:04:58.253970][LOG][    srvproto][SEND] plen(41) argcount(4) sockfd(12)
+[2015-10-28 18:04:58.254005][LOG][   postproto][POST][SEND]srvid(1).Login.PLAYER_PASS() END
+[2015-10-28 18:04:58.254017][LOG][   postproto][POST][RECV]srvid(1).Login.PLAYER_ENTER() END
+[2015-10-28 18:04:58.254026][LOG][    srvproto]rskip(42)
+[2015-10-28 18:04:58.254070][LOG]lport.cc:178
+[2015-10-28 18:04:58.254082][LOG]real_send(41)
+
+[2015-10-28 18:04:58.254301][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:04:58.254315][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:04:58.254325][LOG][    srvproto]recv(74)
+[2015-10-28 18:04:58.254377][LOG][    srvproto]plen(74) datalen(74)
+[2015-10-28 18:04:58.254395][LOG][    srvproto]argcount(6) plen(74)
+[2015-10-28 18:04:58.254415][LOG][   postproto][POST][RECV]srvid(1).Dbsrv.GET()
+[2015-10-28 18:04:58.254436][LOG][   postproto]{
+	"1":	333,
+	"2":	"Login.msg_db_srv_get_playerdata",
+	"3":	"user"
+}
+[2015-10-28 18:04:58.256200][LOG][       dbsrv]total_size(0)
+[2015-10-28 18:04:58.256734][LOG][   postproto][POST][SEND]srvid(1).Login.msg_db_srv_get_playerdata()
+[2015-10-28 18:04:58.256776][LOG]json.cc:95
+[2015-10-28 18:04:58.256784][LOG]unspport type
+
+[2015-10-28 18:04:58.256791][LOG]json.cc:84
+[2015-10-28 18:04:58.256797][LOG]null
+[2015-10-28 18:04:58.256808][LOG][   postproto]{
+	"1":	333,
+	"2":	1
+}
+[2015-10-28 18:04:58.257032][LOG][    srvproto][SEND] plen(81) argcount(6) sockfd(12)
+[2015-10-28 18:04:58.257071][LOG][    srvproto]dbproto.UserData
+[2015-10-28 18:04:58.257086][LOG][   postproto][POST][SEND]srvid(1).Login.msg_db_srv_get_playerdata() END
+[2015-10-28 18:04:58.257097][LOG][   postproto][POST][RECV]srvid(1).Dbsrv.GET() END
+[2015-10-28 18:04:58.257105][LOG][    srvproto]rskip(74)
+[2015-10-28 18:04:58.257141][LOG]lport.cc:178
+[2015-10-28 18:04:58.257151][LOG]real_send(81)
+
+[2015-10-28 18:04:58.272643][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:04:58.272686][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:04:58.272699][LOG][    srvproto]recv(101)
+[2015-10-28 18:04:58.272726][LOG][    srvproto]plen(101) datalen(101)
+[2015-10-28 18:04:58.272738][LOG][    srvproto]argcount(7) plen(101)
+[2015-10-28 18:04:58.272831][LOG][    srvproto]dbproto.UserData
+[2015-10-28 18:04:58.272868][LOG][   postproto][POST][RECV]srvid(1).Dbsrv.SET()
+[2015-10-28 18:04:58.272880][LOG]json.cc:95
+[2015-10-28 18:04:58.272887][LOG]unspport type
+
+[2015-10-28 18:04:58.272906][LOG]json.cc:84
+[2015-10-28 18:04:58.272913][LOG]null
+[2015-10-28 18:04:58.272930][LOG][   postproto]{
+	"1":	333,
+	"2":	"Login.msg_db_srv_set_playerdata",
+	"3":	"user"
+}
+[2015-10-28 18:04:58.273775][LOG][       dbsrv]cache to redis uid(333) success
+[2015-10-28 18:04:58.273836][LOG][       dbsrv]replace into user (money,uid,last_login_time,uname, utime) values (0,0,1446026698,'',1446026698)
+[2015-10-28 18:04:58.296239][LOG][       dbsrv]save 333.user(6) success
+[2015-10-28 18:04:58.296411][LOG][   postproto][POST][SEND]srvid(1).Login.msg_db_srv_set_playerdata()
+[2015-10-28 18:04:58.296473][LOG][   postproto]{
+	"1":	333,
+	"2":	1
+}
+[2015-10-28 18:04:58.296518][LOG][    srvproto][SEND] plen(60) argcount(5) sockfd(12)
+[2015-10-28 18:04:58.296566][LOG][   postproto][POST][SEND]srvid(1).Login.msg_db_srv_set_playerdata() END
+[2015-10-28 18:04:58.296588][LOG][   postproto][POST][RECV]srvid(1).Dbsrv.SET() END
+[2015-10-28 18:04:58.296608][LOG][    srvproto]rskip(101)
+[2015-10-28 18:04:58.296720][LOG]lport.cc:178
+[2015-10-28 18:04:58.296757][LOG]real_send(60)
+
+[2015-10-28 18:04:58.297967][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:04:58.298011][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:04:58.298026][LOG][    srvproto]recv(41)
+[2015-10-28 18:04:58.298039][LOG][    srvproto]plen(41) datalen(41)
+[2015-10-28 18:04:58.298055][LOG][    srvproto]argcount(4) plen(41)
+[2015-10-28 18:04:58.298087][LOG][   postproto][POST][RECV]srvid(1).Login.PLAYER_EXIT()
+[2015-10-28 18:04:58.298105][LOG][   postproto]{
+	"1":	333
+}
+[2015-10-28 18:04:58.298120][LOG][       login]player offline uid(333)
+[2015-10-28 18:04:58.298132][LOG][   postproto][POST][RECV]srvid(1).Login.PLAYER_EXIT() END
+[2015-10-28 18:04:58.298142][LOG][    srvproto]rskip(41)
+[2015-10-28 18:05:00.136638][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:05:00.136684][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:05:00.136702][LOG][    srvproto]recv(42)
+[2015-10-28 18:05:00.136716][LOG][    srvproto]plen(42) datalen(42)
+[2015-10-28 18:05:00.136732][LOG][    srvproto]argcount(4) plen(42)
+[2015-10-28 18:05:00.136770][LOG][   postproto][POST][RECV]srvid(1).Login.PLAYER_ENTER()
+[2015-10-28 18:05:00.136790][LOG][   postproto]{
+	"1":	333
+}
+[2015-10-28 18:05:00.136806][LOG][       login]player online uid(333)
+[2015-10-28 18:05:00.136822][LOG][   postproto][POST][SEND]srvid(1).Login.PLAYER_PASS()
+[2015-10-28 18:05:00.136847][LOG][   postproto]{
+	"1":	333
+}
+[2015-10-28 18:05:00.136871][LOG][    srvproto][SEND] plen(41) argcount(4) sockfd(12)
+[2015-10-28 18:05:00.136892][LOG][   postproto][POST][SEND]srvid(1).Login.PLAYER_PASS() END
+[2015-10-28 18:05:00.136905][LOG][   postproto][POST][RECV]srvid(1).Login.PLAYER_ENTER() END
+[2015-10-28 18:05:00.136916][LOG][    srvproto]rskip(42)
+[2015-10-28 18:05:00.136944][LOG]lport.cc:178
+[2015-10-28 18:05:00.136956][LOG]real_send(41)
+
+[2015-10-28 18:05:00.138657][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:05:00.138687][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:05:00.138702][LOG][    srvproto]recv(74)
+[2015-10-28 18:05:00.138716][LOG][    srvproto]plen(74) datalen(74)
+[2015-10-28 18:05:00.138732][LOG][    srvproto]argcount(6) plen(74)
+[2015-10-28 18:05:00.138757][LOG][   postproto][POST][RECV]srvid(1).Dbsrv.GET()
+[2015-10-28 18:05:00.138776][LOG][   postproto]{
+	"1":	333,
+	"2":	"Login.msg_db_srv_get_playerdata",
+	"3":	"user"
+}
+[2015-10-28 18:05:00.138954][LOG][       dbsrv]load from redis 333.user(6)
+[2015-10-28 18:05:00.139015][LOG][       dbsrv]last_login_time: 1446026698
+
+[2015-10-28 18:05:00.139102][LOG][   postproto][POST][SEND]srvid(1).Login.msg_db_srv_get_playerdata()
+[2015-10-28 18:05:00.139120][LOG]json.cc:95
+[2015-10-28 18:05:00.139130][LOG]unspport type
+
+[2015-10-28 18:05:00.139153][LOG]json.cc:84
+[2015-10-28 18:05:00.139161][LOG]null
+[2015-10-28 18:05:00.139174][LOG][   postproto]{
+	"1":	333,
+	"2":	1
+}
+[2015-10-28 18:05:00.139200][LOG][    srvproto][SEND] plen(87) argcount(6) sockfd(12)
+[2015-10-28 18:05:00.139227][LOG][    srvproto]dbproto.UserData
+[2015-10-28 18:05:00.139242][LOG][   postproto][POST][SEND]srvid(1).Login.msg_db_srv_get_playerdata() END
+[2015-10-28 18:05:00.139255][LOG][   postproto][POST][RECV]srvid(1).Dbsrv.GET() END
+[2015-10-28 18:05:00.139266][LOG][    srvproto]rskip(74)
+[2015-10-28 18:05:00.139295][LOG]lport.cc:178
+[2015-10-28 18:05:00.139307][LOG]real_send(87)
+
+[2015-10-28 18:05:00.143502][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:05:00.143542][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:05:00.143554][LOG][    srvproto]recv(101)
+[2015-10-28 18:05:00.143565][LOG][    srvproto]plen(101) datalen(101)
+[2015-10-28 18:05:00.143577][LOG][    srvproto]argcount(7) plen(101)
+[2015-10-28 18:05:00.143605][LOG][    srvproto]dbproto.UserData
+[2015-10-28 18:05:00.143626][LOG][   postproto][POST][RECV]srvid(1).Dbsrv.SET()
+[2015-10-28 18:05:00.143647][LOG]json.cc:95
+[2015-10-28 18:05:00.143654][LOG]unspport type
+
+[2015-10-28 18:05:00.143661][LOG]json.cc:84
+[2015-10-28 18:05:00.143667][LOG]null
+[2015-10-28 18:05:00.143680][LOG][   postproto]{
+	"1":	333,
+	"2":	"Login.msg_db_srv_set_playerdata",
+	"3":	"user"
+}
+[2015-10-28 18:05:00.143877][LOG][       dbsrv]cache to redis uid(333) success
+[2015-10-28 18:05:00.143919][LOG][       dbsrv]replace into user (money,uid,last_login_time,uname, utime) values (0,0,1446026700,'',1446026700)
+[2015-10-28 18:05:00.150560][LOG][       dbsrv]save 333.user(6) success
+[2015-10-28 18:05:00.150616][LOG][   postproto][POST][SEND]srvid(1).Login.msg_db_srv_set_playerdata()
+[2015-10-28 18:05:00.150635][LOG][   postproto]{
+	"1":	333,
+	"2":	1
+}
+[2015-10-28 18:05:00.150655][LOG][    srvproto][SEND] plen(60) argcount(5) sockfd(12)
+[2015-10-28 18:05:00.150675][LOG][   postproto][POST][SEND]srvid(1).Login.msg_db_srv_set_playerdata() END
+[2015-10-28 18:05:00.150741][LOG][   postproto][POST][RECV]srvid(1).Dbsrv.SET() END
+[2015-10-28 18:05:00.150753][LOG][    srvproto]rskip(101)
+[2015-10-28 18:05:00.150791][LOG]lport.cc:178
+[2015-10-28 18:05:00.150800][LOG]real_send(60)
+
+[2015-10-28 18:05:00.151201][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:05:00.151223][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:05:00.151235][LOG][    srvproto]recv(41)
+[2015-10-28 18:05:00.151244][LOG][    srvproto]plen(41) datalen(41)
+[2015-10-28 18:05:00.151280][LOG][    srvproto]argcount(4) plen(41)
+[2015-10-28 18:05:00.151946][LOG][   postproto][POST][RECV]srvid(1).Login.PLAYER_EXIT()
+[2015-10-28 18:05:00.151969][LOG][   postproto]{
+	"1":	333
+}
+[2015-10-28 18:05:00.151981][LOG][       login]player offline uid(333)
+[2015-10-28 18:05:00.151991][LOG][   postproto][POST][RECV]srvid(1).Login.PLAYER_EXIT() END
+[2015-10-28 18:05:00.152000][LOG][    srvproto]rskip(41)
+[2015-10-28 18:05:00.802843][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:05:00.802894][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:05:00.802911][LOG][    srvproto]recv(42)
+[2015-10-28 18:05:00.802923][LOG][    srvproto]plen(42) datalen(42)
+[2015-10-28 18:05:00.802935][LOG][    srvproto]argcount(4) plen(42)
+[2015-10-28 18:05:00.802958][LOG][   postproto][POST][RECV]srvid(1).Login.PLAYER_ENTER()
+[2015-10-28 18:05:00.802973][LOG][   postproto]{
+	"1":	333
+}
+[2015-10-28 18:05:00.802985][LOG][       login]player online uid(333)
+[2015-10-28 18:05:00.802999][LOG][   postproto][POST][SEND]srvid(1).Login.PLAYER_PASS()
+[2015-10-28 18:05:00.803009][LOG][   postproto]{
+	"1":	333
+}
+[2015-10-28 18:05:00.803027][LOG][    srvproto][SEND] plen(41) argcount(4) sockfd(12)
+[2015-10-28 18:05:00.803043][LOG][   postproto][POST][SEND]srvid(1).Login.PLAYER_PASS() END
+[2015-10-28 18:05:00.803052][LOG][   postproto][POST][RECV]srvid(1).Login.PLAYER_ENTER() END
+[2015-10-28 18:05:00.803061][LOG][    srvproto]rskip(42)
+[2015-10-28 18:05:00.803083][LOG]lport.cc:178
+[2015-10-28 18:05:00.803092][LOG]real_send(41)
+
+[2015-10-28 18:05:00.803751][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:05:00.803779][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:05:00.803792][LOG][    srvproto]recv(74)
+[2015-10-28 18:05:00.803803][LOG][    srvproto]plen(74) datalen(74)
+[2015-10-28 18:05:00.803814][LOG][    srvproto]argcount(6) plen(74)
+[2015-10-28 18:05:00.803843][LOG][   postproto][POST][RECV]srvid(1).Dbsrv.GET()
+[2015-10-28 18:05:00.803862][LOG][   postproto]{
+	"1":	333,
+	"2":	"Login.msg_db_srv_get_playerdata",
+	"3":	"user"
+}
+[2015-10-28 18:05:00.804001][LOG][       dbsrv]load from redis 333.user(6)
+[2015-10-28 18:05:00.804033][LOG][       dbsrv]last_login_time: 1446026700
+
+[2015-10-28 18:05:00.804398][LOG][   postproto][POST][SEND]srvid(1).Login.msg_db_srv_get_playerdata()
+[2015-10-28 18:05:00.804474][LOG]json.cc:95
+[2015-10-28 18:05:00.804493][LOG]unspport type
+
+[2015-10-28 18:05:00.804501][LOG]json.cc:84
+[2015-10-28 18:05:00.804506][LOG]null
+[2015-10-28 18:05:00.804518][LOG][   postproto]{
+	"1":	333,
+	"2":	1
+}
+[2015-10-28 18:05:00.804636][LOG][    srvproto][SEND] plen(87) argcount(6) sockfd(12)
+[2015-10-28 18:05:00.804764][LOG][    srvproto]dbproto.UserData
+[2015-10-28 18:05:00.804780][LOG][   postproto][POST][SEND]srvid(1).Login.msg_db_srv_get_playerdata() END
+[2015-10-28 18:05:00.804789][LOG][   postproto][POST][RECV]srvid(1).Dbsrv.GET() END
+[2015-10-28 18:05:00.804798][LOG][    srvproto]rskip(74)
+[2015-10-28 18:05:00.804901][LOG]lport.cc:178
+[2015-10-28 18:05:00.804913][LOG]real_send(87)
+
+[2015-10-28 18:05:00.808638][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:05:00.808678][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:05:00.808692][LOG][    srvproto]recv(101)
+[2015-10-28 18:05:00.808703][LOG][    srvproto]plen(101) datalen(101)
+[2015-10-28 18:05:00.808715][LOG][    srvproto]argcount(7) plen(101)
+[2015-10-28 18:05:00.808743][LOG][    srvproto]dbproto.UserData
+[2015-10-28 18:05:00.808765][LOG][   postproto][POST][RECV]srvid(1).Dbsrv.SET()
+[2015-10-28 18:05:00.808779][LOG]json.cc:95
+[2015-10-28 18:05:00.808785][LOG]unspport type
+
+[2015-10-28 18:05:00.808792][LOG]json.cc:84
+[2015-10-28 18:05:00.808798][LOG]null
+[2015-10-28 18:05:00.808867][LOG][   postproto]{
+	"1":	333,
+	"2":	"Login.msg_db_srv_set_playerdata",
+	"3":	"user"
+}
+[2015-10-28 18:05:00.810116][LOG][       dbsrv]cache to redis uid(333) success
+[2015-10-28 18:05:00.810282][LOG][       dbsrv]replace into user (money,uid,last_login_time,uname, utime) values (0,0,1446026700,'',1446026700)
+[2015-10-28 18:05:00.815537][LOG][       dbsrv]save 333.user(6) success
+[2015-10-28 18:05:00.815672][LOG][   postproto][POST][SEND]srvid(1).Login.msg_db_srv_set_playerdata()
+[2015-10-28 18:05:00.815708][LOG][   postproto]{
+	"1":	333,
+	"2":	1
+}
+[2015-10-28 18:05:00.815746][LOG][    srvproto][SEND] plen(60) argcount(5) sockfd(12)
+[2015-10-28 18:05:00.815786][LOG][   postproto][POST][SEND]srvid(1).Login.msg_db_srv_set_playerdata() END
+[2015-10-28 18:05:00.815801][LOG][   postproto][POST][RECV]srvid(1).Dbsrv.SET() END
+[2015-10-28 18:05:00.815812][LOG][    srvproto]rskip(101)
+[2015-10-28 18:05:00.815890][LOG]lport.cc:178
+[2015-10-28 18:05:00.815905][LOG]real_send(60)
+
+[2015-10-28 18:05:00.816349][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:05:00.816368][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:05:00.816381][LOG][    srvproto]recv(41)
+[2015-10-28 18:05:00.816392][LOG][    srvproto]plen(41) datalen(41)
+[2015-10-28 18:05:00.816406][LOG][    srvproto]argcount(4) plen(41)
+[2015-10-28 18:05:00.817037][LOG][   postproto][POST][RECV]srvid(1).Login.PLAYER_EXIT()
+[2015-10-28 18:05:00.817060][LOG][   postproto]{
+	"1":	333
+}
+[2015-10-28 18:05:00.817137][LOG][       login]player offline uid(333)
+[2015-10-28 18:05:00.817147][LOG][   postproto][POST][RECV]srvid(1).Login.PLAYER_EXIT() END
+[2015-10-28 18:05:00.817156][LOG][    srvproto]rskip(41)
+[2015-10-28 18:05:08.663254][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-28 18:05:08.663342][LOG][    srvproto]bufremain(1024)
+[2015-10-28 18:05:08.663408][LOG][    srvproto]recv(-1)
+[2015-10-28 18:05:08.663455][LOG][     gamesrv]ev_close sockfd(12) reason(Success)
+[2015-10-28 18:05:08.663543][LOG][     gamesrv]game disconnect srvname(gamesrv1)
+[2015-10-28 18:11:05.598853][LOG]lsrvmain.cc:35
+[2015-10-28 18:11:05.598928][LOG]sig_int
+[2015-10-28 18:11:05.598966][LOG][    asyncsrv]atint
+[2015-10-28 18:11:05.598994][LOG][    asyncsrv]game over!
+[2015-10-28 18:11:05.599719][LOG]lsrvmain.cc:24
+[2015-10-28 18:11:05.599787][LOG]_atexit
+[2015-10-28 18:11:05.599824][LOG][    asyncsrv]atexit
+[2015-10-28 18:11:05.600072][LOG][    asyncsrv]exit pid(9845)
+[2015-10-28 18:11:44.833723][LOG]lsrvmain.cc:24
+[2015-10-28 18:11:44.833965][LOG]_atexit
+[2015-10-28 18:11:44.834104][LOG][    asyncsrv]atexit
+[2015-10-28 18:11:44.836056][LOG]lsrvmain.cc:24
+[2015-10-28 18:11:44.836162][LOG]_atexit
+[2015-10-28 18:11:44.836253][LOG][    asyncsrv]atexit
+[2015-10-28 18:11:44.839099][LOG][    asyncsrv]running pid(10004)
+[2015-10-28 20:56:43.595433][LOG]lsrvmain.cc:35
+[2015-10-28 20:56:43.595888][LOG]sig_int
+[2015-10-28 20:56:43.596021][LOG][    asyncsrv]atint
+[2015-10-28 20:56:43.596077][LOG][    asyncsrv]game over!
+[2015-10-28 20:56:43.613330][LOG]lsrvmain.cc:24
+[2015-10-28 20:56:43.613467][LOG]_atexit
+[2015-10-28 20:56:43.613564][LOG][    asyncsrv]atexit
+[2015-10-28 20:56:43.613923][LOG][    asyncsrv]exit pid(10004)
+[2015-10-29 05:21:17.426132][LOG]lsrvmain.cc:24
+[2015-10-29 05:21:17.426339][LOG]_atexit
+[2015-10-29 05:21:17.426493][LOG][    asyncsrv]atexit
+[2015-10-29 05:21:17.427393][LOG][    asyncsrv]exit pid(13350)
+[2015-10-29 05:21:17.429369][LOG]lsrvmain.cc:24
+[2015-10-29 05:21:17.429513][LOG]_atexit
+[2015-10-29 05:21:17.429940][LOG][    asyncsrv]atexit
+----------加载模块----------
+load mod(mod/pbc)
+mod_path(mod/pbc) mod_name(pbc)
+scan file(mod/pbc/pbc.lua)
+finish load mod(mod/pbc)
+
+load mod(mod/timer)
+mod_path(mod/timer) mod_name(timer)
+ignore file(mod/timer/.date.lua.swp)!!!!!
+scan file(mod/timer/timer.lua)
+finish load mod(mod/timer)
+
+load mod(mod/strproto)
+mod_path(mod/strproto) mod_name(strproto)
+scan file(mod/strproto/strproto.lua)
+finish load mod(mod/strproto)
+
+load mod(mod/srvproto)
+mod_path(mod/srvproto) mod_name(srvproto)
+scan file(mod/srvproto/srvproto.lua)
+finish load mod(mod/srvproto)
+
+load mod(mod/postproto)
+mod_path(mod/postproto) mod_name(postproto)
+scan file(mod/postproto/postproto.lua)
+finish load mod(mod/postproto)
+
+load mod(mod/callproto)
+mod_path(mod/callproto) mod_name(callproto)
+scan file(mod/callproto/callproto.lua)
+finish load mod(mod/callproto)
+
+load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+mod_path(framework/distsrv/globalsrv/dbsrv/dbsrv) mod_name(dbsrv)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/redis_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/mysql_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/dbsrv.lua)
+finish load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+
+load mod(framework/distsrv/globalsrv/gamesrv)
+mod_path(framework/distsrv/globalsrv/gamesrv) mod_name(gamesrv)
+scan file(framework/distsrv/globalsrv/gamesrv/gamesrv.lua)
+finish load mod(framework/distsrv/globalsrv/gamesrv)
+
+load mod(framework/distsrv/globalsrv/globalsrv)
+mod_path(framework/distsrv/globalsrv/globalsrv) mod_name(globalsrv)
+scan file(framework/distsrv/globalsrv/globalsrv/globalsrv.lua)
+scan file(framework/distsrv/globalsrv/globalsrv/main.lua)
+finish load mod(framework/distsrv/globalsrv/globalsrv)
+
+load mod(framework/distsrv/globalsrv/centersrv/login)
+mod_path(framework/distsrv/globalsrv/centersrv/login) mod_name(login)
+scan file(framework/distsrv/globalsrv/centersrv/login/main.lua)
+finish load mod(framework/distsrv/globalsrv/centersrv/login)
+
+load mod(game/jxqy/globalsrv/guild)
+mod_path(game/jxqy/globalsrv/guild) mod_name(guild)
+scan file(game/jxqy/globalsrv/guild/main.lua)
+finish load mod(game/jxqy/globalsrv/guild)
+
+load mod(game/jxqy/globalsrv/item)
+mod_path(game/jxqy/globalsrv/item) mod_name(item)
+scan file(game/jxqy/globalsrv/item/item.lua)
+ignore file(game/jxqy/globalsrv/item/item.cc)!!!!!
+ignore file(game/jxqy/globalsrv/item/interface.h)!!!!!
+finish load mod(game/jxqy/globalsrv/item)
+
+[2015-10-29 05:21:17.437419][LOG]lsrvmain.cc:24
+[2015-10-29 05:21:17.437493][LOG]_atexit
+[2015-10-29 05:21:17.437516][LOG][    asyncsrv]atexit
+[2015-10-29 05:21:28.602913][LOG]lsrvmain.cc:24
+[2015-10-29 05:21:28.602978][LOG]_atexit
+[2015-10-29 05:21:28.603417][LOG][    asyncsrv]atexit
+[2015-10-29 05:21:28.603617][LOG][    asyncsrv]exit pid(13355)
+[2015-10-29 05:21:28.606024][LOG]lsrvmain.cc:24
+[2015-10-29 05:21:28.606615][LOG]_atexit
+[2015-10-29 05:21:28.606930][LOG][    asyncsrv]atexit
+----------加载模块----------
+load mod(mod/pbc)
+mod_path(mod/pbc) mod_name(pbc)
+scan file(mod/pbc/pbc.lua)
+finish load mod(mod/pbc)
+
+load mod(mod/timer)
+mod_path(mod/timer) mod_name(timer)
+ignore file(mod/timer/.date.lua.swp)!!!!!
+scan file(mod/timer/timer.lua)
+finish load mod(mod/timer)
+
+load mod(mod/strproto)
+mod_path(mod/strproto) mod_name(strproto)
+scan file(mod/strproto/strproto.lua)
+finish load mod(mod/strproto)
+
+load mod(mod/srvproto)
+mod_path(mod/srvproto) mod_name(srvproto)
+scan file(mod/srvproto/srvproto.lua)
+finish load mod(mod/srvproto)
+
+load mod(mod/postproto)
+mod_path(mod/postproto) mod_name(postproto)
+scan file(mod/postproto/postproto.lua)
+finish load mod(mod/postproto)
+
+load mod(mod/callproto)
+mod_path(mod/callproto) mod_name(callproto)
+scan file(mod/callproto/callproto.lua)
+finish load mod(mod/callproto)
+
+load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+mod_path(framework/distsrv/globalsrv/dbsrv/dbsrv) mod_name(dbsrv)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/redis_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/mysql_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/dbsrv.lua)
+finish load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+
+load mod(framework/distsrv/globalsrv/gamesrv)
+mod_path(framework/distsrv/globalsrv/gamesrv) mod_name(gamesrv)
+scan file(framework/distsrv/globalsrv/gamesrv/gamesrv.lua)
+finish load mod(framework/distsrv/globalsrv/gamesrv)
+
+load mod(framework/distsrv/globalsrv/globalsrv)
+mod_path(framework/distsrv/globalsrv/globalsrv) mod_name(globalsrv)
+scan file(framework/distsrv/globalsrv/globalsrv/globalsrv.lua)
+scan file(framework/distsrv/globalsrv/globalsrv/main.lua)
+finish load mod(framework/distsrv/globalsrv/globalsrv)
+
+load mod(framework/distsrv/globalsrv/centersrv/login)
+mod_path(framework/distsrv/globalsrv/centersrv/login) mod_name(login)
+scan file(framework/distsrv/globalsrv/centersrv/login/main.lua)
+finish load mod(framework/distsrv/globalsrv/centersrv/login)
+
+load mod(game/jxqy/globalsrv/guild)
+mod_path(game/jxqy/globalsrv/guild) mod_name(guild)
+scan file(game/jxqy/globalsrv/guild/main.lua)
+finish load mod(game/jxqy/globalsrv/guild)
+
+load mod(game/jxqy/globalsrv/item)
+mod_path(game/jxqy/globalsrv/item) mod_name(item)
+scan file(game/jxqy/globalsrv/item/item.lua)
+ignore file(game/jxqy/globalsrv/item/item.cc)!!!!!
+ignore file(game/jxqy/globalsrv/item/interface.h)!!!!!
+finish load mod(game/jxqy/globalsrv/item)
+
+[2015-10-29 05:21:28.618409][LOG]lsrvmain.cc:24
+[2015-10-29 05:21:28.618465][LOG]_atexit
+[2015-10-29 05:21:28.618482][LOG][    asyncsrv]atexit
+[2015-10-29 05:21:54.634676][LOG]lsrvmain.cc:24
+[2015-10-29 05:21:54.634815][LOG]_atexit
+[2015-10-29 05:21:54.634946][LOG][    asyncsrv]atexit
+[2015-10-29 05:21:54.635324][LOG][    asyncsrv]exit pid(13358)
+[2015-10-29 05:21:54.638846][LOG]lsrvmain.cc:24
+[2015-10-29 05:21:54.639110][LOG]_atexit
+[2015-10-29 05:21:54.639647][LOG][    asyncsrv]atexit
+----------加载模块----------
+load mod(mod/pbc)
+mod_path(mod/pbc) mod_name(pbc)
+scan file(mod/pbc/pbc.lua)
+finish load mod(mod/pbc)
+
+load mod(mod/timer)
+mod_path(mod/timer) mod_name(timer)
+ignore file(mod/timer/.date.lua.swp)!!!!!
+scan file(mod/timer/timer.lua)
+finish load mod(mod/timer)
+
+load mod(mod/strproto)
+mod_path(mod/strproto) mod_name(strproto)
+scan file(mod/strproto/strproto.lua)
+finish load mod(mod/strproto)
+
+load mod(mod/srvproto)
+mod_path(mod/srvproto) mod_name(srvproto)
+scan file(mod/srvproto/srvproto.lua)
+finish load mod(mod/srvproto)
+
+load mod(mod/postproto)
+mod_path(mod/postproto) mod_name(postproto)
+scan file(mod/postproto/postproto.lua)
+finish load mod(mod/postproto)
+
+load mod(mod/callproto)
+mod_path(mod/callproto) mod_name(callproto)
+scan file(mod/callproto/callproto.lua)
+finish load mod(mod/callproto)
+
+load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+mod_path(framework/distsrv/globalsrv/dbsrv/dbsrv) mod_name(dbsrv)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/redis_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/mysql_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/dbsrv.lua)
+finish load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+
+load mod(framework/distsrv/globalsrv/gamesrv)
+mod_path(framework/distsrv/globalsrv/gamesrv) mod_name(gamesrv)
+scan file(framework/distsrv/globalsrv/gamesrv/gamesrv.lua)
+finish load mod(framework/distsrv/globalsrv/gamesrv)
+
+load mod(framework/distsrv/globalsrv/globalsrv)
+mod_path(framework/distsrv/globalsrv/globalsrv) mod_name(globalsrv)
+scan file(framework/distsrv/globalsrv/globalsrv/globalsrv.lua)
+scan file(framework/distsrv/globalsrv/globalsrv/main.lua)
+finish load mod(framework/distsrv/globalsrv/globalsrv)
+
+load mod(framework/distsrv/globalsrv/centersrv/login)
+mod_path(framework/distsrv/globalsrv/centersrv/login) mod_name(login)
+scan file(framework/distsrv/globalsrv/centersrv/login/main.lua)
+finish load mod(framework/distsrv/globalsrv/centersrv/login)
+
+load mod(game/jxqy/globalsrv/guild)
+mod_path(game/jxqy/globalsrv/guild) mod_name(guild)
+scan file(game/jxqy/globalsrv/guild/main.lua)
+finish load mod(game/jxqy/globalsrv/guild)
+
+load mod(game/jxqy/globalsrv/item)
+mod_path(game/jxqy/globalsrv/item) mod_name(item)
+scan file(game/jxqy/globalsrv/item/item.lua)
+ignore file(game/jxqy/globalsrv/item/item.cc)!!!!!
+ignore file(game/jxqy/globalsrv/item/interface.h)!!!!!
+finish load mod(game/jxqy/globalsrv/item)
+
+[2015-10-29 05:21:54.655413][LOG]lsrvmain.cc:24
+[2015-10-29 05:21:54.655602][LOG]_atexit
+[2015-10-29 05:21:54.655658][LOG][    asyncsrv]atexit
+[2015-10-29 05:22:10.257500][LOG]lsrvmain.cc:24
+[2015-10-29 05:22:10.257557][LOG]_atexit
+[2015-10-29 05:22:10.257639][LOG][    asyncsrv]atexit
+[2015-10-29 05:22:10.257837][LOG][    asyncsrv]exit pid(13362)
+[2015-10-29 05:22:10.259793][LOG]lsrvmain.cc:24
+[2015-10-29 05:22:10.260162][LOG]_atexit
+[2015-10-29 05:22:10.260422][LOG][    asyncsrv]atexit
+----------加载模块----------
+load mod(mod/pbc)
+mod_path(mod/pbc) mod_name(pbc)
+scan file(mod/pbc/pbc.lua)
+finish load mod(mod/pbc)
+
+load mod(mod/timer)
+mod_path(mod/timer) mod_name(timer)
+ignore file(mod/timer/.date.lua.swp)!!!!!
+scan file(mod/timer/timer.lua)
+finish load mod(mod/timer)
+
+load mod(mod/strproto)
+mod_path(mod/strproto) mod_name(strproto)
+scan file(mod/strproto/strproto.lua)
+finish load mod(mod/strproto)
+
+load mod(mod/srvproto)
+mod_path(mod/srvproto) mod_name(srvproto)
+scan file(mod/srvproto/srvproto.lua)
+finish load mod(mod/srvproto)
+
+load mod(mod/postproto)
+mod_path(mod/postproto) mod_name(postproto)
+scan file(mod/postproto/postproto.lua)
+finish load mod(mod/postproto)
+
+load mod(mod/callproto)
+mod_path(mod/callproto) mod_name(callproto)
+scan file(mod/callproto/callproto.lua)
+finish load mod(mod/callproto)
+
+load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+mod_path(framework/distsrv/globalsrv/dbsrv/dbsrv) mod_name(dbsrv)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/redis_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/mysql_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/dbsrv.lua)
+finish load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+
+load mod(framework/distsrv/globalsrv/gamesrv)
+mod_path(framework/distsrv/globalsrv/gamesrv) mod_name(gamesrv)
+scan file(framework/distsrv/globalsrv/gamesrv/gamesrv.lua)
+finish load mod(framework/distsrv/globalsrv/gamesrv)
+
+load mod(framework/distsrv/globalsrv/globalsrv)
+mod_path(framework/distsrv/globalsrv/globalsrv) mod_name(globalsrv)
+scan file(framework/distsrv/globalsrv/globalsrv/globalsrv.lua)
+scan file(framework/distsrv/globalsrv/globalsrv/main.lua)
+finish load mod(framework/distsrv/globalsrv/globalsrv)
+
+load mod(framework/distsrv/globalsrv/centersrv/login)
+mod_path(framework/distsrv/globalsrv/centersrv/login) mod_name(login)
+scan file(framework/distsrv/globalsrv/centersrv/login/main.lua)
+finish load mod(framework/distsrv/globalsrv/centersrv/login)
+
+load mod(game/jxqy/globalsrv/guild)
+mod_path(game/jxqy/globalsrv/guild) mod_name(guild)
+scan file(game/jxqy/globalsrv/guild/main.lua)
+finish load mod(game/jxqy/globalsrv/guild)
+
+load mod(game/jxqy/globalsrv/item)
+mod_path(game/jxqy/globalsrv/item) mod_name(item)
+scan file(game/jxqy/globalsrv/item/item.lua)
+ignore file(game/jxqy/globalsrv/item/item.cc)!!!!!
+ignore file(game/jxqy/globalsrv/item/interface.h)!!!!!
+finish load mod(game/jxqy/globalsrv/item)
+
+[2015-10-29 05:22:10.270723][LOG]lsrvmain.cc:24
+[2015-10-29 05:22:10.270797][LOG]_atexit
+[2015-10-29 05:22:10.270826][LOG][    asyncsrv]atexit
+[2015-10-29 05:24:34.993072][LOG]lsrvmain.cc:24
+[2015-10-29 05:24:34.993940][LOG]_atexit
+[2015-10-29 05:24:34.994033][LOG][    asyncsrv]atexit
+[2015-10-29 05:24:34.994520][LOG][    asyncsrv]exit pid(13384)
+[2015-10-29 05:24:34.996834][LOG]lsrvmain.cc:24
+[2015-10-29 05:24:34.996965][LOG]_atexit
+[2015-10-29 05:24:34.997065][LOG][    asyncsrv]atexit
+----------加载模块----------
+load mod(mod/pbc)
+mod_path(mod/pbc) mod_name(pbc)
+scan file(mod/pbc/pbc.lua)
+finish load mod(mod/pbc)
+
+load mod(mod/timer)
+mod_path(mod/timer) mod_name(timer)
+ignore file(mod/timer/.date.lua.swp)!!!!!
+scan file(mod/timer/timer.lua)
+finish load mod(mod/timer)
+
+load mod(mod/strproto)
+mod_path(mod/strproto) mod_name(strproto)
+scan file(mod/strproto/strproto.lua)
+finish load mod(mod/strproto)
+
+load mod(mod/srvproto)
+mod_path(mod/srvproto) mod_name(srvproto)
+scan file(mod/srvproto/srvproto.lua)
+finish load mod(mod/srvproto)
+
+load mod(mod/postproto)
+mod_path(mod/postproto) mod_name(postproto)
+scan file(mod/postproto/postproto.lua)
+finish load mod(mod/postproto)
+
+load mod(mod/callproto)
+mod_path(mod/callproto) mod_name(callproto)
+scan file(mod/callproto/callproto.lua)
+finish load mod(mod/callproto)
+
+load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+mod_path(framework/distsrv/globalsrv/dbsrv/dbsrv) mod_name(dbsrv)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/redis_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/mysql_conn.lua)
+ignore file(framework/distsrv/globalsrv/dbsrv/dbsrv/.dbsrv.lua.swp)!!!!!
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/dbsrv.lua)
+finish load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+
+load mod(framework/distsrv/globalsrv/gamesrv)
+mod_path(framework/distsrv/globalsrv/gamesrv) mod_name(gamesrv)
+scan file(framework/distsrv/globalsrv/gamesrv/gamesrv.lua)
+finish load mod(framework/distsrv/globalsrv/gamesrv)
+
+load mod(framework/distsrv/globalsrv/globalsrv)
+mod_path(framework/distsrv/globalsrv/globalsrv) mod_name(globalsrv)
+scan file(framework/distsrv/globalsrv/globalsrv/globalsrv.lua)
+scan file(framework/distsrv/globalsrv/globalsrv/main.lua)
+finish load mod(framework/distsrv/globalsrv/globalsrv)
+
+load mod(framework/distsrv/globalsrv/centersrv/login)
+mod_path(framework/distsrv/globalsrv/centersrv/login) mod_name(login)
+scan file(framework/distsrv/globalsrv/centersrv/login/main.lua)
+finish load mod(framework/distsrv/globalsrv/centersrv/login)
+
+load mod(game/jxqy/globalsrv/guild)
+mod_path(game/jxqy/globalsrv/guild) mod_name(guild)
+scan file(game/jxqy/globalsrv/guild/main.lua)
+finish load mod(game/jxqy/globalsrv/guild)
+
+load mod(game/jxqy/globalsrv/item)
+mod_path(game/jxqy/globalsrv/item) mod_name(item)
+scan file(game/jxqy/globalsrv/item/item.lua)
+ignore file(game/jxqy/globalsrv/item/item.cc)!!!!!
+ignore file(game/jxqy/globalsrv/item/interface.h)!!!!!
+finish load mod(game/jxqy/globalsrv/item)
+
+[2015-10-29 05:24:35.005306][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/friend.proto)
+[2015-10-29 05:24:35.005549][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/achieve.proto)
+[2015-10-29 05:24:35.005680][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/task.proto)
+[2015-10-29 05:24:35.005805][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/player.proto)
+[2015-10-29 05:24:35.005936][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/user.proto)
+[2015-10-29 05:24:35.006313][LOG][       dbsrv]success connect redis index(1) host(127.0.0.1) port(6379) dbname(1)
+[2015-10-29 05:24:35.008132][LOG][       dbsrv]success connect mysql index(1) host(127.0.0.1) dbname(jxqy) user(root)
+[2015-10-29 05:24:35.008185][LOG][     gamesrv]listen on host(0.0.0.0) port(3334)
+[2015-10-29 05:24:35.008266][LOG][   globalsrv]listen on host(0.0.0.0) port(3333)
+[2015-10-29 05:27:57.590437][LOG][     gamesrv]accept a game sockfd(12)
+[2015-10-29 05:27:57.594948][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-29 05:27:57.595004][LOG][    srvproto]bufremain(1024)
+[2015-10-29 05:27:57.595033][LOG][    srvproto]recv(-1)
+[2015-10-29 05:27:57.595052][LOG][     gamesrv]ev_close sockfd(12) reason(Success)
+[2015-10-29 05:28:28.238109][LOG][     gamesrv]accept a game sockfd(12)
+[2015-10-29 05:28:28.242831][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-29 05:28:28.242914][LOG][    srvproto]bufremain(1024)
+[2015-10-29 05:28:28.242945][LOG][    srvproto]recv(65)
+[2015-10-29 05:28:28.242986][LOG][    srvproto]plen(21) datalen(65)
+[2015-10-29 05:28:28.243061][LOG][    srvproto]argcount(3) plen(21)
+[2015-10-29 05:28:28.243095][LOG][   postproto]srvid(1) <=> sockfd(12)
+[2015-10-29 05:28:28.243112][LOG][    srvproto]rskip(21)
+[2015-10-29 05:28:28.243209][LOG][    srvproto]plen(44) datalen(44)
+[2015-10-29 05:28:28.243232][LOG][    srvproto]argcount(4) plen(44)
+[2015-10-29 05:28:28.243267][LOG][   postproto][POST][RECV]srvid(1).Gamesrv.REGIST()
+[2015-10-29 05:28:28.243288][LOG][   postproto]{
+	"1":	"gamesrv1"
+}
+[2015-10-29 05:28:28.243319][LOG][     gamesrv]a game regist srvname(gamesrv1)
+[2015-10-29 05:28:28.243331][LOG][   postproto][POST][RECV]srvid(1).Gamesrv.REGIST() END
+[2015-10-29 05:28:28.243340][LOG][    srvproto]rskip(44)
+[2015-10-29 05:28:29.043263][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-29 05:28:29.043333][LOG][    srvproto]bufremain(1024)
+[2015-10-29 05:28:29.043416][LOG][    srvproto]recv(-1)
+[2015-10-29 05:28:29.043456][LOG][     gamesrv]ev_close sockfd(12) reason(Success)
+[2015-10-29 05:28:29.043481][LOG][     gamesrv]game disconnect srvname(gamesrv1)
+[2015-10-29 05:28:31.221246][LOG][     gamesrv]accept a game sockfd(12)
+[2015-10-29 05:28:31.222916][LOG][     gamesrv]ev_read sockfd(12)
+[2015-10-29 05:28:31.222941][LOG][    srvproto]bufremain(1024)
+[2015-10-29 05:28:31.222957][LOG][    srvproto]recv(65)
+[2015-10-29 05:28:31.222968][LOG][    srvproto]plen(21) datalen(65)
+[2015-10-29 05:28:31.222981][LOG][    srvproto]argcount(3) plen(21)
+[2015-10-29 05:28:31.222997][LOG][   postproto]srvid(1) <=> sockfd(12)
+[2015-10-29 05:28:31.223006][LOG][    srvproto]rskip(21)
+[2015-10-29 05:28:31.223016][LOG][    srvproto]plen(44) datalen(44)
+[2015-10-29 05:28:31.223026][LOG][    srvproto]argcount(4) plen(44)
+[2015-10-29 05:28:31.223043][LOG][   postproto][POST][RECV]srvid(1).Gamesrv.REGIST()
+[2015-10-29 05:28:31.223058][LOG][   postproto]{
+	"1":	"gamesrv1"
+}
+[2015-10-29 05:28:31.223072][LOG][     gamesrv]a game regist srvname(gamesrv1)
+[2015-10-29 05:28:31.223082][LOG][   postproto][POST][RECV]srvid(1).Gamesrv.REGIST() END
+[2015-10-29 05:28:31.223090][LOG][    srvproto]rskip(44)
+[2015-10-29 05:29:43.333911][LOG]lsrvmain.cc:24
+[2015-10-29 05:29:43.334110][LOG]_atexit
+[2015-10-29 05:29:43.334783][LOG][    asyncsrv]atexit
+[2015-10-29 05:29:43.335066][LOG][    asyncsrv]exit pid(13444)
+[2015-10-29 05:29:43.337014][LOG]lsrvmain.cc:24
+[2015-10-29 05:29:43.337298][LOG]_atexit
+[2015-10-29 05:29:43.337479][LOG][    asyncsrv]atexit
+----------加载模块----------
+load mod(mod/pbc)
+mod_path(mod/pbc) mod_name(pbc)
+scan file(mod/pbc/pbc.lua)
+finish load mod(mod/pbc)
+
+load mod(mod/timer)
+mod_path(mod/timer) mod_name(timer)
+ignore file(mod/timer/.date.lua.swp)!!!!!
+scan file(mod/timer/timer.lua)
+finish load mod(mod/timer)
+
+load mod(mod/strproto)
+mod_path(mod/strproto) mod_name(strproto)
+scan file(mod/strproto/strproto.lua)
+finish load mod(mod/strproto)
+
+load mod(mod/srvproto)
+mod_path(mod/srvproto) mod_name(srvproto)
+scan file(mod/srvproto/srvproto.lua)
+finish load mod(mod/srvproto)
+
+load mod(mod/postproto)
+mod_path(mod/postproto) mod_name(postproto)
+scan file(mod/postproto/postproto.lua)
+finish load mod(mod/postproto)
+
+load mod(mod/callproto)
+mod_path(mod/callproto) mod_name(callproto)
+scan file(mod/callproto/callproto.lua)
+finish load mod(mod/callproto)
+
+load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+mod_path(framework/distsrv/globalsrv/dbsrv/dbsrv) mod_name(dbsrv)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/redis_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/mysql_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/dbsrv.lua)
+finish load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+
+load mod(framework/distsrv/globalsrv/gamesrv)
+mod_path(framework/distsrv/globalsrv/gamesrv) mod_name(gamesrv)
+scan file(framework/distsrv/globalsrv/gamesrv/gamesrv.lua)
+finish load mod(framework/distsrv/globalsrv/gamesrv)
+
+load mod(framework/distsrv/globalsrv/globalsrv)
+mod_path(framework/distsrv/globalsrv/globalsrv) mod_name(globalsrv)
+scan file(framework/distsrv/globalsrv/globalsrv/globalsrv.lua)
+scan file(framework/distsrv/globalsrv/globalsrv/main.lua)
+finish load mod(framework/distsrv/globalsrv/globalsrv)
+
+load mod(framework/distsrv/globalsrv/centersrv/login)
+mod_path(framework/distsrv/globalsrv/centersrv/login) mod_name(login)
+scan file(framework/distsrv/globalsrv/centersrv/login/main.lua)
+finish load mod(framework/distsrv/globalsrv/centersrv/login)
+
+load mod(game/jxqy/globalsrv/guild)
+mod_path(game/jxqy/globalsrv/guild) mod_name(guild)
+scan file(game/jxqy/globalsrv/guild/main.lua)
+finish load mod(game/jxqy/globalsrv/guild)
+
+load mod(game/jxqy/globalsrv/item)
+mod_path(game/jxqy/globalsrv/item) mod_name(item)
+scan file(game/jxqy/globalsrv/item/item.lua)
+ignore file(game/jxqy/globalsrv/item/item.cc)!!!!!
+ignore file(game/jxqy/globalsrv/item/interface.h)!!!!!
+finish load mod(game/jxqy/globalsrv/item)
+
+[2015-10-29 05:29:43.347545][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/friend.proto)
+[2015-10-29 05:29:43.347832][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/achieve.proto)
+[2015-10-29 05:29:43.348060][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/task.proto)
+[2015-10-29 05:29:43.348286][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/player.proto)
+[2015-10-29 05:29:43.348492][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/user.proto)
+[2015-10-29 05:29:43.349066][LOG][       dbsrv]success connect redis index(1) host(127.0.0.1) port(6379) dbname(1)
+[2015-10-29 05:29:43.353099][LOG][       dbsrv]success connect mysql index(1) host(127.0.0.1) dbname(jxqy) user(root)
+[2015-10-29 05:29:43.353189][LOG][     gamesrv]listen on host(0.0.0.0) port(3334)
+[2015-10-29 05:29:43.353691][LOG][   globalsrv]listen on host(0.0.0.0) port(3333)
+[2015-10-29 05:30:51.813601][LOG]lsrvmain.cc:24
+[2015-10-29 05:30:51.813638][LOG]_atexit
+[2015-10-29 05:30:51.813691][LOG][    asyncsrv]atexit
+[2015-10-29 05:30:51.813781][LOG][    asyncsrv]exit pid(13471)
+[2015-10-29 05:30:51.814881][LOG]lsrvmain.cc:24
+[2015-10-29 05:30:51.814949][LOG]_atexit
+[2015-10-29 05:30:51.815020][LOG][    asyncsrv]atexit
+----------加载模块----------
+load mod(mod/pbc)
+mod_path(mod/pbc) mod_name(pbc)
+scan file(mod/pbc/pbc.lua)
+finish load mod(mod/pbc)
+
+load mod(mod/timer)
+mod_path(mod/timer) mod_name(timer)
+ignore file(mod/timer/.date.lua.swp)!!!!!
+scan file(mod/timer/timer.lua)
+finish load mod(mod/timer)
+
+load mod(mod/strproto)
+mod_path(mod/strproto) mod_name(strproto)
+scan file(mod/strproto/strproto.lua)
+finish load mod(mod/strproto)
+
+load mod(mod/srvproto)
+mod_path(mod/srvproto) mod_name(srvproto)
+scan file(mod/srvproto/srvproto.lua)
+finish load mod(mod/srvproto)
+
+load mod(mod/postproto)
+mod_path(mod/postproto) mod_name(postproto)
+scan file(mod/postproto/postproto.lua)
+finish load mod(mod/postproto)
+
+load mod(mod/callproto)
+mod_path(mod/callproto) mod_name(callproto)
+scan file(mod/callproto/callproto.lua)
+finish load mod(mod/callproto)
+
+load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+mod_path(framework/distsrv/globalsrv/dbsrv/dbsrv) mod_name(dbsrv)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/redis_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/mysql_conn.lua)
+scan file(framework/distsrv/globalsrv/dbsrv/dbsrv/dbsrv.lua)
+finish load mod(framework/distsrv/globalsrv/dbsrv/dbsrv)
+
+load mod(framework/distsrv/globalsrv/gamesrv)
+mod_path(framework/distsrv/globalsrv/gamesrv) mod_name(gamesrv)
+scan file(framework/distsrv/globalsrv/gamesrv/gamesrv.lua)
+finish load mod(framework/distsrv/globalsrv/gamesrv)
+
+load mod(framework/distsrv/globalsrv/globalsrv)
+mod_path(framework/distsrv/globalsrv/globalsrv) mod_name(globalsrv)
+scan file(framework/distsrv/globalsrv/globalsrv/globalsrv.lua)
+scan file(framework/distsrv/globalsrv/globalsrv/main.lua)
+finish load mod(framework/distsrv/globalsrv/globalsrv)
+
+load mod(framework/distsrv/globalsrv/centersrv/login)
+mod_path(framework/distsrv/globalsrv/centersrv/login) mod_name(login)
+scan file(framework/distsrv/globalsrv/centersrv/login/main.lua)
+finish load mod(framework/distsrv/globalsrv/centersrv/login)
+
+load mod(game/jxqy/globalsrv/guild)
+mod_path(game/jxqy/globalsrv/guild) mod_name(guild)
+scan file(game/jxqy/globalsrv/guild/main.lua)
+finish load mod(game/jxqy/globalsrv/guild)
+
+load mod(game/jxqy/globalsrv/item)
+mod_path(game/jxqy/globalsrv/item) mod_name(item)
+scan file(game/jxqy/globalsrv/item/item.lua)
+ignore file(game/jxqy/globalsrv/item/item.cc)!!!!!
+ignore file(game/jxqy/globalsrv/item/interface.h)!!!!!
+finish load mod(game/jxqy/globalsrv/item)
+
+[2015-10-29 05:30:51.819878][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/friend.proto)
+[2015-10-29 05:30:51.820073][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/achieve.proto)
+[2015-10-29 05:30:51.820655][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/task.proto)
+[2015-10-29 05:30:51.820852][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/player.proto)
+[2015-10-29 05:30:51.821004][LOG][         pbc]import proto(/root/lua333/game/jxqy/dbproto/user.proto)
+[2015-10-29 05:30:51.821445][LOG][       dbsrv]success connect redis index(1) host(127.0.0.1) port(6379) dbname(1)
+[2015-10-29 05:30:51.826257][LOG][       dbsrv]success connect mysql index(1) host(127.0.0.1) dbname(jxqy) user(root)
+[2015-10-29 05:30:51.826425][LOG][     gamesrv]listen on host(0.0.0.0) port(3334)
+[2015-10-29 05:30:51.826598][LOG][   globalsrv]listen on host(0.0.0.0) port(3333)

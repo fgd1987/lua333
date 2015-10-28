@@ -1,6 +1,6 @@
 /*
 ** Lua binding: globalsrv
-** Generated automatically by tolua++-1.0.92 on Mon Oct 26 22:41:22 2015.
+** Generated automatically by tolua++-1.0.92 on Wed Oct 28 17:32:27 2015.
 */
 
 #ifndef __cplusplus

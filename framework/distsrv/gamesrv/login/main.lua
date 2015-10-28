@@ -6,7 +6,8 @@ player_manager = player_manager or {}
 onlinenum = onlinenum or 0
 
 function main()
-    --Pbc.import_dir(_CONF.dbproto_dir)
+    require(_CONF.dbproto)
+    Pbc.import_dir(Config.game_dir..'/'.._CONF.dbproto)
 --    Evdisp.add_timer(global_timer, Config.game_srv.save_interval * 1000, "Login.timer_check")
 end
 
@@ -15,6 +16,7 @@ function PLAYER_ENTER(srvid, uid)
     tmp_player_manager[uid] = srvid
     log('player enter uid(%d)', uid)
     POST(CentersrvSockfd, 'Login.PLAYER_ENTER', uid)
+    log('player enter uid(%d)', uid)
 end
 
 --功能:退出服务器
@@ -50,7 +52,7 @@ function PLAYER_INSTEAD(srvid, uid)
         logerr('player out found uid(%d)', uid)
         return
     end
-    local msg = pbc.msgnew('login.DISCONNECT') 
+    local msg = Pbc.msgnew('login.DISCONNECT') 
     msg.errno = 15
     Gatesrv.reply(player.srvid, uid, msg)
     player_logout(player)
@@ -59,7 +61,7 @@ end
 --功能:登陆成功
 --@player
 function player_login(player)
-    local msg = pbc.msgnew('login.ENTER')
+    local msg = Pbc.msgnew('login.ENTER')
     local uid = player.uid
     local user = player.playerdata.user
     local last_login_time = user.last_login_time
@@ -84,7 +86,7 @@ function player_logout(player)
     local args = {}
     for table_name, msg in pairs(playerdata) do
         --是否有脏标志
-        if pbc.isdirty(msg) then
+        if true or msg:isdirty() then
             log('uid(%d).%s is dirty', uid, table_name)
             table.insert(args, table_name)
             table.insert(args, msg)
@@ -111,7 +113,8 @@ function msg_db_srv_set_playerdata(srvid, uid, result, ...)
     local user = playerdata.user
     local args = {...}
     for _, varname in pairs(args) do
-        pbc.setdirty(playerdata[table_name], 0)
+        local msg = playerdata[table_name]
+        --msg:setdirty(0)
     end
     --已经下线了
     for k, v in pairs(playerdata) do
@@ -181,7 +184,7 @@ function timer_check()
         if timenow - player.last_save_time > _CONF.save_interval then
             local args = {}
             for table_name, msg in pairs(playerdata) do
-                if pbc.isdirty(msg) then
+                if true or msg:isdirty() then
                     log('uid(%d).%s is dirty', uid, table_name)
                     table.insert(args, table_name)
                     table.insert(args, msg)

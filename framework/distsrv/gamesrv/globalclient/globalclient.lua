@@ -55,8 +55,9 @@ end
 
 function test_db_get(srvid, uid, result, msg)
     --log(msg)
-    log(uid, result)
-    log(pbc.debug_string(msg))
+    log('asfasf')
+    log('uid(%d) result(%d)', uid, result)
+    log('debug_string(%s)', msg:debug_string())
     POST(srvid, 'Dbsrv.SET', 333, 'Globalclient.test_db_set', 'user', msg) 
 end
 

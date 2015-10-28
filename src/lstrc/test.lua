@@ -1,3 +1,10 @@
+--[[
+
+ItemConfPool *itemConfPool = new ItemConfPool();
+itemConfPool->load("xxx");
+
+--]]
+
 require('actordb')
 print('mod', Actordb)
 local msg = Actordb.new('User')

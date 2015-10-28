@@ -1,4 +1,5 @@
 #include "json.h"
+#include "log.h"
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
@@ -8,7 +9,6 @@
 #include <ctype.h>
 #include "cJSON.h"
 
-#define LOG_ERROR printf
 
 static int is_digit(char str){
     if(str >= 48 && str <= 57){
@@ -23,7 +23,7 @@ static void json_decode_tree(lua_State* L, cJSON *json);
 char *json_encode(lua_State *L){
     cJSON *json = json_encode_tree(L);
     if(json == NULL){
-        LOG_ERROR("null");
+        LOG_LOG("null");
         return NULL;
     }
     char *str = cJSON_Print(json);
@@ -34,7 +34,7 @@ char *json_encode(lua_State *L){
 int json_decode(lua_State* L, char *str){
     cJSON *json = cJSON_Parse(str);
     if(json == NULL){
-        LOG_ERROR("null");
+        LOG_LOG("null");
         return 0;
     }
     json_decode_tree(L, json);
@@ -63,7 +63,7 @@ static cJSON* json_encode_tree(lua_State *L){
     }else if(type == LUA_TTABLE){
         cJSON *json = cJSON_CreateObject();
         if(json == NULL){
-            LOG_ERROR("null");
+            LOG_LOG("null");
             return NULL;
         }
         lua_pushnil(L);
@@ -73,7 +73,7 @@ static cJSON* json_encode_tree(lua_State *L){
                 const char *k = lua_tolstring(L, -2, &str_len);
                 cJSON *cjson = json_encode_tree(L);
                 if(cjson == NULL){
-                    LOG_ERROR("null");
+                    LOG_LOG("null");
                     break;
                 }
                 cJSON_AddItemToObject(json, k, cjson);
@@ -81,7 +81,7 @@ static cJSON* json_encode_tree(lua_State *L){
                 int k = (int)lua_tonumber(L, -2);
                 cJSON *cjson = json_encode_tree(L);
                 if(cjson == NULL){
-                    LOG_ERROR("null");
+                    LOG_LOG("null");
                     break;
                 }
                 char kname[32];
@@ -92,7 +92,7 @@ static cJSON* json_encode_tree(lua_State *L){
         }
         return json;
     }
-    LOG_ERROR("unspport type\n");
+    LOG_LOG("unspport type\n");
     return NULL;
 }
 
@@ -144,7 +144,7 @@ static void json_decode_tree(lua_State* L, cJSON* json){
 static int lencode(lua_State *L){
     char *str = json_encode(L);
     if(str == NULL){
-        LOG_ERROR("null");
+        LOG_LOG("null");
         return 0;
     }
     lua_pushstring(L, str);

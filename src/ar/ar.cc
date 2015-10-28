@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define uint8 unsigned char
+
 #define int8 char
 #define int16 short
 #define int32 int
@@ -235,6 +237,18 @@ static int lreadlstr(lua_State *L){
     return 0;
 }
 
+static int lreaduint8(lua_State *L){
+	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
+        int fd = (int)lua_tointeger(L, 1);
+        uint8 val = 0;
+        ar_read(fd, (char *)&val, sizeof(uint8));
+        lua_pushinteger(L, val); 
+        return 1;
+	}
+    return 0;
+}
+
+
 static int lreadint8(lua_State *L){
 	if (lua_gettop(L) == 1 && lua_isnumber(L, 1)){
         int fd = (int)lua_tointeger(L, 1);
@@ -288,6 +302,7 @@ static luaL_Reg lua_lib[] = {
     {"getptr",      lgetptr},
     {"rewind",      lrewind},
     {"test",        ltest},
+    {"readuint8",   lreaduint8},
     {"readint8",    lreadint8},
     {"readint16",   lreadint16},
     {"readint32",   lreadint32},

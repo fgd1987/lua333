@@ -1,6 +1,9 @@
 module('Login', package.seeall)
 
-player_manager = player_manager or {}
+player_manager = player_manager or {
+    --[uid] = {uid, srvname, srvid, time}
+}
+
 onlinenum = onlinenum or 0
 
 function main()

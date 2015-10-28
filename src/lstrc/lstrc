@@ -1,6 +1,5 @@
 #!/usr/local/bin/lua
 
-
 local mod_name = 'actordb'
 local rootdir = 'actordb'
 local clsname_list = {}

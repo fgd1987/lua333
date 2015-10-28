@@ -7,7 +7,9 @@ tmp_socket_manager = tmp_socket_manager or {}
 
 function main()
     portfd = Port.create(Ae.main_loop())
-    Pbc.import_dir(_CONF.protodir)
+    require(_CONF.protodir)
+    local msg = Pbc.msgnew('account.LOGIN')
+    assert(msg, 'proto not import')
     listen()
 end
 
@@ -21,8 +23,8 @@ end
 
 function dispatch(sockfd, msgbuf, msglen, msgname)
     log('dispatch msgname(%s)', msgname)
-    local msg = pbc.msgnew(msgname)
-    pbc.parse_from_buf(msg, msgbuf, msglen)
+    local msg = Pbc.msgnew(msgname)
+    msg:parse_from_buf(msgbuf, msglen)
     local pats = string.split(msgname, '.')
     local mod_name = pats[1]
     local func_name = pats[2]
@@ -34,7 +36,7 @@ function dispatch(sockfd, msgbuf, msglen, msgname)
         if player.packet_counter > _CONF.packet_count_threshold then
             if timenow - player.last_check_packet_time < _CONF.packet_time_threshold then
                 logwarn('packet hack')
-                local msg = pbc.msgname('login.DISCONNECT')
+                local msg = pbc.msgnew('login.DISCONNECT')
                 msg.errno = 14
                 reply(player.sockfd,  msg)
                 disconnect(player.sockfd, 'packet hack')

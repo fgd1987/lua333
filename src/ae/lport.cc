@@ -91,6 +91,7 @@ static int sock_create(Port *port, int sockfd)
     bzero(sock, sizeof(Sock));
     sock->port = port;
     sock->sockfd = sockfd;
+    sock->userdata = 0;
     recvbuf_create(sockfd, 1024);
     sendbuf_create(sockfd);
     return OK;
@@ -576,6 +577,44 @@ static int lon_accept(lua_State *L)
     return 0;
 }
 
+static int lgetuserdata(lua_State *L)
+{
+    if(lua_isnumber(L, 1))
+    {
+        int sockfd = (int)lua_tonumber(L, 1);
+        if(sockfd <= 0 || sockfd >= MAX_SOCK)
+        {
+            LOG_ERROR("bad fd %d\n", sockfd);
+            return 0;
+        }
+        Sock *sock = fd2sock(sockfd);
+        lua_pushinteger(L, sock->userdata);
+        return 1;
+    }
+    return 0;
+}
+
+
+static int lsetuserdata(lua_State *L)
+{
+    if(lua_isnumber(L, 1))
+    {
+        int sockfd = (int)lua_tonumber(L, 1);
+        int userdata = (int)lua_tonumber(L, 2);
+        if(sockfd <= 0 || sockfd >= MAX_SOCK)
+        {
+            LOG_ERROR("bad fd %d\n", sockfd);
+            return 0;
+        }
+        Sock *sock = fd2sock(sockfd);
+        sock->userdata = userdata;
+        lua_pushboolean(L, 1);
+        return 1;
+    }
+    return 0;
+}
+
+
 static int lsetuid(lua_State *L)
 {
     if(lua_isuserdata(L, 1) && lua_isnumber(L, 2))
@@ -770,6 +809,8 @@ static luaL_Reg lua_lib[] =
     {"getpeerport", lgetpeerport},
     {"getpeerip", lgetpeerip},
     {"setuid", lsetuid},
+    {"setuserdata", lsetuserdata},
+    {"getuserdata", lgetuserdata},
     {"remove_write_event", lremove_write_event},
     {"add_write_event", ladd_write_event},
     {"recv", lrecv},

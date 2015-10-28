@@ -44,6 +44,7 @@ typedef struct Sock
     int uid;
     int send_seq; 
     int recv_seq; 
+    int userdata;
 }Sock;
 
 int luaopen_port(lua_State *L);

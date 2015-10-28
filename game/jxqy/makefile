@@ -12,7 +12,16 @@ global:
 	../../bin/startsrv globalsrv1
 
 test:
-	../../bin/pbtest login.ping
+	../../bin/pbclient login.ping
 
 dbinit:
 	../../bin/dbinit
+
+srvlist:
+	../../bin/srvlist
+
+srvclean:
+	../../bin/srvclean gamesrv1
+
+srvstop:
+	../../bin/srvstop globalsrv1

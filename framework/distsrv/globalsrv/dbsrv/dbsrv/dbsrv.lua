@@ -3,7 +3,8 @@ module('Dbsrv', package.seeall)
 descriptors = {}
 
 function main()
-    --Pbc.import_dir(_CONF.dbproto_dir)
+    require(_CONF.dbproto)
+    Pbc.import_dir(Config.game_dir..'/'.._CONF.dbproto)
     --构建descriptor
     --for table_name, table_conf in pairs(_CONF.table_conf) do
     --    if not table_conf.binary then
@@ -38,13 +39,13 @@ local function select_from_mysql(uid, table_name)
         return false
     end
     local pb_class = _CONF.table_conf[table_name].class
-    local msg = Protopool.msgnew(pb_class)
+    local msg = Pbc.msgnew(pb_class)
     if not result then
         return msg, ''
     end
-    local descriptor = Protopool.get_descriptor(table_name)
+    local descriptor = Pbc.get_descriptor(table_name)
     if descriptor then
-        local fields = descriptor.fields
+        local fields = descriptor.field
         for field_name, field in pairs(fields) do
             if field.is_message then
                 local field_msg = msg[field_name]
@@ -97,10 +98,11 @@ function get_from_redis(srvid, uid, callback, ...)
         for idx, v in pairs(redis_reply.value) do
             local table_name = table_array[idx]
             if v.type == 'string' then
-                local msg = Protopool.msgnew(_CONF.table_conf[table_name].class)
+                local msg = Pbc.msgnew(_CONF.table_conf[table_name].class)
                 msg:parse_from_string(v.value)
                 table.insert(msg_array, msg)
                 log('load from redis %d.%s(%d)', uid, table_name, string.len(v.value))
+                log(msg:debug_string())
                 total_size = total_size + string.len(v.value)
             else
                 return
@@ -184,6 +186,7 @@ function set_to_redis(srvid, uid, callback, ...)
             return
         end
     end
+    log('cache to redis uid(%d) success',  uid)
     return true
 end
 
@@ -200,27 +203,27 @@ function set_to_mysql(srvid, uid, callback, ...)
         local table_name = args[i]
         local msg = args[i + 1]
         --是否要展开这个表
-        local descriptor = Protopool.descriptors(table_name)
-        if not descriptor then
+        local pb_class = _CONF.table_conf[table_name]
+        if pb_class.binary then
             local table_bin = msg:tostring()
-            local sql_str = string.format("replace into %s (uid, table_bin, update_time) VALUES (%d, '%s', %d)", table_name, uid, Mysql.escape(conn, table_bin), timenow)
+            local sql_str = string.format("replace into %s (uid, bin, utime) VALUES (%d, '%s', %d)", table_name, uid, Mysql.escape(conn, table_bin), timenow)
             if not Mysql.command(conn, sql_str) then
                 logerr('%s replace fail', table_name)
                 return
             end
             log('save %d.%s(%d) success', uid, table_name, string.len(table_bin))
         else
-            local pb_class = _CONF.table_conf[table_name].class
+            local descriptor = Pbc.get_descriptor(pb_class.class)
             local sql_str = string.format('replace into '..table_name..' (')
             for field_name, field in pairs(descriptor.field) do
                 local value = msg[field_name]
                 sql_str = sql_str..field_name..','
             end
-            sql_str = sql_str..' update_time) values ('
-            for field_name, field in pairs(descriptor) do
+            sql_str = sql_str..' utime) values ('
+            for field_name, field in pairs(descriptor.field) do
                 local value = msg[field_name]
                 value = value and value or ''
-                if field.type == 'int' then
+                if field.type == 'int32' then
                     sql_str = sql_str..value..','
                 elseif field.type == 'string' then
                     sql_str = sql_str..'\''..Mysql.escape(conn, value)..'\','
@@ -309,7 +312,7 @@ function MSG_KVSET(srvid, msg)
     for _, kv in pbpairs(msg.kvs) do
         sql = sql..string.format("%s='%s', ", kv.key, kv.value)
     end
-    sql = sql..string.format(' update_time=%d ', os.time())
+    sql = sql..string.format(' utime=%d ', os.time())
     sql = sql..string.format(' WHERE uid=%d', uid)
     if not Mysql.command(mysql, sql) then
         logerr('kvset fail %s', sql)

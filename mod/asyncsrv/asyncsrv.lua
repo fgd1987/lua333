@@ -32,6 +32,9 @@ end
 
 function recordpid()
     if File.exists('pid') then
+        log('pid file exists')
+        os.exit(1)
+        return
     end
     local pid = System.getpid()
     local file = io.open('pid', 'w+')
@@ -40,19 +43,36 @@ function recordpid()
     log('running pid(%d)', pid)
 end
 
+function initenv() 
+    print('----------加载模块----------')
+    table.insert(Mod.search_path, engine_dir)
+    for _, mod_conf in pairs(Main.config) do
+        local mod_path = mod_conf[1]
+        print(string.format('load mod(%s)', mod_path))
+        local mod = import(mod_path)
+            if mod then
+            print(string.format('finish load mod(%s)', mod_path))
+            print('')
+            mod._CONF = mod_conf
+        end
+    end
+    Mod.call('main')
+end
+
 function mainloop()
     --初始化环境
     Srvmain.main()
     --切换工作目录
-    local running_dir = string.format('%s/%s', Config.proc_path, Config.srvname)
+    local running_dir = string.format('%s/%s', Config.proc_dir, Config.srvname)
     File.mkdirs(running_dir)
     File.chdir(running_dir)
     log('running dir(%s)', File.getcwd())
-    if _CONF.daemon then
+    recordpid()
+    if Config.daemon then
         Log.logfile(Config.srvname, 10000, running_dir)
         Srvmain.daemon()
     end
-    recordpid()
+    initenv()
     Ae.main(loop)
     log('game over!')
 end

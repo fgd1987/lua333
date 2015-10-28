@@ -1,4 +1,4 @@
 
-local config = {host = '127.0.0.1', port = 3331},
 
-return config
+PbClientConf = {root_dir = 'client',  proto_dir = 'proto', host = '127.0.0.1', port = 3331}
+

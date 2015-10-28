@@ -16,6 +16,9 @@ extern "C" {
 #define int32 int
 #define int64 long long
 
+#define uint16 unsigned short
+#define uint32 unsigned short
+
 typedef struct RBuf{
 	int buf_len;
     int rptr;
@@ -114,6 +117,7 @@ static int lfind(lua_State *L) {
     } 
     RBuf *self = fd2rbuf(sockfd);
     if (self->rptr + (int)str_len >= self->wptr) {
+    //    printf("rptr(%d) str_len(%d) wptr(%d)\n", self->rptr, str_len, self->wptr);
         return 0;
     }
     //printf("i(%d) wptr(%d)\n", self->rptr + startpos, self->wptr);
@@ -122,7 +126,7 @@ static int lfind(lua_State *L) {
             lua_pushinteger(L, i - self->rptr);
             return 1;
         }
-        //printf("ee %d c(%c)\n", i, *(self->buf + i));
+     //   printf("ee %d c(%c)\n", i, *(self->buf + i));
     }
     return 0;
 }
@@ -227,6 +231,27 @@ static int lgetint8(lua_State *L){
     return 1;
 }
 
+static int lgetuint32(lua_State *L){
+    int sockfd;
+    sockfd = (int)lua_tointeger(L, 1);
+    uint32 val = 0;
+    get_buf(sockfd, (char *)&val, sizeof(uint32));
+    lua_pushinteger(L, val);
+    return 1;
+}
+
+
+
+static int lgetuint16(lua_State *L){
+    int sockfd;
+    sockfd = (int)lua_tointeger(L, 1);
+    uint16 val = 0;
+    get_buf(sockfd, (char *)&val, sizeof(uint16));
+    lua_pushinteger(L, val);
+    return 1;
+}
+
+
 static int lgetint16(lua_State *L){
     int sockfd;
     sockfd = (int)lua_tointeger(L, 1);
@@ -296,6 +321,8 @@ static luaL_Reg lua_lib[] ={
     {"getint8", lgetint8},
     {"getint16", lgetint16},
     {"getint32", lgetint32},
+    {"getuint16", lgetuint16},
+    {"getuint32", lgetuint32},
     {"buf2line", lbuf2line},
     {"wskip", lwskip},
     {"rskip", lrskip},

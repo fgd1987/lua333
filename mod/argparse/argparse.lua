@@ -41,5 +41,3 @@ end
 function test()
     parse_argv({'--cpp_out=hello', '-o', 'afaf', 'af', 'asfdaf'})
 end
-
-

@@ -3,10 +3,10 @@ module('Gamesrv', package.seeall)
 portfd = nil
 
 game_manager = game_manager or {
-    --[srvid] = {}
+    --[srvid] = {srvid, srvname, time}
 }
 
-function hello(timerid)
+function test_hello(timerid)
     log('hello')
     log(timerid)
     return 1
@@ -15,7 +15,7 @@ end
 function main()
     portfd = Port.create(Ae.main_loop())
     listen()
-    --local timerid = Timer.addtimer(Ae.main_loop(), 1000, 'Gamesrv.hello')
+    --local timerid = Timer.addtimer(Ae.main_loop(), 1000, 'Gamesrv.test_hello')
     --print(timerid)
 end
 

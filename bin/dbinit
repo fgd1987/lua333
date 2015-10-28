@@ -1,17 +1,17 @@
 #!/usr/local/bin/luaexe
 dofile(os.getenv('ENGINE_PATH')..'/bin/luaenv')
 --建表脚本
-
-require('Config')
+Mod.load('mod/pblua')
+require('etc/dbinit')
 --功能:创建表
 function create_binary_table(conn, dbname, table_name)
-    local str = string.format('CREATE TABLE %s(uid INT NOT NULL, table_bin BLOB NOT NULL, update_time INT NOT NULL, PRIMARY KEY(`uid`)) ENGINE = INNODB DEFAULT CHARSET = utf8;', table_name)
+    local str = string.format('CREATE TABLE %s(uid INT NOT NULL, bin BLOB NOT NULL, utime INT NOT NULL, PRIMARY KEY(`uid`)) ENGINE = INNODB DEFAULT CHARSET = utf8;', table_name)
     command(conn, str)
 end
 
 --功能:修改表
 function alter_table(conn, dbname, table_name, pb_file)
-    local descriptor = pbc.get_descriptor(pb_file)
+    local descriptor = Pblua.get_descriptor(pb_file)
     if not command(conn, 'USE information_schema') then
         return
     end
@@ -47,7 +47,7 @@ end
 
 --功能:创建开表
 function create_table(conn, table_name, pb_file)
-    local descriptor = pbc.get_descriptor(pb_file)
+    local descriptor = Pblua.get_descriptor(pb_file)
     local sql = string.format('CREATE TABLE %s (', table_name)
     for field_name, field in pairs(descriptor) do
         local field_type = 'INT'
@@ -68,7 +68,7 @@ function create_table(conn, table_name, pb_file)
         end
         sql = sql..','
     end
-    sql = sql..' update_time INT DEFAULT 0,'
+    sql = sql..' utime INT DEFAULT 0,'
     if not descriptor['id'] then
         sql = sql..' PRIMARY KEY(`uid`)) ENGINE=INNODB DEFAULT CHARSET=utf8;'
     else
@@ -101,8 +101,8 @@ function command(conn, sql)
 end
 
 function main()
-    for dbname, mysql_conf in pairs(Config.initdb.mysql_conf) do
-        Pbc.import_dir(mysql_conf.dbproto_dir)
+    for dbname, mysql_conf in pairs(DbinitConf.mysql_conf) do
+        Pblua.import_dir(mysql_conf.dbproto_dir)
         print(string.format('test db(%s)', dbname))
         local conn = Mysql.connect(mysql_conf.host, '', mysql_conf.user, mysql_conf.password)
         if not conn then
@@ -120,9 +120,9 @@ function main()
                 end
             else
                 if is_table_exist(conn, dbname, table_name) then
-                    alter_table(conn, dbname, table_name, table_conf.file)
+                    alter_table(conn, dbname, table_name, table_conf.class)
                 else
-                    create_table(conn, table_name, table_conf.file)
+                    create_table(conn, table_name, table_conf.class)
                 end
             end
         end

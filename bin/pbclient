@@ -5,10 +5,14 @@ pbtest login
 pbtest login.login
 --]]
 
+package.cpath = './lib/?.so;'..package.cpath
+require('etc/pbclient')
+--导入协议
+require('proto')
+Mod.load('mod/pbc')
 Mod.load('mod/pbproto')
 
 local url = arg[1]
-
 local mod_name = nil
 local func_name = nil
 if url then
@@ -17,15 +21,21 @@ if url then
     func_name = pats[2]
 end
 
-Pbc.import_dir('proto')
+--Pblua.import_dir(PbClientConf.proto_dir)
 
 function main(dir)
     local files = File.listdir(dir)
+    if not files then
+        print(string.format('dir(%s) not exists', dir))
+        os.exit(1)
+    end
+    --加载模块
     for _, file in pairs(files) do
         if file.type == 'dir' then
             Mod.load(string.format('%s/%s', dir, file.name))
         end
     end
+    --执行函数
     run_func(mod_name, func_name)
     os.exit(0)
 end
@@ -33,7 +43,7 @@ end
 function run_func(mod_name, func_name)
     local mod = _G[string.cap(mod_name)]
     if not mod then
-        logerr('mod(%s) not found', mod_name)
+        print('mod(%s) not found', mod_name)
         return
     end
     local func = mod[func_name]
@@ -46,4 +56,4 @@ function run_func(mod_name, func_name)
     print(string.format('(ok)run %s.%s', mod_name, func_name))
 end
 
-main('pbtest')
+main(PbClientConf.root_dir)

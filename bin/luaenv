@@ -1,4 +1,4 @@
-local engine_path = os.getenv('LUA333_PATH')
+local engine_path = os.getenv('ENGINE_PATH')
 package.path = (engine_path..'/?.lua;')..package.path
 package.cpath = (engine_path..'/lib/?.so;')..package.cpath
 --导入必须的c库
@@ -13,12 +13,10 @@ require('redis')
 require('mysql')
 require('socket')
 require('srvmain')
-require('pbc')
+require('pblua')
 require('date')
 require('file')
 --导入必须的lua库
 require('mod.mod.mod')
 require('mod.log.log')
 table.insert(Mod.search_path, engine_path)
-Mod.load('mod/pbc')
-print('initenv finished')

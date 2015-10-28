@@ -8,7 +8,7 @@ all:
 	cd log;make
 	cd luaexe;make
 	cd mysql;make
-	cd pbc;make
+	cd pblua;make
 	cd redis;make
 	cd socket;make
 	cd srvmain;make
@@ -25,7 +25,7 @@ install:
 	cd log;make install
 	cd luaexe;make install
 	cd mysql;make install
-	cd pbc;make install
+	cd pblua;make install
 	cd redis;make install
 	cd socket;make install
 	cd srvmain;make install
@@ -42,7 +42,7 @@ clean:
 	cd log;make clean
 	cd luaexe;make clean
 	cd mysql;make clean
-	cd pbc;make clean
+	cd pblua;make clean
 	cd redis;make clean
 	cd socket;make clean
 	cd srvmain;make clean

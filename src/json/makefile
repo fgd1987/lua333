@@ -5,7 +5,7 @@ CFLAGS=-fPIC -shared -O2 -Wall
 SO=json.so
 
 ${SO}:json.cc
-	g++ -o ${SO} ${CFLAGS} json.cc cJSON.cc ${INCLUDE_DIRS} ${LIB_DIRS} -llua
+	g++ -o ${SO} ${CFLAGS} json.cc cJSON.cc ${INCLUDE_DIRS} ${LIB_DIRS} -llua -lcommon
 
 clean:
 	rm -rf ${SO}

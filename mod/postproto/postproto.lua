@@ -44,7 +44,8 @@ end
 _G['POST'] = function(srvid, funcname, ...)
     local sockfd = srvid2sockfd[srvid] 
     if not sockfd then
-        logerr('srv is not connect srvid(%d)', srvid)
+        logerr('srv is not connect srvid(%d)', srvid or 0)
+        return
     end
     log('[POST][SEND]srvid(%d).%s()', srvid, funcname)
     log(Json.encode({...}))

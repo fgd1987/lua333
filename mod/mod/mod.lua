@@ -26,6 +26,10 @@ function load(mod_path)
     local mod_name = pats[#pats]
     print(string.format('mod_path(%s) mod_name(%s)', mod_path, mod_name))
     local files = File.listdir(real_path)
+    if not files then
+        print(string.format('dir not exist %s!!!!!!!!!!!!!!!!!!!!!!!!', mod_path))
+        return
+    end
     for _, file in pairs(files) do
         if file.type == 'file' then
             local file_path = string.format('%s/%s', mod_path, file.name)
@@ -67,3 +71,5 @@ function call(func_name, ...)
         end
     end
 end
+
+_G['import'] = load

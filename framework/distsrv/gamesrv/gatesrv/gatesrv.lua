@@ -7,7 +7,10 @@ gate_manager = gate_manager or {
 }
 
 function main()
-    Pbc.import_dir(_CONF.protodir)
+    print(package.cpath)
+    print(_CONF.proto)
+    require(_CONF.proto)
+    Pbc.import_dir(Config.game_dir..'/'.._CONF.proto)
     portfd = Port.create(Ae.main_loop())
     listen()
 end
