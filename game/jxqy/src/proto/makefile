@@ -7,7 +7,7 @@ SRC=$(wildcard *.cc)
 
 $(SO):$(SRC)
 	echo '编译'
-	g++ -o $(SO) $(CFLAGS) $(SRC) $(INCLUDE_DIRS) $(LIB_DIRS) -llua -ltolua -lcommon
+	g++ -o $(SO) $(CFLAGS) $(SRC) $(INCLUDE_DIRS) $(LIB_DIRS) -llua -ltolua -lcommon -lprotobuf
 tolua:
 	echo '执行tolua++'
 	$(ENGINE_PATH)/3rd/tolua++/tolua++ -n proto -o interface.cc proto.pkg

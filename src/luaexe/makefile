@@ -5,7 +5,7 @@ CFLAGS=-O2 -Wall
 EXE=luaexe
 
 ${EXE}:luaexe.c
-	gcc -o ${EXE} ${CFLAGS} luaexe.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua
+	gcc -o ${EXE} ${CFLAGS} luaexe.c ${INCLUDE_DIRS} ${LIB_DIRS} -llua -lm -ldl
 
 clean:
 	rm -rf ${EXE}

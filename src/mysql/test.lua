@@ -1,6 +1,6 @@
 require('mysql')
 
-local conn = Mysql.connect('127.0.0.1', 'mysql', 'root', '')
+local conn = Mysql.connect('127.0.0.1', 'mysql', 'root', 'fgd')
 print(conn)
 local result = Mysql.select(conn, 'select user,host from user')
 for i, row in pairs(result) do

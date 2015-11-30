@@ -1,15 +1,15 @@
 
 all:
-	../../bin/startsrv gatesrv1
+	../../bin/srvstart gatesrv1
 
 game:
-	../../bin/startsrv gamesrv1
+	../../bin/srvstart gamesrv1
 
 gate:
-	../../bin/startsrv gatesrv1
+	../../bin/srvstart gatesrv1
 
 global:
-	../../bin/startsrv globalsrv1
+	../../bin/srvstart globalsrv1
 
 test:
 	../../bin/pbclient login.ping
